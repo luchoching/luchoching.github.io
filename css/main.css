@@ -385,7 +385,7 @@ h1 {
   padding-bottom: 0.5em;
   color: #E91E63; }
 
-.Header, .Posts, .Content {
+.Header, .Posts, .Content, #disqus_thread {
   max-width: 800px;
   margin-left: auto;
   margin-right: auto; }
