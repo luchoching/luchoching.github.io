@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - flexbox</title></head><body><div class="Main"><div class="Content"><div class="Content"><h1 id="flexbox-">Flexbox排版探索(一)</h1>
+<p>用<a href="http://www.w3.org/TR/css3-flexbox/">CSS3 flexbox</a>來排版忽然間就好像上了天堂, 不一定要用繁雜的grid system(或乾脆自己寫一個), 許多版型很輕鬆的就可以達成。</p>
+<p>flexbox可以設定的參數很多, 直接拿例子來玩比較快, 這次我想排一個簡單的三排版型, 頂端有個header bar, 中間就是各式各樣的文章內容, 最下方就是footer, 放置我的版權以及其他輔助資訊這樣。</p>
+<p>HTML結構: </p>
+<pre><code class="lang-html">&lt;<span class="hljs-keyword">div</span> <span class="hljs-type">class</span>=<span class="hljs-string">"Main"</span>&gt;
+  &lt;<span class="hljs-keyword">div</span> <span class="hljs-type">class</span>=<span class="hljs-string">"Header"</span>&gt;Header&lt;/<span class="hljs-keyword">div</span>&gt;
+  &lt;<span class="hljs-keyword">div</span> <span class="hljs-type">class</span>=<span class="hljs-string">"Content"</span>&gt;Content&lt;/<span class="hljs-keyword">div</span>&gt;
+  &lt;<span class="hljs-keyword">div</span> <span class="hljs-type">class</span>=<span class="hljs-string">"Footer"</span>&gt;Footer&lt;/<span class="hljs-keyword">div</span>&gt;
+&lt;/<span class="hljs-keyword">div</span>&gt;
+</code></pre>
+<p>對應的CSS外觀, 把文字置中, 各個欄位用不用底色標示:  </p>
+<pre><code class="lang-css"><span class="hljs-class">.Header</span>, <span class="hljs-class">.Content</span>, <span class="hljs-class">.Footer</span><span class="hljs-rules">{ <span class="hljs-rule"><span class="hljs-attribute">text-align</span>:<span class="hljs-value"> center</span></span>;}</span>
+<span class="hljs-class">.Header</span> <span class="hljs-rules">{<span class="hljs-rule"><span class="hljs-attribute">background</span>:<span class="hljs-value"> yellow</span></span>;}</span>
+<span class="hljs-class">.Content</span> <span class="hljs-rules">{<span class="hljs-rule"><span class="hljs-attribute">background</span>:<span class="hljs-value"> green</span></span>;}</span>
+<span class="hljs-class">.Footer</span> <span class="hljs-rules">{<span class="hljs-rule"><span class="hljs-attribute">background</span>:<span class="hljs-value"> blue</span></span>;}</span>
+</code></pre>
+<p>結果如下, 每個欄位高度都跟文字高度相同, 螢幕下方則是沒有被這3個區塊涵蓋到:</p>
+<p><img src="http://imgur.com/YyyPcEDl.png" alt="base"></p>
+<h2 id="flex-container">flex container</h2>
+<p>開始幫我們的CSS, 加入flexbox排版, </p>
+<p>首先, 要宣告誰是<code>flex container</code>(爸爸), 在爸爸裡面的區塊都是這flex container的<code>flex item</code>(兒子): </p>
+<pre><code class="lang-css"><span class="hljs-class">.Main</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> flex</span></span>;
+}</span>
+</code></pre>
+<p>結果變這樣: </p>
+<p><img src="http://imgur.com/KsnVQrsl.png" alt="onlycontainer"></p>
+<p>原來在flex container裏面兒子的排列方式預設是由左到右橫排(row), 在爸爸這邊我們加上<code>flex-direction</code>屬性來控制兒子的排列方式: </p>
+<pre><code class="lang-css"><span class="hljs-class">.Main</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> flex</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">flex-direction</span>:<span class="hljs-value"> column</span></span>;
+}</span>
+</code></pre>
+<p><code>flex-direction</code>有四種屬性值可用: <code>row</code>(橫排左到右), <code>row-reverse</code>(橫排右到左), <code>column</code>(直排由上到下), <code>column-reverse</code>(直排由下到上)</p>
+<p>好,至少排的方向對了: </p>
+<p><img src="http://imgur.com/i7XV4eKl.png" alt="addflex_direction"></p>
+<h2 id="flex-item">flex item</h2>
+<p>幫我們的css添上新的內容:</p>
+<pre><code class="lang-css"><span class="hljs-class">.Content</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">flex</span>:<span class="hljs-value"> <span class="hljs-number">1</span></span></span>;
+}</span>
+</code></pre>
+<p>這樣是沒有變化的, 把爸爸的高度先改為固定的200px高看看: </p>
+<pre><code class="lang-css"><span class="hljs-class">.Main</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> flex</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">flex-direction</span>:<span class="hljs-value"> column</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">height</span>:<span class="hljs-value"> <span class="hljs-number">200px</span></span></span>;
+}</span>
+</code></pre>
+<p>哇! 接近我們要的樣子了! 不過因為我們是將<code>.Main</code>設定固定高度, 還是沒有利用到視窗畫面(晚些處理): </p>
+<p><img src="http://imgur.com/Lt7Q2I0l.png" alt="main200px"></p>
+<p><code>flex</code>是3個屬性的縮寫: <code>flex-grow</code>, <code>flex-shrink</code>和 <code>flex-basis</code>, 預設值是<code>flex: 0 1 auto</code>。</p>
+<p>如果只單寫一個<code>flex:1</code>就等於<code>flex-grow: 1</code>。</p>
+<p><code>flex-grow</code>定義這個flex item長大(應用整個flex container空間)的能力。預設是0,表示不會變動,這個flex item有多長就多長。如果有一個flex item設定flow-grow為1, 那這個flex item就會用到所有flex container所剩下的空間, 如果所有flex item裏面, 有兩個設定flex-grow為1, 那麼他們兩個就會對分flex container所剩下的空間。</p>
+<p><code>flex-shrink</code>跟<code>flex-grow</code>相反, 預設值是1。</p>
+<p><code>flex-basis</code>是以父元素當作比較標準, 預設是auto,就是子元素本身寬度。<code>flex-basis: 50%</code>就是子元素本身為父元素50%寬度</p>
+<p><strong>直接用這個<a href="http://codepen.io/HugoGiraudel/pen/9a9ad8fb040f5efaf4e749b49cae7281">範例</a>來改看看一下就清楚</strong></p>
+<h2 id="css3-vh-vw">CSS3 新單位: vh / vw</h2>
+<p>拿掉.Main的height屬性, 呼叫CSS3 vh, 讓.Main可以用到整個畫面高度：</p>
+<pre><code class="lang-css"><span class="hljs-class">.Main</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> flex</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">flex-direction</span>:<span class="hljs-value"> column</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">min-height</span>:<span class="hljs-value"> <span class="hljs-number">100vh</span></span></span>;
+}</span>
+</code></pre>
+<p><code>vh</code>(viewport height) 和 <code>vw</code>(viewport width)是CSS3所導入的新單位, 我們可以來設定元素相對於viewport的大小,  數值最大就是100, <code>100vh</code>就是等於viewport 100%的高度。</p>
+<p><img src="http://imgur.com/s1pzPkxl.png" alt="addvh"></p>
+<p>搞定! </p>
+<h2 id="more">more</h2>
+<p><a href="http://philipwalton.github.io/solved-by-flexbox/">solved by flexbox</a></p>
+<p><a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/">a guide to flexbox</a></p>
+<p><a href="http://www.sketchingwithcss.com/samplechapter/cheatsheet.html">flexbox cheatsheet</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript></div><div class="Footer"><p><i>既然走過,就留下點痕跡。</i><a href="email:choching.work@gmail.com">Email Me</a></p></div></div></body></html>

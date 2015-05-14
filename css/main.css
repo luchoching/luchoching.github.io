@@ -368,9 +368,15 @@ body {
   line-height: 1.5em;
   color: #263238; }
 
-pre {
-  padding: 1em;
+pre, code {
   background-color: #ECEFF1; }
+
+pre {
+  padding: 1em; }
+
+code {
+  padding-left: 0.2em;
+  padding-right: 0.2em; }
 
 a {
   text-decoration: none;
@@ -384,6 +390,14 @@ h1 {
   padding-top: 0.5em;
   padding-bottom: 0.5em;
   color: #E91E63; }
+
+.Main {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column; }
+
+.Content {
+  flex: 1; }
 
 .Header, .Posts, .Content, #disqus_thread {
   max-width: 800px;
