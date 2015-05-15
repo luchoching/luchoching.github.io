@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - express_middleware_1</title></head><body><div class="Main"><div class="Content"><div class="Content"><h1 id="express-js-middleware-">Express.js -- 撰寫middleware(一)</h1>
+<p><a href="http://expressjs.com/">Express.js</a> 應該是node.js旗下最老牌而且主流的網頁框架了, 利用express.js這樣的輕量化框架, 可以很開心的寫網站或是撰寫REST API。</p>
+<p>以前都馬開心的使用<a href="http://expressjs.com/starter/generator.html">Express generator</a>拼拼湊湊寫完就丟出去, 現在乖乖來理解一下。以下的文章參考 <a href="https://stormpath.com/blog/how-to-write-middleware-for-express-apps/?utm_source=nodeweekly&amp;utm_medium=email">How to write middleware for express.js App</a>, 寫的太好了我幾乎都是翻譯，然後自己一點補充說明這樣 XD</p>
+<h2 id="-middleware">什麼是Middleware</h2>
+<p>Express.js寫出來的網站, 就是一個大App, user發送request給我們寫好的App, 我們處理好後回應response給user。</p>
+<p><strong>Middleware</strong> 就是一個可以接收request(<strong>req</strong>)和 response(<strong>res</strong>)物件的function。這個middleware可以修改或傳遞request或是response物件, 然後傳給下個middleware。每個middleware可以決定要繼續傳遞, 或是中斷整個傳遞鍊。</p>
+<p>在某些框架 middleware的概念叫作 <strong>filters</strong>, 意思是一樣的, 一個request, 一堆傳遞轉換的function, 輸出response。</p>
+<p><img src="http://i.imgur.com/dShahtQ.jpg" alt="express"></p>
+<p>一個middleware長的樣子如下: </p>
+<pre><code class="lang-js">function logger(req, res, next){
+  console.log(new <span class="hljs-type">Date</span>(), req.<span class="hljs-keyword">method</span>, req.url);
+  next();
+}
+</code></pre>
+<p>express middleware就是一個function帶有3個參數: <code>req</code>, <code>res</code>, <code>next</code>。</p>
+<p>上面所寫的logger middleware會把每次request的時間, method還有url都列印在終端機上, 然後呼叫<code>next()</code>往下個middleware過去。</p>
+<p><strong>Express.js的任務, 就是管理你所有middleware chain。</strong></p>
+<h2 id="-hello-byebye-middleware">&#39;Hello&#39; 和 &#39;ByeBye&#39; middleware</h2>
+<p>先寫出一個Express app: </p>
+<pre><code class="lang-js"><span class="hljs-reserved">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-reserved">var</span> app = express();
+app.listen(<span class="hljs-number">8000</span>);
+</code></pre>
+<p>app有了, 不過這個app沒法做任何事, 要加入middleware才成, 我們把上面寫好的<code>logger</code> middleware加入:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>(logger);
+</code></pre>
+<p>啟動我們寫好的app, 利用curl測試看看, 會發現印出以下訊息:</p>
+<pre><code class="lang-bash"><span class="hljs-variable">$ </span>curl <span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/localhost:8000/</span>
+<span class="hljs-constant">Cannot GET </span>/
+</code></pre>
+<p>但是server這邊有順利列印出log: </p>
+<pre><code class="lang-bash">$ node <span class="hljs-keyword">server</span>
+Fri May <span class="hljs-number">15</span> <span class="hljs-number">2015</span> <span class="hljs-number">15</span>:<span class="hljs-number">00</span>:<span class="hljs-number">47</span> GMT+<span class="hljs-number">0800</span> (CST) <span class="hljs-string">'GET'</span> <span class="hljs-string">'/'</span>
+</code></pre>
+<h3 id="-not-found-">&#39;Not Found&#39;表示 &#39;不做任何事&#39;</h3>
+<p>會這樣是因為我們在logger middleware呼叫了<code>next()</code>,但是並沒有註冊其他middleware給Express用, Express就只好什麼都不做, 又因為我們呼叫了<code>next()</code>,表示我們並未結束這個response, Express就會回應預設的<code>404 Not Found</code>找不到訊息。</p>
+<p>解法就是利用<code>res.end()</code>來完成結束整個response。</p>
+<h3 id="app-use-app-get">app.use 和 app.get</h3>
+<p>再來我們寫一個叫作<code>hello</code>的middleware: </p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">hello</span><span class="hljs-params">(req, res, next)</span>{</span>
+  <span class="hljs-keyword">res</span>.<span class="hljs-keyword">write</span>(<span class="hljs-string">'Hello! \n'</span>);
+  <span class="hljs-keyword">next</span>();
+}
+</code></pre>
+<p>將這個middleware加到我們的middlware chain中: </p>
+<pre><code class="lang-js"><span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>(logger);
+<span class="hljs-keyword">app</span>.<span class="hljs-literal">get</span>('/hello', hello);
+</code></pre>
+<p><code>app.use</code>表示 <strong>所有的request都會執行這個middleware</strong></p>
+<p><code>app.get</code>表示 <strong>只有針對該URL 做 GET request的時候才會執行這個middleware</strong></p>
+<p>測試一下看結果: </p>
+<pre><code class="lang-bash">$ <span class="hljs-tag">curl</span> <span class="hljs-rule"><span class="hljs-attribute">localhost</span>:<span class="hljs-value"><span class="hljs-number">8000</span>/hello
+Hello</span></span>
+</code></pre>
+<p>察看一下server log: </p>
+<pre><code>Fri May <span class="hljs-number">15</span> <span class="hljs-number">2015</span> <span class="hljs-number">15</span>:<span class="hljs-number">26</span>:<span class="hljs-number">02</span> GMT<span class="hljs-number">+0800</span> <span class="hljs-comment">(CST)</span> <span class="hljs-string">'GET'</span> <span class="hljs-string">'/hello'</span>
+</code></pre><p>結果都ok, 但是發現 curl沒有終止 ... </p>
+<h2 id="-response-">注意response 有沒有結束</h2>
+<p>要結束response, 就要呼叫<code>res.end()</code>。</p>
+<p>我們再來寫一個middleware, 在這個middleware裏面,我們會結束這個response: </p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bye</span><span class="hljs-params">(req, res, next)</span>{</span>
+  <span class="hljs-keyword">res</span>.<span class="hljs-keyword">write</span>(<span class="hljs-string">'ByeBye \n'</span>);
+  <span class="hljs-keyword">res</span>.end();
+}
+</code></pre>
+<p>修改一下我們的middleware chain: </p>
+<pre><code class="lang-js"><span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>(logger);
+<span class="hljs-keyword">app</span>.<span class="hljs-literal">get</span>('/hello', hello, bye);
+</code></pre>
+<p>這次就可以順利結束response了: </p>
+<pre><code class="lang-bash">$ <span class="hljs-tag">curl</span> <span class="hljs-rule"><span class="hljs-attribute">localhost</span>:<span class="hljs-value"><span class="hljs-number">8000</span>/hello
+Hello 
+Bye 
+$</span></span>
+</code></pre>
+<h2 id="more">more</h2>
+<p><a href="http://expressjs.com/guide/using-middleware.html">Expressjs - Using Middleware</a></p>
+<p><a href="https://stormpath.com/blog/how-to-write-middleware-for-express-apps/?utm_source=nodeweekly&amp;utm_medium=email">How to write middleware for express.js App</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript></div><div class="Footer"><p><i>既然走過,就留下點痕跡。</i><a href="email:choching.work@gmail.com">Email Me</a></p></div></div></body></html>
