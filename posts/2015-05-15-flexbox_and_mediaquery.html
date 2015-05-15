@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - flexbox_and_mediaquery</title></head><body><div class="Main"><div class="Content"><div class="Content"><h1 id="flexbox-media-query">Flexbox排版探索(二) -- 加上media query</h1>
+<p>試著利用flexbox實現 Mobile-First approach排版。</p>
+<p>Mobile-First 的方式就是我們先撰寫給mobile的CSS, 然後我們利用<a href="http://www.w3.org/TR/css3-mediaqueries/">media query</a>來指定特定的style(例如較大的螢幕寬度)。</p>
+<p>先設計一下我想要的基本結構:</p>
+<pre><code class="lang-html">&lt;<span class="hljs-keyword">div</span> <span class="hljs-type">class</span>=<span class="hljs-string">"Wrapper"</span>&gt;
+  &lt;<span class="hljs-keyword">div</span> <span class="hljs-type">class</span>=<span class="hljs-string">"Header"</span>&gt;Header&lt;/<span class="hljs-keyword">div</span>&gt;
+  &lt;<span class="hljs-keyword">div</span> <span class="hljs-type">class</span>=<span class="hljs-string">"Main"</span>&gt;
+    &lt;<span class="hljs-keyword">div</span> <span class="hljs-type">class</span>=<span class="hljs-string">"Content"</span>&gt;Content&lt;/<span class="hljs-keyword">div</span>&gt;
+    &lt;<span class="hljs-keyword">div</span> <span class="hljs-type">class</span>=<span class="hljs-string">"Desc"</span>&gt;Desc&lt;/<span class="hljs-keyword">div</span>&gt;
+  &lt;/<span class="hljs-keyword">div</span>&gt;
+  &lt;<span class="hljs-keyword">div</span> <span class="hljs-type">class</span>=<span class="hljs-string">"Footer"</span>&gt;Footer&lt;/<span class="hljs-keyword">div</span>&gt;
+&lt;/<span class="hljs-keyword">div</span>&gt;
+</code></pre>
+<p>對應的CSS外觀:</p>
+<pre><code class="lang-css"><span class="hljs-class">.Wrapper</span> <span class="hljs-rules">{<span class="hljs-rule"><span class="hljs-attribute">background</span>:<span class="hljs-value"> black</span></span>;}</span>
+<span class="hljs-class">.Header</span> <span class="hljs-rules">{<span class="hljs-rule"><span class="hljs-attribute">background</span>:<span class="hljs-value"> yellow</span></span>;}</span>
+<span class="hljs-class">.Content</span> <span class="hljs-rules">{<span class="hljs-rule"><span class="hljs-attribute">background</span>:<span class="hljs-value"> green</span></span>;}</span>
+<span class="hljs-class">.Desc</span> <span class="hljs-rules">{<span class="hljs-rule"><span class="hljs-attribute">background</span>:<span class="hljs-value"> Fuchsia</span></span>;}</span>
+<span class="hljs-class">.Footer</span> <span class="hljs-rules">{<span class="hljs-rule"><span class="hljs-attribute">background</span>:<span class="hljs-value"> blue</span></span>;}</span>
+<span class="hljs-class">.Header</span>, <span class="hljs-class">.Desc</span>, <span class="hljs-class">.Content</span>, <span class="hljs-class">.Footer</span><span class="hljs-rules">{ <span class="hljs-rule"><span class="hljs-attribute">text-align</span>:<span class="hljs-value"> center</span></span>;}</span>
+</code></pre>
+<p>長這樣: </p>
+<p><img src="http://imgur.com/dtQzqVll.png" alt="base"></p>
+<h2 id="mobile-flexbox-">mobile flexbox排版</h2>
+<p>手機版沒啥梗, 依序顯示.Header, .Content, .Desc, .Footer:</p>
+<pre><code class="lang-css"><span class="hljs-class">.Wrapper</span>, <span class="hljs-class">.Main</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">display</span>:<span class="hljs-value"> flex</span></span>;
+  <span class="hljs-rule"><span class="hljs-attribute">flex-direction</span>:<span class="hljs-value"> column</span></span>;
+}</span>
+<span class="hljs-class">.Wrapper</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">min-height</span>:<span class="hljs-value"> <span class="hljs-number">100vh</span></span></span>;
+}</span>
+<span class="hljs-class">.Main</span>, <span class="hljs-class">.Content</span> <span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">flex</span>:<span class="hljs-value"> <span class="hljs-number">1</span></span></span>;
+}</span>
+</code></pre>
+<p>可以參考<a href="/posts/2015-05-14-flexbox.html">Flexbox排版探索(一)</a></p>
+<h2 id="media-query-">media query -- 給大一點的螢幕</h2>
+<p>Media queries 是一些簡單的filters, 用來指定特定的style, 這讓我們很方便的可以依照使用裝置的寬度來調整各種style, 例如排版啦字體大小啦等等。</p>
+<p>這裡設定兩個style, 手機(螢幕寬度小於600px)就用我們上面寫的預設版面, 超過600px寬度的時候我就將.Desc和 .Content並排, 並且.Desc比較窄放置於左邊。</p>
+<p>新增CSS如下: </p>
+<pre><code class="lang-css"><span class="hljs-at_rule">@<span class="hljs-keyword">media</span> (min-width: <span class="hljs-number">37.5em</span>)</span>{
+  <span class="hljs-class">.Main</span> <span class="hljs-rules">{
+    <span class="hljs-rule"><span class="hljs-attribute">flex-direction</span>:<span class="hljs-value"> row</span></span>;
+  }</span>
+  <span class="hljs-class">.Desc</span> <span class="hljs-rules">{
+    <span class="hljs-rule"><span class="hljs-attribute">flex</span>:<span class="hljs-value"> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">12em</span></span></span>;
+    <span class="hljs-rule"><span class="hljs-attribute">order</span>:<span class="hljs-value"> -<span class="hljs-number">1</span></span></span>;
+  }</span>
+}
+</code></pre>
+<p>media query的語法如下: </p>
+<pre><code class="lang-css"><span class="hljs-at_rule">@<span class="hljs-keyword">media</span> (query) </span>{
+  <span class="hljs-comment">/* 當query條件符合, 就使用這裡的CSS規則 */</span>
+}
+</code></pre>
+<p>常用的query查詢條件有: <code>min-width</code>, <code>max-width</code>, <code>min-height</code>, <code>max-height</code>。</p>
+<p>這裡設定的條件是<code>min-width: 37.5em</code>表示：當螢幕寬度大於37.5em的時候, 就會執行這個@media區塊。</p>
+<p>當螢幕大於37.5em, 我就將.Main的<code>flex-direction</code>改回<code>row</code>(由左到右橫排)。</p>
+<p>.Main下面有兩個flex item, 將.Desc設定<code>flex: 0 0 12em</code>表示將.Desc固定在12em的寬度, 設定<code>order:-1</code>表示反轉排列的順序, 這樣就會變成.Desc在左方, .Content這個item就會在右方。</p>
+<p>結果如下: </p>
+<p><img src="http://imgur.com/3BMaEG5l.png" alt="ok"></p>
+<p>大功告成! </p>
+<h2 id="more">more</h2>
+<p><a href="https://developers.google.com/web/fundamentals/layouts/rwd-fundamentals/use-media-queries?hl=en">Use CSS media queries for responsiveness</a></p>
+<p><a href="http://www.zell-weekeat.com/how-to-write-mobile-first-css/">How to write Mobile-first CSS</a></p>
+<p><a href="https://www.new-bamboo.co.uk/blog/2014/03/10/flexboxes-media-queries-awesome-layouts/">flexboxes + media queries = awesome layouts</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript></div><div class="Footer"><p><i>既然走過,就留下點痕跡。</i><a href="email:choching.work@gmail.com">Email Me</a></p></div></div></body></html>
