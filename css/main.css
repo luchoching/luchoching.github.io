@@ -372,55 +372,72 @@ pre, code {
   background-color: #ECEFF1; }
 
 pre {
-  padding: 1em; }
-
-code {
-  padding-left: 0.2em;
-  padding-right: 0.2em; }
+  padding: 0.5em; }
 
 a {
   text-decoration: none;
   color: #1976D2; }
   a:hover, a:active {
-    color: #E91E63;
-    text-decoration: underline; }
+    color: #E91E63; }
 
 h1 {
-  margin: 0;
-  padding-top: 0.5em;
-  padding-bottom: 0.5em;
   color: #E91E63; }
 
-.Main {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column; }
+h2 {
+  border-bottom: 1px solid #ECEFF1; }
 
-.Content {
-  flex: 1; }
+img {
+  max-width: 100%; }
 
-.Header, .Posts, .Content, #disqus_thread {
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto; }
+.Header {
+  background-color: #ECEFF1; }
+  .Header h1 {
+    margin: 0;
+    padding: 0.2em;
+    font-size: 1.2em; }
+    .Header h1 a {
+      color: #E91E63; }
 
-.Header h1 {
-  padding-left: 0.5em; }
-
-.Posts ul {
-  margin: 0;
+.Posts {
   list-style: none;
-  background-color: #ffffff; }
-  .Posts ul li {
-    margin-top: 0.5em; }
+  padding: 0.2em;
+  margin: 0.2em; }
+  .Posts li {
+    margin-top: 0.2em;
+    padding: 0.1em; }
+    .Posts li:hover {
+      background-color: #ECEFF1; }
 
-.Content {
-  padding: 0.5em;
-  background-color: #ffffff; }
+.Main {
+  padding: 0.5em; }
+  .Main h1 {
+    color: #2196F3;
+    margin: 0;
+    padding: 0.2em;
+    font-size: 1.5em;
+    border-bottom: 1px solid #ECEFF1; }
+
+#disqus_thread {
+  padding: 0.2em; }
 
 .Footer {
   background-color: #ECEFF1;
-  text-align: right;
-  padding-right: 0.5em; }
+  text-align: right; }
+  .Footer p {
+    margin: 0;
+    padding: 0.2em; }
+
+.Wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; }
+
+.Main {
+  flex: 1; }
+
+@media (min-width: 50em) {
+  .Main, #disqus_thread {
+    width: 50em;
+    margin: 0 auto; } }
 
 /*# sourceMappingURL=main.css.map */
