@@ -1,0 +1,157 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_1</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-golang-by-example-">[Golang] by Example 筆記(一)</h1>
+<p>除了官網的<a href="https://tour.golang.org/">A Tour of Go</a>, 另外就是<a href="https://gobyexample.com/">Go by Example</a>了, 感謝網路上這麼多的前輩與資源, 整理一下練Go by Example的印象筆記。</p>
+<p>Go安裝與設定請參考: <a href="posts/2015-05-13-install_and_setting_golang_on_ubuntu_and_vim.html">使用gvm安裝golang, 並設定vim開發環境</a></p>
+<h2 id="hello-world">Hello World</h2>
+<p>hello.go: </p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+
+<span class="hljs-comment">// hi</span>
+<span class="hljs-comment">/* hello 
+   world */</span>
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{
+  fmt.<span class="hljs-type">Println</span>(<span class="hljs-string">"hello world"</span>)
+}
+</code></pre>
+<p>第一行是<code>package declaration</code>, 每個Go程式第1行都是package宣告, 這是Go用來管理與重複使用程式碼的方式。每個Go程式都是由<code>package</code>所組成。</p>
+<p>程式會在<code>main</code> package開始啟動。</p>
+<p>我們在<code>hello.go</code>建立了一個叫作<code>main</code>的package </p>
+<p>這個程式引用了(import)一個叫作<code>fmt</code>的package</p>
+<p>引用package的方式可以用:</p>
+<pre><code class="lang-go"><span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> <span class="hljs-string">"math"</span>
+</code></pre>
+<p>不過建議都用這樣: </p>
+<pre><code class="lang-go"><span class="hljs-preprocessor"><span class="hljs-keyword">import</span> (</span>
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"math"</span>
+)
+</code></pre>
+<p>註解的方法跟常用的C/C++/javascript 都一樣。</p>
+<p>執行go程式, 編譯(<code>build</code>)程式變成binary, 執行binary: </p>
+<pre><code class="lang-bash">$ <span class="hljs-keyword">go</span> run hello.<span class="hljs-keyword">go</span>
+$ <span class="hljs-keyword">go</span> build hello.<span class="hljs-keyword">go</span>
+$ ./hello
+</code></pre>
+<h2 id="values-types-">Values( Types )</h2>
+<p>Golang value types包括了 string, interger, float, boolean --&gt; 就如你所想的一樣, 跟我們所熟悉的很像。</p>
+<p>String litetals 可以用雙引號(<strong>&quot;</strong>)來表示, 或是用反向單引號(<strong>`</strong>)來表示, 反向單引號就是鍵盤左上角在esc鍵下方那顆</p>
+<p>差別在於雙引號可以接受特殊跳脫字元, 例如<code>\n</code>, 用反向單引號就如實印出來這樣,不會將跳脫字元轉成特殊字元。</p>
+<p>字串可以直接用加號相加。</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>                                                                                    
+func main() {
+  fmt.<span class="hljs-keyword">Println</span>(`Hello World\n`)
+  fmt.<span class="hljs-keyword">Println</span>(<span class="hljs-string">"Hello\nWorld"</span>)
+  fmt.<span class="hljs-keyword">Println</span>(<span class="hljs-string">"Hello"</span> + <span class="hljs-string">"World"</span>)
+}
+</code></pre>
+<p>會印出:</p>
+<pre><code class="lang-bash">$ <span class="hljs-keyword">go</span> run hello.<span class="hljs-keyword">go</span> 
+Hello World\n
+Hello
+World
+HelloWorld
+</code></pre>
+<h2 id="variables">Variables</h2>
+<p>使用 <code>var</code> keyword來宣告一個或多個變數並起可以同時賦予值, 宣告的方式就是var, 變數名, 變數type這樣。</p>
+<p>如果宣告變數沒有給初始值的話, Go就會給一個<strong>zero-value</strong> , 對int來說, zero-value就是0。</p>
+<p><code>:=</code>是一個簡寫的方式, Go就會自動判斷<code>:=</code>是屬於哪種type。</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span> 
+
+<span class="hljs-keyword">func</span> main(){
+  <span class="hljs-keyword">var</span> a <span class="hljs-typename">string</span> = <span class="hljs-string">"Hello"</span>
+
+  <span class="hljs-keyword">var</span> b, c <span class="hljs-typename">int</span> = <span class="hljs-number">1</span>, <span class="hljs-number">2</span>
+
+  <span class="hljs-keyword">var</span> d = <span class="hljs-constant">true</span>
+
+  <span class="hljs-keyword">var</span> e <span class="hljs-typename">int</span> 
+  fmt.Println(e)
+
+  f := <span class="hljs-string">"short"</span>
+  fmt.PrintLn(f)
+
+  g := <span class="hljs-number">300</span>
+  fmt.Println(g+<span class="hljs-number">100</span>)
+</code></pre>
+<h2 id="constants">Constants</h2>
+<p>Go支援 character, string, boolean, numeric value的 constants。</p>
+<pre><code class="lang-go"><span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> a = <span class="hljs-string">"Hello World"</span>
+</code></pre>
+<p>宣告方式跟<code>var</code>一樣, 只是改成<code>const</code>, var可以出現的地方, const就可以出現</p>
+<p>numeric constants一開始沒有type, 除非給他一個,例如type cast </p>
+<pre><code class="lang-go"><span class="hljs-keyword">const</span> <span class="hljs-keyword">n</span> = 500000000
+fmt.Println(math.<span class="hljs-literal">Sin</span>(<span class="hljs-keyword">n</span>))
+</code></pre>
+<h2 id="scope">Scope</h2>
+<p>Go 是 block scope 。</p>
+<h2 id="for-loop">For loop</h2>
+<p>單一條件: </p>
+<pre><code class="lang-go">i := <span class="hljs-number">1</span>
+<span class="hljs-keyword">for</span> i &lt;= <span class="hljs-number">3</span> <span class="hljs-comment">{
+  fmr.Println(i)
+  i += 1
+}</span>
+</code></pre>
+<p>經典的 initial/condition/after for loop: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">for</span> <span class="hljs-built_in">j</span> := <span class="hljs-number">7</span>; <span class="hljs-built_in">j</span> &lt;= <span class="hljs-number">9</span>; <span class="hljs-built_in">j</span>++ <span class="hljs-cell">{
+  fmt.Println(j)
+}</span>
+</code></pre>
+<p>for如果沒有條件, 就會一直循環下去: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">for</span> {
+  fmt.<span class="hljs-keyword">Println</span>(<span class="hljs-string">"loop"</span>)
+  <span class="hljs-keyword">break</span>
+}
+</code></pre>
+<h2 id="if-else">If/Else</h2>
+<p>就跟大家的印象一樣。</p>
+<p>可以在if條件裏面宣告以及初始變數, 在這條件式裏面宣告的變數, 在整個if/else branches都可以使用:</p>
+<pre><code class="lang-go"><span class="hljs-keyword">if</span> <span class="hljs-built_in">num</span> := <span class="hljs-number">9</span>; <span class="hljs-built_in">num</span> &lt; <span class="hljs-number">0</span> {
+  fmt.Println(<span class="hljs-built_in">num</span>, <span class="hljs-string">"is negative"</span>)
+} <span class="hljs-keyword">else</span> {
+  fmt.Println(<span class="hljs-built_in">num</span>, <span class="hljs-string">"oh ya!"</span>)
+}
+</code></pre>
+<p>Go沒有<code>?:</code>(ternary if)。</p>
+<h2 id="switch">Switch</h2>
+<p>就跟大家的印象一樣。</p>
+<p>可以把多個expressions放在相同的case statement上,</p>
+<p>case也可以是運算式: </p>
+<pre><code class="lang-go">switch <span class="hljs-built_in">time</span>.<span class="hljs-built_in">Now</span>().<span class="hljs-built_in">Weekday</span>() {
+  <span class="hljs-keyword">case</span> <span class="hljs-built_in">time</span>.Saturday, <span class="hljs-built_in">time</span>.Sunday:
+    fmt.Println(<span class="hljs-string">"it's the weekend"</span>)
+  <span class="hljs-keyword">default</span>:
+    fmt.Println(<span class="hljs-string">"it's a weekday"</span>)
+}
+</code></pre>
+<p>switch若沒有expression, 就像是if/else一樣: </p>
+<pre><code class="lang-go">witch {
+  <span class="hljs-keyword">case</span> t.Hour() &lt; <span class="hljs-number">12</span>:
+    fmt.Println(<span class="hljs-string">"it's before noon"</span>)
+  <span class="hljs-keyword">default</span>:
+    fmt.Println(<span class="hljs-string">"it's after noon"</span>)
+}
+</code></pre>
+<h2 id="more">More</h2>
+<p>對 C/C++ 有經驗的朋友, 一定可以很快就上手Go, 另外還加上了python語法的簡潔, 
+程式讀起來很快就可以適應與理解其字面,  用起來令人開心阿!</p>
+<p><a href="https://gobyexample.com">Go by Example</a></p>
+<p><a href="http://www.golang-book.com/">An introduction to programming in Go</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>既然走過,就留下點痕跡。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
