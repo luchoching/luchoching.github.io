@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_2</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-go-by-example-arrays-slices-maps">[Go] by Example (二) -- Arrays, Slices, Maps</h1>
+<p>延續<a href="/posts/2015-05-18-go_by_example_1.html">(一)</a>的內容, 討論Go的資料結構</p>
+<h2 id="array">Array</h2>
+<p>對Go來說, array就是一個有特定長度的元素的有號序列。</p>
+<p>以下宣告了一個長度為5, type為int的陣列, 注意陣列元素的初始值為0, 利用內建函式<code>len</code>傳回陣列長度: </p>
+<pre><code class="lang-go"><span class="hljs-tag">var</span> <span class="hljs-tag">a</span> [<span class="hljs-number">5</span>]int
+<span class="hljs-tag">a</span>[<span class="hljs-number">5</span>] = <span class="hljs-number">100</span>
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(a)</span></span>
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(a[<span class="hljs-number">5</span>])</span></span>
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(len(a)</span></span>)
+</code></pre>
+<p>會印出: </p>
+<pre><code class="lang-bash">[<span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">0</span> <span class="hljs-number">100</span>]
+<span class="hljs-number">100</span>
+<span class="hljs-number">5</span>
+</code></pre>
+<p>也可以直接宣告並且初始陣列: </p>
+<pre><code class="lang-go"><span class="hljs-string">b :</span>= [<span class="hljs-number">5</span>]<span class="hljs-typename">int</span>{<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>}
+</code></pre>
+<p>懶得填陣列長度或是懶得算, 也可以用<code>...</code>代替: </p>
+<pre><code class="lang-go"><span class="hljs-string">b :</span>= [...]<span class="hljs-typename">int</span>{<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>}
+</code></pre>
+<h2 id="slices">Slices</h2>
+<p>Slice像是功能更強大的array, array長度不能變動, slice可以。</p>
+<p>Slice長的就像array, 只是沒有宣告其長度: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">var</span> s []<span class="hljs-keyword">string</span>
+</code></pre>
+<p>這樣會建立一個長度為0的slice。</p>
+<p>要建立一個非0長度的slice(元素初始值均為zero-value), 要利用Go內建的<code>make</code>: </p>
+<pre><code class="lang-go">s := <span class="hljs-function"><span class="hljs-title">make</span><span class="hljs-params">([]string, <span class="hljs-number">3</span>)</span></span>
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(s)</span></span>
+</code></pre>
+<p>會得到以下結果(string的zero-value是一個空白字元): </p>
+<pre><code class="lang-bash">[   ]
+</code></pre>
+<p>操作方法都跟array一樣。</p>
+<p>只是slice多了許多好用的操作, 例如<code>append</code>: </p>
+<pre><code class="lang-go">s = <span class="hljs-function"><span class="hljs-title">append</span><span class="hljs-params">(s, <span class="hljs-string">"d"</span>, <span class="hljs-string">"e"</span>)</span></span>
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(s)</span></span>
+</code></pre>
+<p>會得到:</p>
+<pre><code class="lang-bash">[   de]
+</code></pre>
+<p>既然叫作Slice, 那代表Slice有一個<code>slice</code> operator 來讓我們將現有的slice切片(像Python語法), 使用 <code>slice[low: high]</code>: </p>
+<pre><code class="lang-go"><span class="hljs-tag">i</span> := s[<span class="hljs-number">2</span>:<span class="hljs-number">5</span>]
+<span class="hljs-tag">i</span> = s[:<span class="hljs-number">5</span>]
+<span class="hljs-tag">i</span> = s[<span class="hljs-number">2</span>:]
+</code></pre>
+<p>slice也可以直接宣告初始值: </p>
+<pre><code class="lang-go">l := <span class="hljs-literal">[]</span><span class="hljs-built_in">string</span>{<span class="hljs-string">"a"</span>, <span class="hljs-string">"b"</span>, <span class="hljs-string">"c"</span>}
+</code></pre>
+<p>宣告一個新的slice, 可以利用<code>copy</code>來做拷貝:</p>
+<pre><code class="lang-go">j := <span class="hljs-function"><span class="hljs-title">make</span><span class="hljs-params">([]string,<span class="hljs-number">3</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">copy</span><span class="hljs-params">(j, s)</span></span>
+</code></pre>
+<p>如果j的長度小於s的長度, j就只會拷貝j長度的s, 若j長度大於s, 那多的部份就是初始為zero-value。</p>
+<h2 id="maps">Maps</h2>
+<p>Map就是 key-value配對, 就是其他程式語言的<code>hashes</code>或是 <code>dicts</code>。</p>
+<p>要建立一個空的map, 就要使用<code>make</code> --&gt; make(male[key-type]val-type) 像這樣:</p>
+<pre><code class="lang-go">m := <span class="hljs-function"><span class="hljs-title">make</span><span class="hljs-params">(map[string]int)</span></span>
+m[<span class="hljs-string">"k1"</span>] = <span class="hljs-number">7</span>
+m[<span class="hljs-string">"k2"</span>] = <span class="hljs-number">14</span>
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(m)</span></span>
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(len(m)</span></span>)
+</code></pre>
+<p>結果為: </p>
+<pre><code class="lang-bash">map[<span class="hljs-string">k1:</span><span class="hljs-number">7</span> <span class="hljs-string">k2:</span><span class="hljs-number">14</span>]
+<span class="hljs-number">2</span>
+</code></pre>
+<p>也可以直接宣告並給定初始值: </p>
+<pre><code class="lang-go">n := <span class="hljs-built_in">map</span>[<span class="hljs-built_in">string</span>]<span class="hljs-keyword">int</span>{<span class="hljs-string">"foo"</span>: <span class="hljs-number">1</span>, <span class="hljs-string">"bar"</span>: <span class="hljs-number">2</span>}
+</code></pre>
+<p>利用內建的<code>delete</code>刪除key/value: </p>
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-title">delete</span><span class="hljs-params">(m, <span class="hljs-string">"k2"</span>)</span></span>
+</code></pre>
+<p>事實上當我們從map取值的時候, return value有兩個, 第一個是value, 第二個是boolean, </p>
+<p>例如繼承上例, 我們把k2的key-value從m中刪除了, 那麼 : </p>
+<pre><code class="lang-go"><span class="hljs-tag">a</span>, <span class="hljs-tag">b</span> := m[<span class="hljs-string">"k1"</span>]
+c, d := m[<span class="hljs-string">"k2"</span>]
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(a, b)</span></span>
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(c, d)</span></span>
+</code></pre>
+<p>會得到: </p>
+<pre><code class="lang-bash"><span class="hljs-number">2</span> <span class="hljs-literal">true</span>
+<span class="hljs-number">0</span> <span class="hljs-literal">false</span>
+</code></pre>
+<p>Go在找map找不到符合的key的時候,會傳回zero value, 像是<code>0</code>或是<code>&quot;&quot;</code>, 不過我們拿到zero value沒啥意義, 這時候我們可以忽略使用 <em>blank identifier</em> <strong>_</strong> 來忽略這個傳回值: </p>
+<pre><code class="lang-go">_, <span class="hljs-keyword">d</span> := <span class="hljs-keyword">m</span>[<span class="hljs-string">"k2"</span>]
+fmt.Println(<span class="hljs-keyword">d</span>)
+</code></pre>
+<h2 id="more">More</h2>
+<p><a href="http://blog.golang.org/go-slices-usage-and-internals">官網 Go Slices: usage and internals</a></p>
+<p><a href="https://tour.golang.org/">官網 A Tour of Go</a></p>
+<p><a href="https://gobyexample.com">Go by Example</a></p>
+<p><a href="http://www.golang-book.com/">An introduction to programming in Go</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>既然走過,就留下點痕跡。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
