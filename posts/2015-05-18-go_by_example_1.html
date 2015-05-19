@@ -118,7 +118,7 @@ fmt.Println(math.<span class="hljs-literal">Sin</span>(<span class="hljs-keyword
 </code></pre>
 <p>Go沒有<code>?:</code>(ternary if)。</p>
 <h2 id="switch">Switch</h2>
-<p>就跟大家的印象一樣。</p>
+<p>就跟大家印象相同。</p>
 <p>可以把多個expressions放在相同的case statement上,</p>
 <p>case也可以是運算式: </p>
 <pre><code class="lang-go">switch <span class="hljs-built_in">time</span>.<span class="hljs-built_in">Now</span>().<span class="hljs-built_in">Weekday</span>() {
@@ -128,8 +128,9 @@ fmt.Println(math.<span class="hljs-literal">Sin</span>(<span class="hljs-keyword
     fmt.Println(<span class="hljs-string">"it's a weekday"</span>)
 }
 </code></pre>
-<p>switch若沒有expression, 就像是if/else一樣: </p>
-<pre><code class="lang-go">witch {
+<p>switch若沒有expression, 就像是if/else: </p>
+<pre><code class="lang-go">t := time.Now()
+witch {
   <span class="hljs-keyword">case</span> t.Hour() &lt; <span class="hljs-number">12</span>:
     fmt.Println(<span class="hljs-string">"it's before noon"</span>)
   <span class="hljs-keyword">default</span>:
@@ -138,7 +139,8 @@ fmt.Println(math.<span class="hljs-literal">Sin</span>(<span class="hljs-keyword
 </code></pre>
 <h2 id="more">More</h2>
 <p>對 C/C++ 有經驗的朋友, 一定可以很快就上手Go, 另外還加上了python語法的簡潔, 
-程式讀起來很快就可以適應與理解其字面,  用起來令人開心阿!</p>
+程式讀起來很快就可以適應與理解其字面,  用起來令人開心!</p>
+<p><a href="https://tour.golang.org/">官網 A Tour of Go</a></p>
 <p><a href="https://gobyexample.com">Go by Example</a></p>
 <p><a href="http://www.golang-book.com/">An introduction to programming in Go</a></p>
 </div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
