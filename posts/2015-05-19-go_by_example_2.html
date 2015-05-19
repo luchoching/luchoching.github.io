@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_2</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-go-by-example-arrays-slices-maps">[Go] by Example (二) -- Arrays, Slices, Maps</h1>
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_2</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-go-by-example-arrays-slices-maps-range">[Go] by Example (二) -- Arrays, Slices, Maps, Range</h1>
 <p>延續<a href="/posts/2015-05-18-go_by_example_1.html">(一)</a>的內容, 討論Go的資料結構</p>
 <h2 id="array">Array</h2>
 <p>對Go來說, array就是一個有特定長度的元素的有號序列。</p>
@@ -87,6 +87,42 @@ fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span cla
 <p>Go在找map找不到符合的key的時候,會傳回zero value, 像是<code>0</code>或是<code>&quot;&quot;</code>, 不過我們拿到zero value沒啥意義, 這時候我們可以忽略使用 <em>blank identifier</em> <strong>_</strong> 來忽略這個傳回值: </p>
 <pre><code class="lang-go">_, <span class="hljs-keyword">d</span> := <span class="hljs-keyword">m</span>[<span class="hljs-string">"k2"</span>]
 fmt.Println(<span class="hljs-keyword">d</span>)
+</code></pre>
+<h2 id="range">Range</h2>
+<p><code>range</code> iterator 可以幫助我們遍歷(browse)我們上面所提到的資料結構內的元素。</p>
+<pre><code class="lang-go">nums := []<span class="hljs-built_in">int</span>{<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>}
+for <span class="hljs-built_in">index</span>, num := <span class="hljs-built_in">range</span> nums {
+  <span class="hljs-keyword">fmt</span>.Println(<span class="hljs-built_in">index</span>, num)
+}
+</code></pre>
+<p>如果不需要index, 那麼就使用 <em>blank identifier</em> 將index忽略掉: </p>
+<pre><code class="lang-go">nums := []<span class="hljs-built_in">int</span>{<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>}
+<span class="hljs-keyword">for</span> _, <span class="hljs-built_in">num</span> := range nums {
+  fmt.Println(<span class="hljs-built_in">num</span>)
+}
+</code></pre>
+<p>range on map : </p>
+<pre><code class="lang-go">k := map[<span class="hljs-built_in">string</span>]<span class="hljs-built_in">string</span>{<span class="hljs-string">"a"</span>:<span class="hljs-string">"apple"</span>, <span class="hljs-string">"b"</span>:<span class="hljs-string">"banana"</span>}
+for <span class="hljs-built_in">key</span>, <span class="hljs-built_in">value</span> := range k{
+  fmt.Println(<span class="hljs-built_in">key</span>, <span class="hljs-built_in">value</span>)
+}
+</code></pre>
+<p>注意如果是range on string, 那value將會是unicode code, index是開始的byte的index, 例如:</p>
+<pre><code class="lang-go">for <span class="hljs-built_in">index</span>, <span class="hljs-keyword">value</span> := <span class="hljs-built_in">range</span> <span class="hljs-string">"你好go hello"</span> {
+  <span class="hljs-keyword">fmt</span>.PrintLn(<span class="hljs-built_in">index</span>, <span class="hljs-keyword">value</span>)
+}
+</code></pre>
+<p>仔細觀察一下結果: </p>
+<pre><code class="lang-bash">0 20320
+3 22909
+6 103
+7 111
+8 32
+9 104
+10 101
+11 108
+12 108
+13 111
 </code></pre>
 <h2 id="more">More</h2>
 <p><a href="http://blog.golang.org/go-slices-usage-and-internals">官網 Go Slices: usage and internals</a></p>
