@@ -73,6 +73,13 @@ Hello
 Bye 
 $</span></span>
 </code></pre>
+<h2 id="-middleware">串起middleware</h2>
+<p>有了一堆寫好的middleware, 我們就可以任意的對不同條件, 組合起不同的服務, </p>
+<p>例如我們先拿掉<code>app.use(logger)</code>, 改成以下: </p>
+<pre><code class="lang-js">app.<span class="hljs-keyword">get</span>(<span class="hljs-string">'/hello'</span>, hello, bye);
+app.<span class="hljs-keyword">get</span>(<span class="hljs-string">'/wsaasds'</span>, logger, hello, bye);
+</code></pre>
+<p>那麼只要request是到<code>/wsaasds</code>的route, 通通都會透過<code>logger</code>這個middleware做log顯示, <code>/hello</code>則不會。</p>
 <h2 id="more">more</h2>
 <p><a href="http://expressjs.com/guide/using-middleware.html">Expressjs - Using Middleware</a></p>
 <p><a href="https://stormpath.com/blog/how-to-write-middleware-for-express-apps/?utm_source=nodeweekly&amp;utm_medium=email">How to write middleware for express.js App</a></p>
