@@ -384,6 +384,7 @@ h1 {
   color: #E91E63; }
 
 h2 {
+  padding-bottom: 0.2em;
   border-bottom: 1px solid #ECEFF1; }
 
 img {
