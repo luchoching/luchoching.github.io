@@ -43,10 +43,16 @@ fs.readFile('file.js', 'utf8', function(err, val){
 <span class="hljs-keyword">var</span> myFile = fs.readFile(<span class="hljs-string">'file.js'</span>, <span class="hljs-string">'utf8'</span>);
 </code></pre>
 <p>這裡<code>fs.readFile</code> method由原來的callback型式, 被轉成傳回一個promise物件。</p>
+<p>如果這個引用函式庫有很多method都會用到, 那麼可以利用<code>promisifyAll</code>這個method: </p>
+<pre><code class="lang-js"><span class="hljs-reserved">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">"fs"</span>);
+Promise.promisifyAll(fs);
+fs.readFileAsync(<span class="hljs-string">"file.js"</span>, <span class="hljs-string">"utf8"</span>).<span class="hljs-keyword">then</span>(...)
+</code></pre>
+<p>注意, 這裡要使用<code>fs.readFileAsync</code>來取代原來的<code>fs.readFile</code>, 所有被promisfy的函式, 都會加上<code>Async</code>的後綴。</p>
 <h2 id="promise-chaining">Promise chaining</h2>
 <p>傳回這個promise物件好處多多, 我們可以重複使用, 也可以利用promise的 <code>.then()</code> method, 來串接我們的流程。當promise狀態為fullfilled或是rejected的時候執行對應的handler。</p>
 <p>使用<code>.catch(Handler)</code>就像是 <code>.then(null, handler)</code>的簡便寫法, 只要有任何錯誤, 在整個<code>.then-chain</code>裏面會丟給最近的<code>.catch</code> handler處理。</p>
-<p>使用 <code>.catch(ErrorClass, Handler)</code> 就好像C#或是Java的 <a href="http://www.tutorialspoint.com/java/java_exceptions.htm">try-catch-finally block</a>一樣。</p>
+<p>使用 <code>.catch(ErrorClass, Handler)</code> 就好像C#或是Java的 <a href="http://www.tutorialspoint.com/java/java_exceptions.htm">try-catch-finally block</a>一樣。Promise寫法的好處, 就是讓非同步程式的程式碼, 很像同步程式碼(try-catch-finally)的寫法與習慣。</p>
 <p>上述例子接續改寫成如下: </p>
 <pre><code class="lang-js">myFile
   .then(<span class="hljs-type">JSON</span>.parse)
