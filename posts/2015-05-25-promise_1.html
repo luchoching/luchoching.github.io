@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - promise_1</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-promise-bluebird-">[Promise]使用<a href="一">Bluebird</a></h1>
+<p>Promise用起來實在太開心了! 目前我拿來取代<a href="https://github.com/caolan/async">async</a>的非同步工作流程。</p>
+<h2 id="-promise">什麼是Promise</h2>
+<p>Promise是一個javascript中處理非同步運算的一種手法。概念就是用一個promise(承諾)物件. 表示一個非同步運算的結果 。</p>
+<p>一個promise物件有三種狀態: <code>pending</code>(promise初始狀態, 還不知道結果), <code>fulfilled</code>(resolved, 非同步運算結果成功), <code>rejected</code>(非同步運算結果失敗)。</p>
+<p>一但promise的結果出來了,不管結果是fulfilled或是rejected, 這個promise都無法被改變(immutable)。</p>
+<p>假設我們要讀取一個檔案, 然後將檔案內容解析成JSON：</p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> fs = require('fs');
+
+fs.readFile('file.js', 'utf8',  function(err, val){
+  <span class="hljs-keyword">if</span> (err) {
+    console.error('unable to read file.');
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">var</span> <span class="hljs-literal">result</span> = <span class="hljs-type">JSON</span>.parse(val);
+    console.log('<span class="hljs-literal">result</span>: ' + <span class="hljs-literal">result</span>);
+  }
+});
+</code></pre>
+<p>這邊只處理了讀取檔案的錯誤, 若還要加上解決 <code>JSON.parse(val)</code>的錯誤處理變這樣: </p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> fs = require('fs');
+
+fs.readFile('file.js', 'utf8', function(err, val){
+  <span class="hljs-keyword">if</span> (err) {
+    console.error('unable to read file.');
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">try</span>{
+      <span class="hljs-keyword">var</span> <span class="hljs-literal">result</span> = <span class="hljs-type">JSON</span>.parse(val);
+      console.log('<span class="hljs-literal">result</span>: ' + <span class="hljs-literal">result</span>);
+    } catch (e) {
+      console.error('invalid json file.');
+    }
+    }
+});
+</code></pre>
+<p>一連串的巢狀讓人覺得, 寫起來怎麼這麼囉唆, 有沒有將程式碼攤平, 讓整個程序看起來的&quot;flow&quot;(流程化)的好方法?</p>
+<p>通常我們在Javscript講Pomise這個字, 通常我們指的是 <a href="https://promisesaplus.com/">CommonJS Promises/A+</a>這個最小實作的規格, 那基於Promise/A規格實作的函式庫有很多, 我這邊用的是<a href="https://github.com/petkaantonov/bluebird">Bluebird</a>。另外你也可能聽過 <a href="https://github.com/kriskowal/q">Q</a>。我們比較少有機會手工打包建立一個Promise物件, 這裡利用現成的bluebird函式庫來幫我們達成。</p>
+<pre><code class="lang-bash">$ npm <span class="hljs-operator"><span class="hljs-keyword">install</span> <span class="hljs-comment">--save bluebird</span></span>
+</code></pre>
+<p>Bluebird的<a href="https://github.com/petkaantonov/bluebird/blob/master/API.md#promisification">Promisification</a>將現有的nodejs API(promise-unware)轉成可以傳回promise的API(promise-returning): </p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> <span class="hljs-built_in">Promise</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">"bluebird"</span>);
+<span class="hljs-keyword">var</span> readFile = <span class="hljs-built_in">Promise</span>.promisify(<span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>.readFile); 
+
+<span class="hljs-keyword">var</span> myFile = fs.readFile(<span class="hljs-string">'file.js'</span>, <span class="hljs-string">'utf8'</span>);
+</code></pre>
+<p>這裡<code>fs.readFile</code> method由原來的callback型式, 被轉成傳回一個promise物件。</p>
+<h2 id="promise-chaining">Promise chaining</h2>
+<p>傳回這個promise物件好處多多, 我們可以重複使用, 也可以利用promise的 <code>.then()</code> method, 來串接我們的流程。當promise狀態為fullfilled或是rejected的時候執行對應的handler。</p>
+<p>使用<code>.catch(Handler)</code>就像是 <code>.then(null, handler)</code>的簡便寫法, 只要有任何錯誤, 在整個<code>.then-chain</code>裏面會丟給最近的<code>.catch</code> handler處理。</p>
+<p>使用 <code>.catch(ErrorClass, Handler)</code> 就好像C#或是Java的 <a href="http://www.tutorialspoint.com/java/java_exceptions.htm">try-catch-finally block</a>一樣。</p>
+<p>上述例子接續改寫成如下: </p>
+<pre><code class="lang-js">myFile
+  .then(<span class="hljs-type">JSON</span>.parse)
+  .then(function(<span class="hljs-literal">result</span>){
+    console.log('<span class="hljs-literal">result</span>: ' + <span class="hljs-literal">result</span>);
+  })
+  .catch(<span class="hljs-type">SyntaxError</span>, function(e){
+    console.error('invalid json file.');
+  })
+  .catch(function(e){
+    console.error('unable to read file.');
+  });
+</code></pre>
+<p><code>.then</code>或是 <code>.catch</code> 都是傳回一個promise。</p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">MDN</a> 這張圖片解釋的很清楚: 
+<img src="https://mdn.mozillademos.org/files/8633/promises.png" alt="promise chain"></p>
+<p>Wow! 我們做到了跟callback一樣的功能, 但是更容易閱讀!</p>
+<h2 id="more">More</h2>
+<p><a href="https://www.joyent.com/developers/node/design/errors">Error Handling in Node.js</a></p>
+<p><a href="https://promisesaplus.com/">Promise/A+</a></p>
+<p><a href="https://www.promisejs.org/">promisejs.org</a></p>
+<p><a href="https://promise-nuggets.github.io/">promise nuggets</a></p>
+<p><a href="http://www.slideshare.net/morrissinger/unit-testing-express-middleware">Unit testing express middleware</a></p>
+<p><a href="https://blog.domenic.me/youre-missing-the-point-of-promises/#toc_1">You&#39;re Missing the Point of Promises</a></p>
+<p><a href="http://tech.mozilla.com.tw/posts/3154/%E4%BD%BF%E7%94%A8-promise-%E6%A8%A1%E5%BC%8F%EF%BC%8C%E5%AF%AB%E5%87%BA%E7%B0%A1%E5%96%AE%E6%98%93%E6%87%82%E7%9A%84-marionette-test-case">使用 Promise 模式，寫出簡單易懂的 marionette test case</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>

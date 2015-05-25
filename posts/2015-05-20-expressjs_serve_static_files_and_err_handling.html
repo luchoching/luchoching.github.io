@@ -33,6 +33,10 @@ app.<span class="hljs-keyword">use</span>(express.<span class="hljs-keyword">sta
 <p>就可以像這樣存取(URL多了<code>/static</code>的prefix):</p>
 <pre><code class="lang-js"><span class="hljs-string">http:</span><span class="hljs-comment">//localhost:3000/static/hello.html</span>
 </code></pre>
+<p>像如果我用npm安裝了bootstrap或是jquery的套件, 那我就會設定如下: </p>
+<pre><code class="lang-js">app.<span class="hljs-keyword">use</span>(<span class="hljs-string">'/bootstrap'</span>, express.<span class="hljs-keyword">static</span>(__dirname + <span class="hljs-string">'/node_modules/bootstrap/dist'</span>));
+app.<span class="hljs-keyword">use</span>(<span class="hljs-string">'/jquery'</span>, express.<span class="hljs-keyword">static</span>(__dirname + <span class="hljs-string">'/node_modules/jquery/dist'</span>));
+</code></pre>
 <h2 id="render-plain-html">Render plain HTML</h2>
 <p>我們不需要使用<code>res.render()</code>這樣的方法來回應一個HTML給user, 如果有一個特定的檔案, 那麼就使用<code>res.sendFile()</code>就可以, 不然就放在特定資料夾, 用上述的<code>express.static()</code> middleware來處理。</p>
 <h2 id="-404-">處理 404 找不到頁面</h2>
