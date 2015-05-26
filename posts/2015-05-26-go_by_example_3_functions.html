@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_3_functions</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-go-by-example-functions">[Go] by Example 筆記(三) -- Functions</h1>
+<p><img src="http://www.golang-book.com/public/img/intro/10000000000001FF000000A90C708B88.noatx1.png" alt="functions"></p>
+<p><a href="http://www.golang-book.com/books/intro/7">圖片出處</a></p>
+<p>什麼是Function? 我覺得上面這張圖說明的太好了: 一個function是一段獨立的程式碼,就好像一個黑盒子一樣,  我們餵進去0到多個參數進去後, 這個黑盒子就會吐出0-多個結果給我們。</p>
+<p>目前我們已經寫過了第一個function: </p>
+<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {}
+</code></pre>
+<p>寫法可以很容易理解: </p>
+<pre><code class="lang-go"><span class="hljs-function">func <span class="hljs-title">plus</span><span class="hljs-params">(a <span class="hljs-keyword">int</span>, b <span class="hljs-keyword">int</span>)</span> <span class="hljs-keyword">int</span> </span>{
+  <span class="hljs-keyword">return</span> a + b
+}
+</code></pre>
+<p>以上表示說, 我們建立了一個function叫作plus, 可以傳入2個type均為int的參數a和b, function傳回的參數type也為int。</p>
+<p>如果傳入function的參數都是相同type, 那麼只要宣告一次就好: </p>
+<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">plus</span><span class="hljs-params">(a, b, <span class="hljs-built_in">c</span> int)</span></span> int {
+  <span class="hljs-keyword">return</span> a + b + <span class="hljs-built_in">c</span>
+}
+</code></pre>
+<p>呼叫function就跟我們熟悉的一樣, 使用 <code>name(args)</code>: </p>
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{
+  res := plus(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>)
+}
+</code></pre>
+<h2 id="multiple-return-values">Multiple Return Values</h2>
+<p>Go內建支援function的多個傳回值(multiple return values), 在Go裏面是非常常見的手法, 例如從function傳回結果(result)和錯誤值(error)。</p>
+<p>以下<code>(int, int)</code>表示這個function傳回兩個ints: </p>
+<pre><code class="lang-go"><span class="hljs-function">func <span class="hljs-title">vals</span><span class="hljs-params">()</span> <span class="hljs-params">(<span class="hljs-keyword">int</span>, <span class="hljs-keyword">int</span>)</span></span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-number">3</span>, <span class="hljs-number">7</span>
+}
+</code></pre>
+<p>使用該function的時候, 我們可以利用 <em>multiple assignment</em> 來接收兩個不同的傳回值: </p>
+<pre><code class="lang-go"><span class="hljs-tag">a</span>, <span class="hljs-tag">b</span> := <span class="hljs-function"><span class="hljs-title">vals</span><span class="hljs-params">()</span></span>
+</code></pre>
+<p>如果我們只要傳回值的子集合, 就是不要某些傳回值, 那麼就利用blank identifier <strong>_</strong> :</p>
+<pre><code class="lang-go">_, c := <span class="hljs-function"><span class="hljs-title">vals</span><span class="hljs-params">()</span></span>
+</code></pre>
+<h2 id="variadic-functions">Variadic Functions</h2>
+<p>Go也支援 Variadic function(可接收可變數量參數的函式)。</p>
+<pre><code class="lang-go">func <span class="hljs-literal">sum</span>(nums ...int) {
+  fmt.<span class="hljs-keyword">Print</span>(nums, <span class="hljs-string">" "</span>)
+
+  <span class="hljs-keyword">total</span> := 0
+  <span class="hljs-keyword">for</span> _, num := <span class="hljs-keyword">range</span> nums {
+    <span class="hljs-keyword">total</span> += num
+  }
+  fmt.Println(<span class="hljs-keyword">total</span>)
+}
+</code></pre>
+<p>呼叫時候可以傳入不同數量的參數: </p>
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-title">sum</span><span class="hljs-params">(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)</span></span>
+<span class="hljs-function"><span class="hljs-title">sum</span><span class="hljs-params">(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)</span></span>
+</code></pre>
+<p>如果要傳入的參數已經存放在slice裡了, 那要用<code>func(slice...)</code>的語法如下:</p>
+<pre><code class="lang-go">nums := []<span class="hljs-keyword">int</span>{<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>}
+<span class="hljs-keyword">sum</span>(nums...)
+</code></pre>
+<h2 id="closures">Closures</h2>
+<p>Go也支援匿名函式(<em>anonymous functions</em>), 用來製作 <em>closure</em> 。</p>
+<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">intSeq</span><span class="hljs-params">()</span></span> <span class="hljs-func"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> int {
+  i := <span class="hljs-number">0</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-func"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> int {
+    i += <span class="hljs-number">1</span>
+    <span class="hljs-keyword">return</span> i
+  }
+}
+</code></pre>
+<p>這裡的<code>intSeq</code> 函式傳回了另外一個我們定義的匿名函式, 這個傳回的函式將變數<code>i</code>封裝起來形成closure。</p>
+<p>當我們呼叫<code>intSeq</code>, 把<code>intSeq</code>的值(一個function)給<code>nextInt</code>, 這個<code>nextInt</code>有其自己的<code>i</code>值, 每次我們呼叫<code>nextInt</code>, <code>i</code>就會一直更新, 例如: </p>
+<pre><code class="lang-go">  fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(nextInt()</span></span>)
+  fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(nextInt()</span></span>)
+  fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(nextInt()</span></span>)
+
+  newInts := <span class="hljs-function"><span class="hljs-title">intSeq</span><span class="hljs-params">()</span></span>
+  fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(newInts()</span></span>)
+</code></pre>
+<p>將會得到: </p>
+<pre><code class="lang-bash">1
+2
+3
+1
+</code></pre>
+<h2 id="recurison">Recurison</h2>
+<p>Go也支援遞迴函式(<em>recursive functions</em>)</p>
+<pre><code class="lang-go">func <span class="hljs-keyword">fact</span>(<span class="hljs-keyword">n</span> int) int {
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">n</span> == 0 {
+    <span class="hljs-keyword">return</span> 1
+  }
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">n</span> * <span class="hljs-keyword">fact</span>(<span class="hljs-keyword">n</span>-1)
+}
+</code></pre>
+<h2 id="more">More</h2>
+<p>這系列筆記文章都來自於以下局部翻譯或整理: </p>
+<p><a href="https://tour.golang.org/">官網 A Tour of Go</a></p>
+<p><a href="https://gobyexample.com">Go by Example</a></p>
+<p><a href="http://www.golang-book.com/">An introduction to programming in Go</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
