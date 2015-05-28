@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_3_functions</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-go-by-example-functions">[Go] by Example 筆記(三) -- Functions</h1>
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_3_functions</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-go-by-example-functions-pointers">[Go] by Example 筆記(三) -- Functions, Pointers</h1>
 <p><img src="http://www.golang-book.com/public/img/intro/10000000000001FF000000A90C708B88.noatx1.png" alt="functions"></p>
 <p><a href="http://www.golang-book.com/books/intro/7">圖片出處</a></p>
 <p>什麼是Function? 我覺得上面這張圖說明的太好了: 一個function是一段獨立的程式碼,就好像一個黑盒子一樣,  我們餵進去0到多個參數進去後, 這個黑盒子就會吐出0-多個結果給我們。</p>
@@ -88,6 +88,34 @@
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">n</span> * <span class="hljs-keyword">fact</span>(<span class="hljs-keyword">n</span>-1)
 }
 </code></pre>
+<h2 id="pointers">Pointers</h2>
+<p>Go支援 pointer(指標), 允許傳址(pass reference to values)。</p>
+<h3 id="passed-by-value">passed  by value</h3>
+<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">zeroval</span><span class="hljs-params">(ival int)</span></span> {
+  ival = <span class="hljs-number">0</span>
+}
+</code></pre>
+<p>zeroval這個function具有參數型別為int, 因此參數就會傳值(value)到函式裡面, 也就是<code>zeroval</code>會得到<code>ival</code>的值拷貝。</p>
+<p>若我們呼叫<code>zeroval</code>:</p>
+<pre><code class="lang-go"><span class="hljs-tag">i</span> := <span class="hljs-number">1</span>
+
+<span class="hljs-function"><span class="hljs-title">zeroval</span><span class="hljs-params">(i)</span></span>
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(i)</span></span>
+</code></pre>
+<p>我們會得到結果為1, 並不會影響原來的 <code>i</code>。</p>
+<h3 id="passed-by-reference">passed by reference</h3>
+<p>就如同大家所熟悉的C/C++: </p>
+<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">zeroptr</span><span class="hljs-params">(iptr *int)</span></span> {
+  *iptr = <span class="hljs-number">0</span>
+}
+</code></pre>
+<p>zeroptr有一個<code>iptr</code>參數, 型別為 <code>*int</code> 表示是一個整數型態的指標(pointer)。</p>
+<p>呼叫<code>zeroptr</code>:</p>
+<pre><code class="lang-go"><span class="hljs-tag">i</span> := <span class="hljs-number">1</span>
+<span class="hljs-function"><span class="hljs-title">zeroptr</span><span class="hljs-params">(&amp;i)</span></span>
+fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">( i)</span></span>
+</code></pre>
+<p><code>&amp;i</code>會給 <code>i</code>的記憶體位址, 這裡i的數值就被改動了, 結果為0。</p>
 <h2 id="more">More</h2>
 <p>這系列筆記文章都來自於以下局部翻譯或整理: </p>
 <p><a href="https://tour.golang.org/">官網 A Tour of Go</a></p>
