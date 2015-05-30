@@ -380,6 +380,9 @@ a {
   a:hover, a:active {
     color: #E91E63; }
 
+li {
+  line-height: 200%; }
+
 h1 {
   color: #E91E63; }
 

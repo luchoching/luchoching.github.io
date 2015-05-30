@@ -1,0 +1,244 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - promise_static_blog_genetator_1</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-promise-bluebird-blog-">[Promise][Bluebird] 做一個簡單的靜態Blog網站產生器(一)</h1>
+<p>利用 <code>Promise</code>方式做一個簡單的靜態Blog產生器。</p>
+<p>不需要資料庫, 只需要撰寫markdown文章, 就轉換成靜態網頁。不需要額外租用網頁空間, 利用<a href="https://pages.github.com/">Github Pages</a> 開開心心發佈我們的部落格。</p>
+<h2 id="-">想法與架構</h2>
+<p>功能很簡單： 我寫了一堆markdown的部落格文章, 執行一個產生器程式, 就幫我產生一個條列所有文章的首頁(index page), 
+上面可以聯結到每個從markdown轉成html的文章頁面。</p>
+<p>檔案結構如下: </p>
+<pre><code>.
+├── build
+├── templates
+│   ├── xxx<span class="hljs-class">.jade</span>
+│   ├── ...
+├── posts
+│   ├── xxx<span class="hljs-class">.md</span>
+│   ├── ...
+├── gen<span class="hljs-class">.js</span>
+└── ...
+</code></pre><p>其中:</p>
+<ul>
+<li><code>build</code>: 放我們最後產出的靜態網頁內容, </li>
+<li><code>templates</code>: 放我們寫好的網頁樣板,</li>
+<li><code>posts</code>: 放我們寫的markdwon部落格文章,</li>
+<li><code>gen.js</code>: 產生器主程式。</li>
+</ul>
+<p><code>gen.js</code>會先蒐集<code>posts</code>資料夾有哪些markdown檔案, 然後解析markdown檔名, 讀取每個檔案並套用樣板轉換成HTML網頁, 最後將所有檔案資訊, 整理製作成index.html。</p>
+<p>產生的結果都放在<code>build</code>資料夾內, 我們就可以把整包拿去發佈了:   </p>
+<pre><code>.
+├── ...
+├── index<span class="hljs-class">.html</span>
+└── posts
+    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">12</span>-hello_world<span class="hljs-class">.html</span>
+    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">13</span>-install_and_setting_golang_on_ubuntu_and_vim<span class="hljs-class">.html</span>
+    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">14</span>-flexbox<span class="hljs-class">.html</span>
+    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">15</span>-express_middleware_1<span class="hljs-class">.html</span>
+    ├── ...
+</code></pre><h2 id="markdown-">Markdown文章格式</h2>
+<p>為了方便(簡單), 撰寫的markdown文章檔名必須要像以下格式: </p>
+<pre><code><span class="hljs-tag">YYYY-MM-DD-post_article_url</span><span class="hljs-class">.md</span>
+</code></pre><p>檔名開頭是<code>YYYY-MM-DD</code>日期開頭, 再來接個<code>-</code>字號, 最後是整個文章的名字, 可以取名像是<code>post_article_url</code>, 但是不能取名用<code>-</code>字號連起來的名字, 例如<code>post-article-url</code>這樣就不行。 XD</p>
+<p>每個文章開頭一定是大寫標題1: </p>
+<pre><code class="lang-md"><span class="hljs-preprocessor"># 你好,我是文章標題</span>
+
+....
+</code></pre>
+<p><code>gen.js</code>會取每個markdown文章的第1行, 條列在首頁的文章列表上。</p>
+<h2 id="-">用到的函式庫</h2>
+<p>把會用到的函式庫安裝一下: </p>
+<pre><code class="lang-bash">$ npm i --save <span class="hljs-keyword">bluebird </span><span class="hljs-keyword">marked </span>jade lodash highlight.js
+</code></pre>
+<p>其中: </p>
+<ul>
+<li><a href="https://github.com/petkaantonov/bluebird">bluebird</a> 是一個高效能的promise函式庫, </li>
+<li><a href="https://github.com/chjj/marked">marked</a> 是一個markdown paser和compiler,</li>
+<li><a href="https://github.com/jadejs/jade">jade</a> 是個樣板引擎(你也可以換成你喜歡的),</li>
+<li><a href="https://github.com/lodash/lodash/">lodash</a> 是一個js工具函式庫</li>
+<li><a href="https://github.com/lodash/lodash/">highlight.js</a> 拿來做語法高亮顯示用。</li>
+</ul>
+<h2 id="-">取得目錄</h2>
+<p>Promise概念和Bluebird使用, 可以參考我寫的<a href="/posts/2015-05-25-promise_1.html">[Promise]使用Bluebird</a></p>
+<p>開始寫<code>gen.js</code>嚕! </p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> _ = <span class="hljs-keyword">require</span>(<span class="hljs-string">'lodash'</span>);
+<span class="hljs-keyword">var</span> fs = <span class="hljs-keyword">require</span>(<span class="hljs-string">'fs'</span>);
+<span class="hljs-keyword">var</span> Bluebird = <span class="hljs-keyword">require</span>(<span class="hljs-string">'bluebird'</span>);
+Bluebird.promisifyAll(fs);
+
+<span class="hljs-keyword">var</span> conf = {
+  name: <span class="hljs-string">'My Blog'</span>,
+  desc: <span class="hljs-string">'程式筆記本'</span>,
+  articleSource: <span class="hljs-string">'./posts'</span>,
+  buildto: <span class="hljs-string">'./build'</span>
+};
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">reverseDirList</span><span class="hljs-params">(list)</span></span>{
+  <span class="hljs-keyword">return</span> _(<span class="hljs-keyword">list</span>).reverse().value();
+}   
+
+
+<span class="hljs-comment">//=== My Flow ======================</span>
+fs.readdirAsync(conf.articleSource)
+  .then(reverseDirList);
+</code></pre>
+<p>這裡我利用<code>fs.readdirAsync(conf.articleSource)</code>建立了一個新的promise陣列, </p>
+<p>再來利用<code>reverseDirList</code>函式將我們取得的目錄陣列做反轉, 讓最新的文章排在陣列第一個, 之後首頁列表顯示的時候才會由最新的文章依序往下排。</p>
+<h2 id="-markdown-">解析markdown檔案資訊</h2>
+<p>取得了文章檔案列表, 再來我們要把一些用到的資訊整理抽離出來:</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseInfo</span><span class="hljs-params">(fileName)</span></span>{
+  <span class="hljs-keyword">var</span> titleArr= fileName.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>].split(<span class="hljs-string">'-'</span>);
+  <span class="hljs-keyword">var</span> postDate = titleArr[<span class="hljs-number">0</span>] +<span class="hljs-string">'-'</span>+ titleArr[<span class="hljs-number">1</span>] +<span class="hljs-string">'-'</span>+ titleArr[<span class="hljs-number">2</span>];
+  <span class="hljs-keyword">return</span> {
+    fileName: fileName,
+    headTitle: conf.name + <span class="hljs-string">' - '</span> + titleArr[<span class="hljs-number">3</span>],
+    postDate: postDate,
+    inPath: conf.articleSource + fileName,
+    outPath: conf.buildto + <span class="hljs-string">'posts/'</span>+ postDate + <span class="hljs-string">'-'</span> + titleArr[<span class="hljs-number">3</span>] + <span class="hljs-string">'.html'</span>,
+    content: fs.readFileAsync(conf.articleSource + fileName, <span class="hljs-string">'utf8'</span>)
+  };
+}
+</code></pre>
+<p><code>parseInfo</code>函式利用每個檔案名稱, 傳回了要顯示在每個文章title標籤的的<code>headTitle</code>, 發表文章的<code>postDate</code>日期, 來源路徑<code>inPath</code>, 目的地路徑<code>outPath</code>,還有讀出來的檔案內容<code>content</code>。 </p>
+<p>最後利用bluebird的<a href="https://github.com/petkaantonov/bluebird/blob/master/API.md#mapfunction-mapper--object-options---promise">map</a> method, 讓陣列裡的每個item都執行<code>parseInfo</code>後傳回新的promise陣列。</p>
+<pre><code class="lang-js"><span class="hljs-tag">fs</span><span class="hljs-class">.readdirAsync</span>(<span class="hljs-tag">conf</span><span class="hljs-class">.articleSource</span>)
+  <span class="hljs-class">.then</span>(<span class="hljs-tag">reverseDirList</span>)
+  <span class="hljs-class">.map</span>(<span class="hljs-tag">parseInfo</span>);
+</code></pre>
+<h2 id="-">文章要套用的樣板</h2>
+<p>樣板這裡使用jade, 如果不習慣jade寫法的人,可以用自己喜歡的, 或是有現成HTML的板型, 可以利用<a href="http://html2jade.aaron-powell.com/">html-to-jade</a>轉成jade。</p>
+<p>基本樣版<code>Html.jade</code>,主要就是共通引用的css,js寫在這, 以及&lt; Body &gt;的結構: </p>
+<pre><code class="lang-jade">doctype html
+html(lang=<span class="hljs-string">'zh'</span>)
+  head
+    block head
+      meta(charset=<span class="hljs-string">'utf-8'</span>)
+      meta(http-equiv=<span class="hljs-string">'X-UA-Compatible'</span>, <span class="hljs-literal">content</span>=<span class="hljs-string">'IE=edge,chrome=1'</span>)
+      meta(<span class="hljs-literal">name</span>=<span class="hljs-string">'viewport'</span>, <span class="hljs-literal">content</span>=<span class="hljs-string">'width=device-width'</span>)
+      <span class="hljs-literal">link</span>(rel=<span class="hljs-string">'stylesheet'</span>, href=<span class="hljs-literal">source</span>+<span class="hljs-string">'css/github.css'</span>)
+      <span class="hljs-literal">link</span>(rel=<span class="hljs-string">'stylesheet'</span>, href=<span class="hljs-literal">source</span>+<span class="hljs-string">'css/main.css'</span>)
+      title= title
+  body
+    .<span class="hljs-constant">Wrapper</span>
+      .<span class="hljs-constant">Header</span>
+        h1: a(href=<span class="hljs-string">'/'</span>) <span class="hljs-constant">Cho</span>-<span class="hljs-constant">Ching</span><span class="hljs-string">'s Blog
+      block main
+      .Footer
+        include ./Footer.jade</span>
+</code></pre>
+<p>注意這裡聯結css的地方, 必須要使用傳入的變數<code>source</code>, 例如:</p>
+<pre><code class="lang-jade"><span class="hljs-function"><span class="hljs-title">link</span><span class="hljs-params">(rel=<span class="hljs-string">'stylesheet'</span>, href=source+<span class="hljs-string">'css/github.css'</span>)</span></span>
+</code></pre>
+<p>主要是因為現在是我所有文章都放在<code>build/posts</code>資料夾下, 而css我是放在<code>build/css</code>下, 所以<code>source</code>在引用是文章的時候值為<code>../</code>, 在index.html的值為<code>./</code>。(應該還有更好寫法)</p>
+<p><code>Post.jade</code>: </p>
+<pre><code class="lang-jade">extends ./Html<span class="hljs-class">.jade</span>
+block main
+  .Main!= <span class="hljs-attribute">content</span>
+  <span class="hljs-tag">h3</span>: <span class="hljs-function"><span class="hljs-title">a</span><span class="hljs-params">(href=<span class="hljs-string">'/'</span>)</span></span> &lt;&lt; 回到文章列表
+</code></pre>
+<p>Post.jade傳入的<code>content</code>, 就是我們由markdown內容轉換過來的HTML。</p>
+<h2 id="markdown-html-save">Markdown --&gt; HTML --&gt; save</h2>
+<p>繼續我們的流程。</p>
+<p>依照陣列裡的每個項目,我們將<code>content</code>由markdown轉成html, 套用我們寫好的jade樣版, 再一起轉成html後寫到我們的目的地(<code>build/posts</code>)資料夾去。</p>
+<p>首先, 引用了jade和marked函式庫, 並在轉換markdown的時候設定使用highlight.js做語法高亮: </p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> jade = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jade'</span>);
+<span class="hljs-keyword">var</span> marked = <span class="hljs-built_in">require</span>(<span class="hljs-string">'marked'</span>); 
+
+marked.setOptions({
+  highlight: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">code</span>) </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">require</span>(<span class="hljs-string">'highlight.js'</span>).highlightAuto(code).value;
+  }
+});
+</code></pre>
+<p>再來,在原來的流程中,加入<code>.each(markdownToHtml)</code>。</p>
+<p><code>markdownToHtml</code>是自定義的function, 使用bluebird的<a href="https://github.com/petkaantonov/bluebird/blob/master/API.md#eachfunction-iterator---promise">each</a> 對前promise陣列中所存的每個item, 執行轉換markdown存到html檔案的動作: </p>
+<pre><code class="lang-js"><span class="hljs-tag">fs</span><span class="hljs-class">.readdirAsync</span>(<span class="hljs-tag">conf</span><span class="hljs-class">.articleSource</span>)
+  <span class="hljs-class">.then</span>(<span class="hljs-tag">reverseDirList</span>)
+  <span class="hljs-class">.map</span>(<span class="hljs-tag">parseInfo</span>)
+  <span class="hljs-class">.each</span>(<span class="hljs-tag">markdownToHtml</span>);
+</code></pre>
+<p><code>markdownToHtml</code>就像是延伸的promise流程, 先將markdown內容轉換成html, 將這html字串套用jade樣板, 最後寫入到目標路徑去, 完成後顯示訊息。使用<a href="https://github.com/petkaantonov/bluebird/blob/master/API.md#donefunction-fulfilledhandler--function-rejectedhandler----void">done</a> method的差異在於, 任何未處理的rejection都會在這裡被拋出然後統一處理: </p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">markdownToHtml</span><span class="hljs-params">(md)</span></span>{
+  var postFn = jade.compileFile(<span class="hljs-string">'./templates/Post.jade'</span>, {pretty:<span class="hljs-keyword">false</span>,<span class="hljs-built_in">debug</span>:<span class="hljs-keyword">true</span>});
+  <span class="hljs-keyword">return</span> md.content
+    .<span class="hljs-keyword">then</span>(marked)
+    .<span class="hljs-keyword">then</span>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(data)</span></span>{
+      <span class="hljs-keyword">return</span> postFn({
+        source: <span class="hljs-string">'../'</span>, 
+        title: md.headTitle, 
+        content: data
+      });  
+    })
+    .<span class="hljs-keyword">then</span>(fs.writeFileAsync.bind(fs, md.outPath))
+    .done(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+      console.log(<span class="hljs-string">'[done] '</span> + md.fileName  + <span class="hljs-string">' --&gt; '</span> + md.outPath );
+    });
+}
+</code></pre>
+<h2 id="-">首頁要套用的樣板</h2>
+<p>好了, 我們已經順利的將所有文章都轉好了, 現在要來處理產生index.html的內容。</p>
+<p>首先先把首頁需要的樣板撰寫一下, <code>templates/Index.jade</code>: </p>
+<pre><code class="lang-jade">extends ./Html.jade
+block main
+  .Main
+    ul.Posts
+      each <span class="hljs-keyword">list</span> <span class="hljs-keyword">in</span> lists
+        <span class="hljs-keyword">li</span>: a(href=<span class="hljs-keyword">list</span>.link) #{<span class="hljs-keyword">list</span>.title} &lt;b&gt;(#{<span class="hljs-keyword">list</span>.date})&lt;/b&gt;
+</code></pre>
+<p>這裡我們列出文章的標題與撰寫的時間, 並提供聯結到對應的文章去。</p>
+<h2 id="-">製作文章列表</h2>
+<p>流程新增一個項目<code>.map(getPostList)</code>: </p>
+<pre><code class="lang-js"><span class="hljs-tag">fs</span><span class="hljs-class">.readdirAsync</span>(<span class="hljs-tag">conf</span><span class="hljs-class">.articleSource</span>)
+  <span class="hljs-class">.then</span>(<span class="hljs-tag">reverseDirList</span>)
+  <span class="hljs-class">.map</span>(<span class="hljs-tag">parseInfo</span>)
+  <span class="hljs-class">.each</span>(<span class="hljs-tag">markdownToHtml</span>)
+  <span class="hljs-class">.map</span>(<span class="hljs-tag">getPostList</span>);
+</code></pre>
+<p><code>getPostList</code>把我們原來的promise item, 改成要產生文章列表所需要的&quot;材料&quot;, <code>link</code> URL聯結, <code>title</code>聯結標題, <code>date</code>文章撰寫日期: </p>
+<pre><code class="lang-js"><span class="hljs-tag">function</span> <span class="hljs-tag">getPostList</span>(md){
+  <span class="hljs-tag">return</span> <span class="hljs-tag">md</span><span class="hljs-class">.content</span>
+    <span class="hljs-class">.then</span>(<span class="hljs-function">function</span>(data){
+      <span class="hljs-tag">return</span> {
+        <span class="hljs-attribute">link</span>: <span class="hljs-string">'/posts/'</span> + md.fileName.<span class="hljs-function">split</span>(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'.html'</span>,
+        <span class="hljs-attribute">title</span>: data.<span class="hljs-function">split</span>(<span class="hljs-string">'\n'</span>)[<span class="hljs-number">0</span>], <span class="hljs-comment">//像是:  # 標題  </span>
+        <span class="hljs-attribute">date</span>: md.postDate
+      };
+    });
+}
+</code></pre>
+<h2 id="-index-html">產生index.html</h2>
+<p>要做的工作很單純, 把我們整理好的文章lists傳到<code>Index.jade</code>組裝成我們最後的HTML, 寫入檔案： </p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">genIndex</span><span class="hljs-params">(lists)</span></span>{
+  var indexFn = jade.compileFile(<span class="hljs-string">'./templates/Index.jade'</span>, {pretty:<span class="hljs-keyword">false</span>,<span class="hljs-built_in">debug</span>:<span class="hljs-keyword">true</span>});
+  <span class="hljs-keyword">return</span> indexFn({
+    source: <span class="hljs-string">'./'</span>, 
+    title: conf.name,
+    lists: lists
+  }); 
+}
+
+fs.readdirAsync(conf.articleSource)
+  .<span class="hljs-keyword">then</span>(reverseDirList)
+  .map(parseInfo)
+  .each.markdownToHtml)
+  .map(getPostList)
+  .<span class="hljs-keyword">then</span>.genIndex)
+  .<span class="hljs-keyword">then</span>(fs.writeFileAsync.bind(fs, conf.buildto + <span class="hljs-string">'index.html'</span>))
+  .done(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+    console.log(<span class="hljs-string">'[done] index.html created.'</span>);
+  });
+</code></pre>
+<h2 id="-">大功告成</h2>
+<p>終於完成 OH YA! 是不是比想像中簡單呢。利用promise, 讓整個非同步流程看起來十分清爽, 整理除錯上效率就提高不少, 雖然我覺得, promise的風格, 的確需要時間熟悉再適應。</p>
+<p>這個網站就是利用這樣的方式完成的, 以上的程式碼我放在<a href="https://github.com/jblog/jblog">這裡</a>。 </p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>

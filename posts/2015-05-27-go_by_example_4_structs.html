@@ -1,24 +1,24 @@
 <!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_4_structs</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-go-by-example-structs-methods-interfaces">[Go] by Example 筆記(四) -- Structs, Methods, Interfaces</h1>
 <p>Go的 <em>structs</em> 是一種包含一堆named fields的型別, 可以很方便的用來整合一堆相關的資料, 例如:</p>
-<pre><code class="lang-go"><span class="hljs-typedef"><span class="hljs-keyword">type</span> person struct <span class="hljs-container">{
-  <span class="hljs-title">name</span> <span class="hljs-type">String</span>
-  <span class="hljs-title">age</span> <span class="hljs-title">int</span>
-}</span></span>
+<pre><code class="lang-go">type <span class="hljs-keyword">person</span> struct {
+  name String
+  age int
+}
 </code></pre>
 <p>上面宣告了一個叫作具有<code>name</code>和<code>age</code>兩個fields的, 叫作<code>pperson</code>的struct type。</p>
 <p>我們利用以下的方法建立新的person struct: </p>
-<pre><code class="lang-go">person{<span class="hljs-string">"Bob"</span>, <span class="hljs-number">20</span>}
+<pre><code class="lang-go"><span class="hljs-keyword">person</span>{<span class="hljs-string">"Bob"</span>, 20}
 
-person{<span class="hljs-string">name:</span> <span class="hljs-string">"Alice"</span>, <span class="hljs-string">age:</span> <span class="hljs-number">30</span>}
+<span class="hljs-keyword">person</span>{name: <span class="hljs-string">"Alice"</span>, age: 30}
 
-person{<span class="hljs-string">name:</span> <span class="hljs-string">"Fred"</span>}
+<span class="hljs-keyword">person</span>{name: <span class="hljs-string">"Fred"</span>}
 </code></pre>
 <p>上述第3種方式, 會把沒有初始化的值賦予 zero-value。</p>
 <p>我們也可以利用 <code>&amp;</code> prefix來產生(yield) 指向這個struct的指標: </p>
-<pre><code class="lang-go"><span class="hljs-keyword">&amp;</span><span class="hljs-tag">person</span>{<span class="hljs-attribute">name</span>: <span class="hljs-string">"Ann"</span>, <span class="hljs-attribute">age</span>: <span class="hljs-number">40</span>}
+<pre><code class="lang-go">&amp;<span class="hljs-keyword">person</span>{name: <span class="hljs-string">"Ann"</span>, age: 40}
 </code></pre>
 <p>利用<code>.</code>(dot)來存取struct的field: </p>
-<pre><code class="lang-go"><span class="hljs-string">s :</span>= person{<span class="hljs-string">name:</span> <span class="hljs-string">"Sean"</span>, <span class="hljs-string">age:</span> <span class="hljs-number">50</span>}
+<pre><code class="lang-go">s := <span class="hljs-keyword">person</span>{name: <span class="hljs-string">"Sean"</span>, age: 50}
 fmt.Println(s.name)
 </code></pre>
 <p>Struct是可以被修改的(mutable): </p>
@@ -84,11 +84,11 @@ func (r <span class="hljs-built_in">rect</span>) perim() float64 {
 }
 </code></pre>
 <p>假設我們的function傳入的參數是interface type, 那麼只要是實作這個interface的type都可以使用這個function: </p>
-<pre><code class="lang-go"><span class="hljs-component">func measure(g geometry) {
-  fmt<span class="hljs-string">.Println(g)</span>
-  fmt<span class="hljs-string">.Println(g.area())</span>
-  fmt<span class="hljs-string">.Println(g.perim())</span>
-}</span>
+<pre><code class="lang-go">func measure<span class="hljs-params">(g geometry)</span> {
+  fmt.Println<span class="hljs-params">(g)</span>
+  fmt.Println<span class="hljs-params">(g.area<span class="hljs-params">()</span>)</span>
+  fmt.Println<span class="hljs-params">(g.perim<span class="hljs-params">()</span>)</span>
+}
 </code></pre>
 <p>例如: </p>
 <pre><code class="lang-go"><span class="hljs-string">r :</span>= rect{<span class="hljs-string">width:</span> <span class="hljs-number">3</span>, <span class="hljs-string">height:</span> <span class="hljs-number">4</span>}

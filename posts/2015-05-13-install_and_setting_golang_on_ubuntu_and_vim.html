@@ -2,7 +2,7 @@
 <p><a href="https://golang.org/">Go</a>好像很好玩！</p>
 <p>感謝有 <a href="https://github.com/moovweb/gvm">Go Version Manager</a>(gvm)提供了管理Go版本的介面, 讓安裝golang變的簡單。</p>
 <p>安裝gvm之前, 先檢查我使用的Ubuntu 14.04有哪些需要前置安裝的套件: </p>
-<pre><code class="lang-bash">sudo apt-<span class="hljs-built_in">get</span> install curl git mercurial <span class="hljs-keyword">make</span> binutils bison gcc build-essential
+<pre><code class="lang-bash"><span class="hljs-label">sudo</span> apt-<span class="hljs-preprocessor">get</span> install curl git mercurial make <span class="hljs-keyword">binutils </span><span class="hljs-keyword">bison </span>gcc <span class="hljs-keyword">build-essential</span>
 </code></pre>
 <p>再來安裝gvm:</p>
 <pre><code>bash &lt; &lt;(curl -s -<span class="hljs-constant">S </span>-<span class="hljs-constant">L </span><span class="hljs-symbol">https:</span>/<span class="hljs-regexp">/raw.githubusercontent.com/moovweb</span><span class="hljs-regexp">/gvm/master</span><span class="hljs-regexp">/binscripts/gvm</span>-installer)

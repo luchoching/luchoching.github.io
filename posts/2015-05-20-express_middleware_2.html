@@ -3,12 +3,12 @@
 <p>例如我們有一個Express server, 提供兩種服務: 一個是home page與相關像是產品頁面, 一個是給顧客來存取的API(例如給client-side app, 像是Angularjs之類)。 很明顯提供home page和API service的程式碼與相關函式庫都不太相同, 那麼就很適合獨立成兩個Express routers。</p>
 <h2 id="hello-world-routers">Hello World + Routers</h2>
 <p>延續前段劇情, 如果我們只要紀錄來存取API的log, 那我們的app可能會長的這樣: </p>
-<pre><code class="lang-js"><span class="hljs-keyword">var</span> <span class="hljs-keyword">app</span> = express();
-<span class="hljs-keyword">var</span> apiRouter = express.Router();
+<pre><code class="lang-js">var app = express<span class="hljs-params">()</span>;
+var apiRouter = express.Router<span class="hljs-params">()</span>;
 
-apiRouter.<span class="hljs-keyword">use</span>(logger);
-<span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>(hello, bye);
-<span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>('/api', apiRouter);
+apiRouter.<span class="hljs-keyword">use</span><span class="hljs-params">(logger)</span>;
+app.<span class="hljs-keyword">use</span><span class="hljs-params">(hello, bye)</span>;
+app.<span class="hljs-keyword">use</span><span class="hljs-params">('/api', apiRouter)</span>;
 </code></pre>
 <p>我們把 API service獨立成一個Express router, 然後指定<code>/api</code> 會導向到這個router。</p>
 <p>上述不管任何URL, 都會傳回Hello和Bye字樣, 只有<code>/api</code> route會在server上顯示log紀錄。</p>
@@ -29,8 +29,8 @@ Bye
 <p>所以, 在Express.js註冊middleware的順序很重要。</p>
 <p>在上面的例子, 我們先註冊<code>bye</code>這個middleware, 然後才註冊<code>apiRouter</code>。但是在<code>bye</code>這個middleware裏面, 我們沒有呼叫<code>next()</code>而是使用<code>res.end()</code>中止了整個middleware chain, 因此<code>apiRouter</code>是完全沒有啟動作用的! </p>
 <p>解法就是重新排序我們的middleware註冊順序: 先註冊apiRouter： </p>
-<pre><code class="lang-js"><span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>('/api', apiRouter);
-<span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>(hello, bye);
+<pre><code class="lang-js">app.<span class="hljs-keyword">use</span><span class="hljs-params">('/api', apiRouter)</span>;
+app.<span class="hljs-keyword">use</span><span class="hljs-params">(hello, bye)</span>;
 </code></pre>
 <p>執行: </p>
 <pre><code class="lang-bash">$ curl <span class="hljs-string">localhost:</span><span class="hljs-number">8000</span><span class="hljs-regexp">/api/</span>hello

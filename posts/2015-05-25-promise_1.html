@@ -44,9 +44,9 @@ fs.readFile('file.js', 'utf8', function(err, val){
 </code></pre>
 <p>這裡<code>fs.readFile</code> method由原來的callback型式, 被轉成傳回一個promise物件。</p>
 <p>如果這個引用函式庫有很多method都會用到, 那麼可以利用<code>promisifyAll</code>這個method: </p>
-<pre><code class="lang-js"><span class="hljs-reserved">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">"fs"</span>);
-Promise.promisifyAll(fs);
-fs.readFileAsync(<span class="hljs-string">"file.js"</span>, <span class="hljs-string">"utf8"</span>).<span class="hljs-keyword">then</span>(...)
+<pre><code class="lang-js">var fs = require<span class="hljs-params">(<span class="hljs-string">"fs"</span>)</span>;
+Promise.promisifyAll<span class="hljs-params">(fs)</span>;
+fs.readFileAsync<span class="hljs-params">(<span class="hljs-string">"file.js"</span>, <span class="hljs-string">"utf8"</span>)</span>.then<span class="hljs-params">(...)</span>
 </code></pre>
 <p>注意, 這裡要使用<code>fs.readFileAsync</code>來取代原來的<code>fs.readFile</code>, 所有被promisfy的函式, 都會加上<code>Async</code>的後綴。</p>
 <h2 id="promise-chaining">Promise chaining</h2>

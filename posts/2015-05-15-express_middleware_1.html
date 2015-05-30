@@ -22,7 +22,7 @@
 app.listen(<span class="hljs-number">8000</span>);
 </code></pre>
 <p>app有了, 不過這個app沒法做任何事, 要加入middleware才成, 我們把上面寫好的<code>logger</code> middleware加入:</p>
-<pre><code class="lang-js"><span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>(logger);
+<pre><code class="lang-js">app.<span class="hljs-keyword">use</span><span class="hljs-params">(logger)</span>;
 </code></pre>
 <p>啟動我們寫好的app, 利用curl測試看看, 會發現印出以下訊息:</p>
 <pre><code class="lang-bash"><span class="hljs-variable">$ </span>curl <span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/localhost:8000/</span>
@@ -49,8 +49,8 @@ Fri May <span class="hljs-number">15</span> <span class="hljs-number">2015</span
 <p><code>app.use</code>表示 <strong>所有的request都會執行這個middleware</strong></p>
 <p><code>app.get</code>表示 <strong>只有針對該URL 做 GET request的時候才會執行這個middleware</strong></p>
 <p>測試一下看結果: </p>
-<pre><code class="lang-bash">$ <span class="hljs-tag">curl</span> <span class="hljs-rule"><span class="hljs-attribute">localhost</span>:<span class="hljs-value"><span class="hljs-number">8000</span>/hello
-Hello</span></span>
+<pre><code class="lang-bash"><span class="hljs-variable">$ </span>curl <span class="hljs-symbol">localhost:</span><span class="hljs-number">8000</span>/hello
+<span class="hljs-constant">Hello</span>
 </code></pre>
 <p>察看一下server log: </p>
 <pre><code>Fri May <span class="hljs-number">15</span> <span class="hljs-number">2015</span> <span class="hljs-number">15</span>:<span class="hljs-number">26</span>:<span class="hljs-number">02</span> GMT<span class="hljs-number">+0800</span> <span class="hljs-comment">(CST)</span> <span class="hljs-string">'GET'</span> <span class="hljs-string">'/hello'</span>
@@ -68,10 +68,10 @@ Hello</span></span>
 <span class="hljs-keyword">app</span>.<span class="hljs-literal">get</span>('/hello', hello, bye);
 </code></pre>
 <p>這次就可以順利結束response了: </p>
-<pre><code class="lang-bash">$ <span class="hljs-tag">curl</span> <span class="hljs-rule"><span class="hljs-attribute">localhost</span>:<span class="hljs-value"><span class="hljs-number">8000</span>/hello
-Hello 
-Bye 
-$</span></span>
+<pre><code class="lang-bash">$ curl localhost:<span class="hljs-number">8000</span>/hello
+<span class="hljs-label">Hello</span> 
+<span class="hljs-keyword">Bye </span>
+$
 </code></pre>
 <h2 id="-middleware">串起middleware</h2>
 <p>有了一堆寫好的middleware, 我們就可以任意的對不同條件, 組合起不同的服務, </p>
