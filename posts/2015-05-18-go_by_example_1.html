@@ -56,8 +56,8 @@ HelloWorld
 </code></pre>
 <h2 id="variables">Variables</h2>
 <p>使用 <code>var</code> keyword來宣告一個或多個變數並起可以同時賦予值, 宣告的方式就是var, 變數名, 變數type這樣。</p>
-<p>如果宣告變數沒有給初始值的話, Go就會給一個<strong>zero-value</strong> , 對int來說, zero-value就是0。</p>
-<p><code>:=</code>是一個簡寫的方式, Go就會自動判斷<code>:=</code>是屬於哪種type。</p>
+<p>如果宣告變數沒有給初始值的話, Go就會給一個<strong>zero-value</strong> 。 對int來說, zero-value就是0, boolean type就是false, string type就是<code>&quot;&quot;</code>。</p>
+<p><code>:=</code>是一個簡寫的方式, Go就會自動判斷<code>:=</code>是屬於哪種type。在function外面,每個statements都要由一個關鍵字開始(<code>var</code>, <code>func</code>或是其他)不能直接用<code>:=</code>。</p>
 <pre><code class="lang-go"><span class="hljs-keyword">package</span> main
 <span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span> 
 
@@ -89,7 +89,8 @@ fmt.Println(math.<span class="hljs-literal">Sin</span>(<span class="hljs-keyword
 <h2 id="scope">Scope</h2>
 <p>Go 是 block scope 。</p>
 <h2 id="for-loop">For loop</h2>
-<p>單一條件: </p>
+<p>Go就只有一種循環結構, 叫作loop。</p>
+<p>單一條件(就是 <code>while</code>): </p>
 <pre><code class="lang-go">i := <span class="hljs-number">1</span>
 <span class="hljs-keyword">for</span> i &lt;= <span class="hljs-number">3</span> <span class="hljs-comment">{
   fmr.Println(i)
@@ -101,6 +102,15 @@ fmt.Println(math.<span class="hljs-literal">Sin</span>(<span class="hljs-keyword
   fmt.Println(j)
 }</span>
 </code></pre>
+<p>跟C或Java一樣, for的 pre statement和 post statment都可以為空, 例如: </p>
+<pre><code class="lang-go">func main() {
+  <span class="hljs-keyword">sum</span> := <span class="hljs-number">1</span>
+  <span class="hljs-keyword">for</span> ; <span class="hljs-keyword">sum</span> &lt; <span class="hljs-number">1000</span>; {
+    <span class="hljs-keyword">sum</span> += <span class="hljs-keyword">sum</span>
+  }
+  fmt.Println(<span class="hljs-keyword">sum</span>)
+}
+</code></pre>
 <p>for如果沒有條件, 就會一直循環下去: </p>
 <pre><code class="lang-go"><span class="hljs-keyword">for</span> {
   fmt.<span class="hljs-keyword">Println</span>(<span class="hljs-string">"loop"</span>)
@@ -108,8 +118,8 @@ fmt.Println(math.<span class="hljs-literal">Sin</span>(<span class="hljs-keyword
 }
 </code></pre>
 <h2 id="if-else">If/Else</h2>
-<p>就跟大家的印象一樣。</p>
-<p>可以在if條件裏面宣告以及初始變數, 在這條件式裏面宣告的變數, 在整個if/else branches都可以使用:</p>
+<p>就跟大家的印象相同。</p>
+<p>if跟for一樣, 可以在條件裏面宣告以及初始變數, 在這條件式裏面宣告的變數, 在整個if/else branches都可以使用:</p>
 <pre><code class="lang-go"><span class="hljs-keyword">if</span> <span class="hljs-built_in">num</span> := <span class="hljs-number">9</span>; <span class="hljs-built_in">num</span> &lt; <span class="hljs-number">0</span> {
   fmt.Println(<span class="hljs-built_in">num</span>, <span class="hljs-string">"is negative"</span>)
 } <span class="hljs-keyword">else</span> {

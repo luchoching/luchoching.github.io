@@ -2,6 +2,7 @@
 <p>延續<a href="/posts/2015-05-18-go_by_example_1.html">(一)</a>的內容, 討論Go的資料結構</p>
 <h2 id="array">Array</h2>
 <p>對Go來說, array就是一個有特定長度的元素的有號序列。</p>
+<p><code>[n]T</code> type 就是一個有n個 T type值的陣列。 陣列的長度是其型別的一部份, 所以陣列item值可以改變, 但<strong>陣列長度是不能變動的</strong></p>
 <p>以下宣告了一個長度為5, type為int的陣列, 注意陣列元素的初始值為0, 利用內建函式<code>len</code>傳回陣列長度: </p>
 <pre><code class="lang-go"><span class="hljs-tag">var</span> <span class="hljs-tag">a</span> [<span class="hljs-number">5</span>]int
 <span class="hljs-tag">a</span>[<span class="hljs-number">5</span>] = <span class="hljs-number">100</span>
@@ -22,16 +23,19 @@ fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span cla
 </code></pre>
 <h2 id="slices">Slices</h2>
 <p>Slice像是功能更強大的array, array長度不能變動, slice可以。</p>
-<p>Slice長的就像array, 只是沒有宣告其長度: </p>
+<p>Slice長的就像array, 只是沒有宣告其長度。<code>[]T</code>就是有型別為T的元素slice: </p>
 <pre><code class="lang-go"><span class="hljs-keyword">var</span> s []<span class="hljs-keyword">string</span>
 </code></pre>
-<p>這樣會建立一個長度為0的slice。</p>
+<p>這樣會建立一個長度為0, 容量為0的slice。這個slice的值為<code>nil</code>。</p>
 <p>要建立一個非0長度的slice(元素初始值均為zero-value), 要利用Go內建的<code>make</code>: </p>
 <pre><code class="lang-go">s := <span class="hljs-function"><span class="hljs-title">make</span><span class="hljs-params">([]string, <span class="hljs-number">3</span>)</span></span>
 fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(s)</span></span>
 </code></pre>
 <p>會得到以下結果(string的zero-value是一個空白字元): </p>
 <pre><code class="lang-bash">[   ]
+</code></pre>
+<p>也可以限制slice的容量(capcity): </p>
+<pre><code class="lang-go"><span class="hljs-tag">b</span> := <span class="hljs-function"><span class="hljs-title">make</span><span class="hljs-params">([]int, <span class="hljs-number">0</span>, <span class="hljs-number">5</span>)</span></span>  <span class="hljs-comment">// len(b)=0, cap(b)=5</span>
 </code></pre>
 <p>操作方法都跟array一樣。</p>
 <p>只是slice多了許多好用的操作, 例如<code>append</code>: </p>
