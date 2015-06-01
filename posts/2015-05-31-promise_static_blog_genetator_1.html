@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - promise_static_blog_genetator_1</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-promise-bluebird-blog-">[Promise][Bluebird] 做一個簡單的靜態Blog網站產生器(一)</h1>
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - promise_static_blog_genetator_1</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-promise-bluebird-blog-">[Promise][Bluebird] 做一個簡單的靜態Blog網站產生器</h1>
 <p>利用 <code>Promise</code>方式做一個簡單的靜態Blog產生器。</p>
 <p>不需要資料庫, 只需要撰寫markdown文章, 就轉換成靜態網頁。不需要額外租用網頁空間, 利用<a href="https://pages.github.com/">Github Pages</a> 開開心心發佈我們的部落格。</p>
 <h2 id="-">想法與架構</h2>
@@ -105,23 +105,23 @@ fs.readdirAsync(conf.articleSource)
 <h2 id="-">文章要套用的樣板</h2>
 <p>樣板這裡使用jade, 如果不習慣jade寫法的人,可以用自己喜歡的, 或是有現成HTML的板型, 可以利用<a href="http://html2jade.aaron-powell.com/">html-to-jade</a>轉成jade。</p>
 <p>基本樣版<code>Html.jade</code>,主要就是共通引用的css,js寫在這, 以及&lt; Body &gt;的結構: </p>
-<pre><code class="lang-jade">doctype html
-html(lang=<span class="hljs-string">'zh'</span>)
+<pre><code class="lang-jade">doctype <span class="hljs-tag">html</span>
+<span class="hljs-function"><span class="hljs-title">html</span><span class="hljs-params">(lang=<span class="hljs-string">'zh'</span>)</span></span>
   head
     block head
-      meta(charset=<span class="hljs-string">'utf-8'</span>)
-      meta(http-equiv=<span class="hljs-string">'X-UA-Compatible'</span>, <span class="hljs-literal">content</span>=<span class="hljs-string">'IE=edge,chrome=1'</span>)
-      meta(<span class="hljs-literal">name</span>=<span class="hljs-string">'viewport'</span>, <span class="hljs-literal">content</span>=<span class="hljs-string">'width=device-width'</span>)
-      <span class="hljs-literal">link</span>(rel=<span class="hljs-string">'stylesheet'</span>, href=<span class="hljs-literal">source</span>+<span class="hljs-string">'css/github.css'</span>)
-      <span class="hljs-literal">link</span>(rel=<span class="hljs-string">'stylesheet'</span>, href=<span class="hljs-literal">source</span>+<span class="hljs-string">'css/main.css'</span>)
+      <span class="hljs-function"><span class="hljs-title">meta</span><span class="hljs-params">(charset=<span class="hljs-string">'utf-8'</span>)</span></span>
+      <span class="hljs-function"><span class="hljs-title">meta</span><span class="hljs-params">(http-equiv=<span class="hljs-string">'X-UA-Compatible'</span>, content=<span class="hljs-string">'IE=edge,chrome=1'</span>)</span></span>
+      <span class="hljs-function"><span class="hljs-title">meta</span><span class="hljs-params">(name=<span class="hljs-string">'viewport'</span>, content=<span class="hljs-string">'width=device-width'</span>)</span></span>
+      <span class="hljs-function"><span class="hljs-title">link</span><span class="hljs-params">(rel=<span class="hljs-string">'stylesheet'</span>, href=source+<span class="hljs-string">'css/github.css'</span>)</span></span>
+      <span class="hljs-function"><span class="hljs-title">link</span><span class="hljs-params">(rel=<span class="hljs-string">'stylesheet'</span>, href=source+<span class="hljs-string">'css/main.css'</span>)</span></span>
       title= title
-  body
-    .<span class="hljs-constant">Wrapper</span>
-      .<span class="hljs-constant">Header</span>
-        h1: a(href=<span class="hljs-string">'/'</span>) <span class="hljs-constant">Cho</span>-<span class="hljs-constant">Ching</span><span class="hljs-string">'s Blog
+  <span class="hljs-tag">body</span>
+    <span class="hljs-class">.Wrapper</span>
+      <span class="hljs-class">.Header</span>
+        <span class="hljs-tag">h1</span>: <span class="hljs-function"><span class="hljs-title">a</span><span class="hljs-params">(href=<span class="hljs-string">'/'</span>)</span></span> My Blog
       block main
-      .Footer
-        include ./Footer.jade</span>
+      <span class="hljs-class">.Footer</span>
+        include ./Footer.jade
 </code></pre>
 <p>注意這裡聯結css的地方, 必須要使用傳入的變數<code>source</code>, 例如:</p>
 <pre><code class="lang-jade"><span class="hljs-function"><span class="hljs-title">link</span><span class="hljs-params">(rel=<span class="hljs-string">'stylesheet'</span>, href=source+<span class="hljs-string">'css/github.css'</span>)</span></span>
@@ -224,6 +224,103 @@ fs.readdirAsync(conf.articleSource)
   .done(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
     console.log(<span class="hljs-string">'[done] index.html created.'</span>);
   });
+</code></pre>
+<h2 id="express-watch-server">Express Watch server</h2>
+<p>平常開發的時候, 還要把markdown檔案編成html檔案後, 再啟動http server看修改內容實在很麻煩, 這時候有個監看的web server幫忙就好多了, 這裡我利用expressjs, nodemon, npm script很簡單的方式實現。</p>
+<p>安裝一下必要套件: </p>
+<pre><code class="lang-bash">$ npm <span class="hljs-tag">i</span> --save express nodemon
+</code></pre>
+<p><a href="http://expressjs.com/">Express.js</a>是最普及的輕量化nodejs網頁框架, <a href="https://github.com/remy/nodemon">nodemon</a>幫忙監控任何nodejs app檔案的變化, 一有變化就重新啟動server。</p>
+<p>在<code>package.json</code>加上script自動化一些動作: </p>
+<pre><code class="lang-js"><span class="hljs-collection">{
+  ...
+  <span class="hljs-string">"scripts"</span>: <span class="hljs-collection">{
+    <span class="hljs-string">"dev"</span>: <span class="hljs-string">"nodemon server.js"</span>,
+    <span class="hljs-string">"build"</span>: <span class="hljs-string">"sass ./contents/scss/main.scss:build/css/main.css &amp; node gen"</span>,
+    <span class="hljs-string">"scss"</span>: <span class="hljs-string">"sass --watch ./contents/scss/main.scss:build/css/main.css"</span>
+  }</span>,
+  ...
+}</span>
+</code></pre>
+<p>執行 <code>npm run dev</code> 就執行express watch server, 只要新增/修改了markdown文章, server就重新啟動, 那重新realod瀏覽器就可以看到更新後的結果。</p>
+<p>文章都寫好了, 確定要發佈就執行 <code>npm run build</code>, 就會直接呼叫<code>gen.js</code>和sass轉換css, 轉換好的<code>build</code>資料夾就可以整包拿去發佈。</p>
+<p>開發的時候若要改動外觀css, 那麼除了執行<code>npm run build</code>以外, 再執行<code>npm run scss</code>就會啟動監看sass檔案, 一有改動就會更新css。</p>
+<p><code>server.js</code>就是我們的監看程式, 基本上, 就是利用我們寫的promise產生流程, 所以首先我們把<code>gen.js</code>的function全部抽出獨立成一個<code>util.js</code>, 設定的部份抽出成<code>conf.js</code>,  這樣<code>gen.js</code>和<code>server.js</code>都可以共用這些函式。</p>
+<p><code>server.js</code> 基本內容就是, 引用函式庫, 使用jade樣板, 啟動, 然後沒相關的route全部導到錯誤處理這樣: </p>
+<pre><code class="lang-js">
+<span class="hljs-keyword">var</span> express = <span class="hljs-keyword">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">var</span> conf = <span class="hljs-keyword">require</span>(<span class="hljs-string">'./conf'</span>);
+<span class="hljs-keyword">var</span> utils = <span class="hljs-keyword">require</span>(<span class="hljs-string">'./utils'</span>);
+<span class="hljs-keyword">var</span> marked = <span class="hljs-keyword">require</span>(<span class="hljs-string">'marked'</span>); 
+<span class="hljs-keyword">var</span> fs = <span class="hljs-keyword">require</span>(<span class="hljs-string">'fs'</span>);
+<span class="hljs-keyword">var</span> Bluebird = <span class="hljs-keyword">require</span>(<span class="hljs-string">'bluebird'</span>);
+Bluebird.promisifyAll(fs);
+
+<span class="hljs-keyword">var</span> app = express();
+
+app.listen(<span class="hljs-number">3000</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+  console.log(<span class="hljs-string">'server listening on port 3000'</span>);
+});
+
+app.set(<span class="hljs-string">'views'</span>, <span class="hljs-string">'./templates'</span>);
+app.set(<span class="hljs-string">'view engine'</span>, <span class="hljs-string">'jade'</span>);
+app.<span class="hljs-keyword">use</span>(<span class="hljs-string">'/css'</span>, express.<span class="hljs-keyword">static</span>(__dirname + <span class="hljs-string">'/build/css'</span>));
+
+<span class="hljs-comment">//Blog Route</span>
+
+<span class="hljs-comment">//Err handling</span>
+app.<span class="hljs-keyword">use</span>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span></span>{
+  <span class="hljs-keyword">var</span> err = <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'Not found'</span>);
+  err.status = <span class="hljs-number">404</span>;
+  next(err);
+});
+
+app.<span class="hljs-keyword">use</span>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, req, res, next)</span></span>{
+  <span class="hljs-keyword">if</span>(err.status === <span class="hljs-number">404</span>) {
+    res.status(<span class="hljs-number">404</span>).send(<span class="hljs-string">'Not Found'</span>);
+  }
+  <span class="hljs-keyword">if</span>(err.status === <span class="hljs-number">500</span>) {
+    console.log(err.stack);
+    res.status(<span class="hljs-number">500</span>).send(<span class="hljs-string">'Something broke!'</span>);
+  }
+});
+</code></pre>
+<p>再來加入要處理的routes: 要處理的route只有兩種, 一個就是index page, 另外就是每篇文章, 處理index page的route像這樣: </p>
+<pre><code class="lang-js"><span class="hljs-comment">//Blog Route</span>
+app.get<span class="hljs-params">('/', function<span class="hljs-params">(req, res)</span>{
+  fs.readdirAsync<span class="hljs-params">(conf.articleSource)</span>
+    .then<span class="hljs-params">(utils.reverseDirList)</span>
+    .map<span class="hljs-params">(utils.parseInfo)</span>
+    .map<span class="hljs-params">(utils.getPostList)</span>
+    .then<span class="hljs-params">(utils.genIndex)</span>
+    .then<span class="hljs-params">(function<span class="hljs-params">(indexPage)</span>{
+      res.send<span class="hljs-params">(indexPage)</span>;
+    })</span>;
+})</span>;
+</code></pre>
+<p>完全就把<code>gen.js</code> promise流程拿來用就對了! 這裡的流程和<code>gen.js</code>相比, 只是拿掉了<code>.each(utils.markdownToHtml)</code>每個markdown轉成html的部份, 以及最後我們沒有把index page寫入檔案, 而是把整個index page 直接傳回顯使給使用者(<code>res.send(indexPage)</code>)。</p>
+<p>顯示每篇文章的部份, 則是我們上述所寫到的<code>markdownToHtml</code> 函式的內容, 我們解析URL, 讀取解析出來對應的markdown檔案, 轉換html, 最後直接render解析jade樣板後, 傳送結果給使用者: </p>
+<pre><code class="lang-js"><span class="hljs-comment">//Blog Route</span>
+app.<span class="hljs-keyword">get</span>(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span></span>{
+  <span class="hljs-comment">//...</span>
+}
+
+app.<span class="hljs-keyword">get</span>(<span class="hljs-string">'/posts/:post'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span></span>{
+  <span class="hljs-keyword">var</span> html = req.params.post;
+  <span class="hljs-keyword">var</span> titleArr = html.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>].split(<span class="hljs-string">'-'</span>);
+  <span class="hljs-keyword">var</span> headTitle = conf.name + <span class="hljs-string">' - '</span> + titleArr[<span class="hljs-number">3</span>];
+  <span class="hljs-keyword">var</span> inPath = conf.articleSource + html.split(<span class="hljs-string">'.'</span>)[<span class="hljs-number">0</span>] + <span class="hljs-string">'.md'</span>;
+
+  fs.readFileAsync(inPath, <span class="hljs-string">'utf8'</span>)
+    .then(marked)
+    .then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(content)</span></span>{
+      res.render(<span class="hljs-string">'Post'</span>,{
+        source: <span class="hljs-string">'../'</span>, 
+        title: headTitle,  
+        content: content
+      });
+    });
+});
 </code></pre>
 <h2 id="-">大功告成</h2>
 <p>終於完成 OH YA! 是不是比想像中簡單呢。利用promise, 讓整個非同步流程看起來十分清爽, 整理除錯上效率就提高不少, 雖然我覺得, promise的風格, 的確需要時間熟悉再適應。</p>
