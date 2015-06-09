@@ -215,7 +215,7 @@ app.listen(port, <span class="hljs-function"><span class="hljs-keyword">function
 });
 </code></pre>
 <h2 id="production-">Production 設定</h2>
-<p>另外寫一個<code>webpack.production.config.js</code>, 與原來<code>webpack.config.js</code>的差別在於我們拿掉了所有有關webpack-dev-server的設定: </p>
+<p>另外寫一個<code>webpack.production.config.js</code>:</p>
 <pre><code class="lang-js"><span class="hljs-attribute">...</span>
 config<span class="hljs-built_in">.</span>entry<span class="hljs-subst">=</span> mainPath ;
 config<span class="hljs-built_in">.</span>output<span class="hljs-subst">=</span> {
@@ -228,9 +228,16 @@ config<span class="hljs-built_in">.</span>plugins<span class="hljs-subst">=</spa
     $: <span class="hljs-string">"jquery"</span>,
     jQuery: <span class="hljs-string">'jquery'</span>,
     _: <span class="hljs-string">"lodash"</span>
+  }),
+  <span class="hljs-literal">new</span> webpack<span class="hljs-built_in">.</span>optimize<span class="hljs-built_in">.</span>UglifyJsPlugin({
+    compress: {
+      warnings: <span class="hljs-literal">false</span>
+    }
   })
 <span class="hljs-preprocessor">]</span><span class="hljs-markup">;</span>
 </code></pre>
+<p>與原來<code>webpack.config.js</code>的差別在於, 我們拿掉了所有有關webpack-dev-server的設定, 
+另外設定了<code>UglifyJSPlugin</code>的選項把warnning訊息取消掉。</p>
 <h2 id="app-main-js">app/main.js</h2>
 <pre><code class="lang-js"><span class="hljs-keyword">require</span>(<span class="hljs-string">'../node_modules/bootstrap/dist/css/bootstrap.min.css'</span>);
 <span class="hljs-keyword">require</span>(<span class="hljs-string">'./main.scss'</span>);
