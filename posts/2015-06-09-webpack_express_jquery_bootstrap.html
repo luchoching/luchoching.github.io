@@ -1,0 +1,269 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - webpack_express_jquery_bootstrap</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-webpack-jquery-boostrap-express-dev-production-server">[Webpack] jQuery + Boostrap + Express dev/production server</h1>
+<p><a href="https://github.com/webpack/webpack">Webpack</a>是一個module bundler。利用webpack就可以開心的管理我們的前端程式碼了, 使用npm管理module, 輸出source maps, 將大的javscript檔案拆成多個檔案, 幫我們前置處理像是jsx, coffeescript, sass, ES6.... </p>
+<p>如果只用了幾個<code>&lt;script src=&#39;...&#39;&gt;</code>那可能看不出webpack效益, 不過若web app很巨大,或是要長的很大, 那麼用webpack效益就會很明顯。</p>
+<p><a href="http://www.christianalfoni.com/articles/2015_04_19_The-ultimate-webpack-setup">參考這篇</a>, 翻譯與整理。</p>
+<h2 id="-">使用情境</h2>
+<p>官網的內容很多, 先縮小一下範圍, 假設一下我的使用情境: 這次我想使用webpack, 管理我的<a href="http://en.wikipedia.org/wiki/Single-page_application">SPA</a>, 做一個可以很快速產出prototyping的環境。</p>
+<p>我的SPA會大量用到boostrap和jQuery, SPA和REST API有可能會放在相同的Express server上,  我的Express server開發的時候可以hot-reload, 當我改變我的sass或是js程式碼的時候, 就會有webpack幫我在記憶體自動編譯,然後瀏覽器就會重新載入顯示更改過後的結果, 當我想要上線的時候, 透過webpack可以幫我的前端程式碼最佳化。 </p>
+<h2 id="-">檔案結構</h2>
+<pre><code class="lang-bash">.
+├── app
+│   ├── main<span class="hljs-class">.js</span>
+│   └── main<span class="hljs-class">.scss</span>
+├── package<span class="hljs-class">.json</span>
+├── public
+│   └── index<span class="hljs-class">.html</span>
+├── server
+│   └── bundle<span class="hljs-class">.js</span>
+├── server<span class="hljs-class">.js</span>
+├── webpack<span class="hljs-class">.config</span><span class="hljs-class">.js</span>
+└── webpack<span class="hljs-class">.production</span><span class="hljs-class">.config</span><span class="hljs-class">.js</span>
+</code></pre>
+<p>其中: </p>
+<ul>
+<li><code>app</code>: SPA主資料夾</li>
+<li><code>app/main.js</code>: 我們app的進入點(entry point)</li>
+<li><code>public</code>: 依照express的慣例, 這裡放static file</li>
+<li><code>public/index.html</code>: 主要就是引用我們編好的js程式碼</li>
+<li><code>server/bundle.js</code>: bundler主程式</li>
+<li><code>server.js</code>: express server 和 proxy</li>
+<li><code>webpack.config.js</code>: 開發時期用的webpack設定檔</li>
+<li><code>webpack.production.config.js</code>: 要產出上線的webapck設定檔</li>
+</ul>
+<h2 id="express-">Express 基本設定</h2>
+<p>一開始, <code>server.js</code>主要就是區分上線或是prototype, 並且提供存取index.html的服務: </p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> express = <span class="hljs-keyword">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">var</span> path = <span class="hljs-keyword">require</span>(<span class="hljs-string">'path'</span>);
+
+<span class="hljs-keyword">var</span> app = express();
+
+<span class="hljs-keyword">var</span> isProduction = process.env.NODE_ENV === <span class="hljs-string">'production'</span>;
+<span class="hljs-keyword">var</span> port = isProduction ? <span class="hljs-number">8080</span> : <span class="hljs-number">5000</span>;
+<span class="hljs-keyword">var</span> publicPath = path.resolve(__dirname, <span class="hljs-string">'public'</span>);
+
+app.<span class="hljs-keyword">use</span>(express.<span class="hljs-keyword">static</span>(publicPath));
+
+app.listen(port, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+  console.log(<span class="hljs-string">'Server running on port '</span> + port);
+});
+</code></pre>
+<p><code>public/index.html</code>單純就是引用bundle好的js檔案, 這裡我們設定bundle好的js檔案放在<code>public/bundle</code>下: </p>
+<pre><code class="lang-html"><span class="hljs-doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">html</span> <span class="hljs-attribute">lang</span>=<span class="hljs-value">"zh"</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">meta</span> <span class="hljs-attribute">charset</span>=<span class="hljs-value">"UTF-8"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-title">title</span>&gt;</span>Prototype<span class="hljs-tag">&lt;/<span class="hljs-title">title</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">body</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">body</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">type</span>=<span class="hljs-value">"text/javascript"</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"build/bundle.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">html</span>&gt;</span>
+</code></pre>
+<h2 id="-bundle-">設定開發時bundle規則</h2>
+<p>參考<a href="http://webpack.github.io/docs/configuration.html">官網設定</a>, 編寫<code>webpack.config.js</code>：</p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+<span class="hljs-keyword">var</span> webpack = <span class="hljs-built_in">require</span>(<span class="hljs-string">'webpack'</span>);
+
+<span class="hljs-keyword">var</span> nodeModulePath = path.resolve(__dirname, <span class="hljs-string">'node_modules'</span>);
+<span class="hljs-keyword">var</span> buildPath = path.resolve(__dirname, <span class="hljs-string">'public'</span>, <span class="hljs-string">'build'</span>);
+<span class="hljs-keyword">var</span> mainPath = path.resolve(__dirname, <span class="hljs-string">'app'</span>, <span class="hljs-string">'main.js'</span>);
+
+<span class="hljs-keyword">var</span> config = <span class="hljs-module"><span class="hljs-keyword">module</span>.exports = </span>{
+  devtool: <span class="hljs-string">'eval'</span>
+};
+</code></pre>
+<p>把相關路徑先做個整理, 先設定<code>devtool: &#39;eval&#39;</code>方便之後使用devtool作debug。</p>
+<h3 id="-">進入點</h3>
+<p>再來設定要bundle的進入點: </p>
+<pre><code class="lang-js"><span class="hljs-atom">config</span>.<span class="hljs-atom">entry</span>= [
+  <span class="hljs-string">'webpack/hot/dev-server'</span>,
+  <span class="hljs-string">'webpack-dev-server/client?http://localhost:8080'</span>,
+  <span class="hljs-atom">mainPath</span>
+];
+</code></pre>
+<p>我們pass給<code>entry</code>一個陣列, 那麼所有的module都會在開始的時候載入, 然後匯出最後一個(<code>mainPath</code>), </p>
+<p>我們使用<a href="http://webpack.github.io/docs/webpack-dev-server.html">webpack-dev-server</a>監看改變,webpack-dev-server就是一個epxress+socket.io server, 當我們js或style檔案改變的時候, webpack-dev-server就會幫我們動態更新頁面, 因此要設定<code>webpack/hot/dev-server</code>和 <code>webpack-dev-server/client?http://localhost:8080</code>這兩個特殊的entry point。</p>
+<h3 id="-">輸出</h3>
+<p>設定我們開發環境的輸出: </p>
+<pre><code class="lang-js"><span class="hljs-filename">config.output= {
+  path</span>: buildPath,
+  filename: <span class="hljs-string">'bundle.js'</span>,
+  publicPath: <span class="hljs-string">'/build'</span>
+};
+</code></pre>
+<p>這裡是說, 我們把bundle好的js檔案輸出到<code>buildPath</code>路徑的<code>bundle.js</code>, 不過我們這邊借用webpack-dev-server, 所有的bundle都是在記憶體執行, 沒有實際輸出到檔案, 因此這個設定是沒有作用的, 不過這兩個設定拿掉webpack會報錯, 因此需要加著。 </p>
+<p>所有關於webpack的檔案應該都要過<code>publicPath</code>(build path), 這裡代表都會經過<code>http://localhost:5000/build</code>, 這樣方便proxy來處理。</p>
+<h3 id="-">檔案前置處理</h3>
+<p>再來設定loaders: </p>
+<pre><code class="lang-js">config.<span class="hljs-built_in">module</span> = {};
+config.<span class="hljs-built_in">module</span>.loaders= [
+  {
+    <span class="hljs-attribute">test</span>: <span class="hljs-regexp">/\.js$/</span>, 
+    <span class="hljs-attribute">loader</span>: <span class="hljs-string">'babel'</span>, 
+    <span class="hljs-attribute">exclude</span>: [nodeModulePath]
+  },
+  { 
+    <span class="hljs-attribute">test</span>: <span class="hljs-regexp">/\.css$/</span>, 
+    <span class="hljs-attribute">loader</span>: <span class="hljs-string">'style!css'</span> 
+  },
+  { 
+    <span class="hljs-attribute">test</span>: <span class="hljs-regexp">/\.scss$/</span>, 
+    <span class="hljs-attribute">loader</span>: <span class="hljs-string">'style!css!sass'</span> 
+  },
+  { 
+    <span class="hljs-attribute">test</span>: <span class="hljs-regexp">/\.(png|woff|woff2|eot|ttf|svg)$/</span>, 
+    <span class="hljs-attribute">loader</span>: <span class="hljs-string">'url-loader?limit=100000'</span> 
+  }
+];
+</code></pre>
+<p><a href="http://webpack.github.io/docs/loaders.html">Loaders</a>就很像其他build工具(例如gulp)裏面的<code>tasks</code>用來轉換檔案, 引用的loader名字可以簡寫例如<code>babel-loader</code>可以簡寫為<code>babel</code>。Loader是可串聯的, 串聯利用<code>!</code>來表示, 例如<code>style!css!sass</code>表示style-loader處理完換css-loader處理,最後sass-loader處理。</p>
+<p>上面的意思這樣就很好理解了, 只要js檔案(除了<code>node_modules</code>)都會先利用babel-loader前置處理轉換ES6程式碼, 剩下類推。loders可參考 <a href="http://webpack.github.io/docs/list-of-loaders.html">Loader列表</a></p>
+<p>記得要安裝相關loader套件: </p>
+<pre><code class="lang-bash">$ npm i -<span class="hljs-built_in">save</span>-<span class="hljs-built_in">dev</span> babel-loader style-loader css-loader url-loader sass-loader
+</code></pre>
+<h3 id="-plugin">使用 Plugin</h3>
+<pre><code class="lang-js">config.plugins= [
+  <span class="hljs-keyword">new</span> webpack.<span class="hljs-type">HotModuleReplacementPlugin</span><span class="hljs-literal">()</span>,
+  <span class="hljs-keyword">new</span> webpack.<span class="hljs-type">ProvidePlugin</span>({
+    $: <span class="hljs-string">"jquery"</span>,
+    jQuery: <span class="hljs-symbol">'jquery'</span>,
+    _: <span class="hljs-string">"lodash"</span>
+  })
+];
+</code></pre>
+<p>Webpack的能力可以靠著<a href="http://webpack.github.io/docs/plugins.html">Plugins</a>來擴充, <code>HotModuleReplacementPlugin</code>啟動Hot Module Replacement功能, <code>ProvidePlugin</code>幫我們自動載入一些module, 例如上面設定後, 我們不再需要每個檔案用到jQuery時都要<code>var $ = require(&#39;jquery&#39;);</code>, 直接使用就成了,例如:  </p>
+<pre><code class="lang-js"><span class="hljs-variable">$(</span><span class="hljs-string">'#item'</span>).show();
+</code></pre>
+<p><a href="http://webpack.github.io/docs/list-of-plugins.html">Plugings列表</a></p>
+<h2 id="bundler">Bundler</h2>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> Webpack = <span class="hljs-built_in">require</span>(<span class="hljs-string">'webpack'</span>);
+<span class="hljs-keyword">var</span> WebpackDevServer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'webpack-dev-server'</span>);
+<span class="hljs-keyword">var</span> webpackConfig = <span class="hljs-built_in">require</span>(<span class="hljs-string">'../webpack.config.js'</span>);
+<span class="hljs-keyword">var</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+<span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+<span class="hljs-keyword">var</span> mainPath = path.resolve(__dirname, <span class="hljs-string">'..'</span>, <span class="hljs-string">'app'</span>, <span class="hljs-string">'main.js'</span>);
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+
+  <span class="hljs-keyword">var</span> bundleStart = <span class="hljs-literal">null</span>; <span class="hljs-comment">//bundle起始時間</span>
+  <span class="hljs-keyword">var</span> compiler = Webpack(webpackConfig); <span class="hljs-comment">//注入webpack設定檔</span>
+
+  <span class="hljs-comment">//編譯開始時的顯示訊息</span>
+  compiler.plugin(<span class="hljs-string">'compile'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Bundling....'</span>);
+    bundleStart = <span class="hljs-built_in">Date</span>.now();
+  });
+
+  <span class="hljs-comment">//編譯完成後的顯示訊息</span>
+  compiler.plugin(<span class="hljs-string">'done'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Bundleed in '</span> + (<span class="hljs-built_in">Date</span>.now() - bundleStart) + <span class="hljs-string">'ms!'</span>);
+  });
+
+  <span class="hljs-keyword">var</span> bundler = <span class="hljs-keyword">new</span> WebpackDevServer(compiler, {
+    publicPath: <span class="hljs-string">'/build/'</span>, 
+    hot: <span class="hljs-literal">true</span>, <span class="hljs-comment">//啟動hot replacement</span>
+    <span class="hljs-comment">//以下為終端機顯示設定</span>
+    quiet: <span class="hljs-literal">false</span>,
+    noInfo: <span class="hljs-literal">true</span>,
+    stats: {
+      color: <span class="hljs-literal">true</span>
+    }
+  });
+
+  <span class="hljs-comment">//webpakc-dev-server 監聽port為8080</span>
+  bundler.listen(<span class="hljs-number">8080</span>, <span class="hljs-string">'localhost'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Building project, please wait....'</span>);
+  });
+};
+</code></pre>
+<p>只要是<code>http://locahost:5000/build</code>的內容, 都會透過proxy轉送到這個<code>http://localhost:8080/build</code>這個webpack-dev-server來處理, webpack-dev-server就會依照我們的webpack.config.js設定檔, 將檔案前置處理並bundle好後回傳(在記憶體中未寫入檔案)。</p>
+<h2 id="-proxy-bundler">設定Proxy到bundler</h2>
+<p>修改一下我們原來的<code>server.js</code>, 加入<code>http-proxy</code>, 利用proxy將要bundle的檔案透過proxy轉給webpack-dev-server: </p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">var</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+<span class="hljs-keyword">var</span> httpProxy = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http-proxy'</span>);
+
+<span class="hljs-keyword">var</span> proxy = httpProxy.createProxyServer();
+<span class="hljs-keyword">var</span> app = express();
+
+<span class="hljs-keyword">var</span> isProduction = process.env.NODE_ENV === <span class="hljs-string">'production'</span>;
+<span class="hljs-keyword">var</span> port = isProduction ? <span class="hljs-number">8080</span> : <span class="hljs-number">5000</span>;
+<span class="hljs-keyword">var</span> publicPath = path.resolve(__dirname, <span class="hljs-string">'public'</span>);
+
+app.use(express.static(publicPath));
+
+<span class="hljs-comment">//如果不是production mode, 就啟動webpack-dev-server</span>
+<span class="hljs-keyword">if</span> (!isProduction){
+  <span class="hljs-keyword">var</span> bundle = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./server/bundle.js'</span>);
+  bundle();
+
+  <span class="hljs-comment">//所有localhost:5000/build的請求都proxy到webpack-dev-server</span>
+  app.all(<span class="hljs-string">'/build/*'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>)</span>{
+    proxy.web(req, res, {
+      target: <span class="hljs-string">'http://localhost:8080'</span>
+    });
+  });
+}
+
+<span class="hljs-comment">//catch proxy errors!</span>
+proxy.on(<span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">e</span>)</span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Could not connect to proxy, please try again...'</span>);
+});
+
+app.listen(port, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Server running on port '</span> + port);
+});
+</code></pre>
+<h2 id="production-">Production 設定</h2>
+<p>另外寫一個<code>webpack.production.config.js</code>, 與原來<code>webpack.config.js</code>的差別在於我們拿掉了所有有關webpack-dev-server的設定: </p>
+<pre><code class="lang-js"><span class="hljs-attribute">...</span>
+config<span class="hljs-built_in">.</span>entry<span class="hljs-subst">=</span> mainPath ;
+config<span class="hljs-built_in">.</span>output<span class="hljs-subst">=</span> {
+  path: buildPath,
+  filename: <span class="hljs-string">'bundle.js'</span>
+};
+<span class="hljs-attribute">...</span>
+config<span class="hljs-built_in">.</span>plugins<span class="hljs-subst">=</span> <span class="hljs-preprocessor">[</span>
+  <span class="hljs-literal">new</span> webpack<span class="hljs-built_in">.</span>ProvidePlugin({
+    $: <span class="hljs-string">"jquery"</span>,
+    jQuery: <span class="hljs-string">'jquery'</span>,
+    _: <span class="hljs-string">"lodash"</span>
+  })
+<span class="hljs-preprocessor">]</span><span class="hljs-markup">;</span>
+</code></pre>
+<h2 id="app-main-js">app/main.js</h2>
+<pre><code class="lang-js"><span class="hljs-keyword">require</span>(<span class="hljs-string">'../node_modules/bootstrap/dist/css/bootstrap.min.css'</span>);
+<span class="hljs-keyword">require</span>(<span class="hljs-string">'./main.scss'</span>);
+<span class="hljs-keyword">require</span>(<span class="hljs-string">'bootstrap'</span>); <span class="hljs-regexp">/* bootrstap.min.js */</span>
+</code></pre>
+<p>在我們的bundle進入點<code>app/main.js</code>中加入對應引用, webpack就可以幫我們處理對應的前置處理與打包了! 不僅js檔案, css,scss都可以引用。</p>
+<h2 id="npm-scripts">npm scripts</h2>
+<p>修改一下<code>package.json</code>, 這裡我加上了簡單的scripts: </p>
+<pre><code class="lang-js">...
+<span class="hljs-string">"scripts"</span>: <span class="hljs-tuple">{
+  <span class="hljs-string">"dev"</span>: <span class="hljs-string">"rm -r public/build; node server"</span>,
+  <span class="hljs-string">"build"</span>: <span class="hljs-string">"rm -r public/build; NODE_ENV=production webpack -p --config webpack.production.config.js"</span>,
+}</span>,
+...
+</code></pre>
+<p>不管是啟動開發或是production的bundle, 都先把<code>public/build</code>的內容物清除, 執行<code>npm run dev</code>就啟動了有webpack-dev-server的環境, 這樣只要修改任何的js或css檔案都會即時的前置編譯並在瀏覽器即時顯示修改結果。</p>
+<p>執行<code>npm run build</code>就會使用<code>webpack.production.config.js</code>設定檔做編譯, 實際的將bundle好的檔案寫入到<code>public/build</code>去。</p>
+<h2 id="more">More</h2>
+<p><a href="http://www.christianalfoni.com/articles/2015_04_19_The-ultimate-webpack-setup">The ultimate webpack setup</a></p>
+<p><a href="http://qiita.com/ktkt/items/17e4fe57f6e6ecf65677">gulp、webpackでjqueryプラグイン(scrollmagic、tweenmax等)を使う時の設定</a></p>
+<p><a href="https://github.com/choonkending/react-webpack-node/blob/master/webpack.config.js">react-webpack-node</a></p>
+<p><a href="http://clarkdave.net/2015/01/how-to-use-webpack-with-rails/">how to use webpack with rails</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
