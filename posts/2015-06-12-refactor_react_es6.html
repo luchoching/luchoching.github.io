@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - refactor_react_es6</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1></div><div class="Main"><h1 id="-react-es6-react-es6-classes-">[React][ES6] 將react元件用ES6 classes改寫</h1>
+<p>純粹翻譯與整理這篇: <a href="http://www.newmediacampaigns.com/blog/refactoring-react-components-to-es6-classes">refactoring react component to es6 classes</a></p>
+<p>自<a href="https://facebook.github.io/react/blog/2015/03/10/react-v0.13.html">react 0.13</a>開始,官方都鼓勵使用 <a href="https://facebook.github.io/react/blog/2015/01/27/react-v0.13.0-beta-1.html">ES6 classes</a> 來撰寫react元件了, 當然趁現在的空檔,從善如流的將react 0.12的程式碼翻寫一下。</p>
+<p>如果有寫過<a href="https://zh.wikipedia.org/zh-tw/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1">OO</a>的應該都會很有熟悉感。</p>
+<h2 id="-proptypes-getdefaulttypes-class-">將 propTypes 和 getDefaultTypes抽出到class定義之外</h2>
+<pre><code class="lang-js"><span class="hljs-built_in">var</span> ExampleComponent <span class="hljs-subst">=</span> React<span class="hljs-built_in">.</span>createClass({ <span class="hljs-attribute">...</span> });
+ExampleComponent<span class="hljs-built_in">.</span>propTypes <span class="hljs-subst">=</span> {
+ aStringProp: React<span class="hljs-built_in">.</span>PropTypes<span class="hljs-built_in">.</span><span class="hljs-built_in">string</span>
+};
+ExampleComponent<span class="hljs-built_in">.</span>defaultProps <span class="hljs-subst">=</span> {
+ aStringProp: <span class="hljs-string">''</span>
+};
+</code></pre>
+<h2 id="-createclass-es6-class">將 createClass轉成使用ES6 Class</h2>
+<p>就不再需要<code>createClass</code> method啦, class直接繼承<code>React.Component</code>:</p>
+<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HelloComponent</span> <span class="hljs-keyword"><span class="hljs-keyword">extends</span></span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> {</span>
+ render() { 
+  <span class="hljs-keyword">return</span> &lt;h1 onClick={<span class="hljs-keyword">this</span>._handleClick}&gt;<span class="hljs-type">Hello</span>&lt;/h1&gt;;
+ }
+ _handleClick() {
+  console.log(<span class="hljs-keyword">this</span>);
+ }
+}
+</code></pre>
+<p>method前面也不在需要<code>function</code> keyword。</p>
+<h2 id="-constructor-instance-methods">使用 constructor 綁定instance methods</h2>
+<p>React的<code>createClass</code> method好用的地方在於, 他會將我們的methods自動榜定(binding)到component einstance去, 但是我們寫ES6 classes, 就要自己處理binding, react團隊建議作<a href="https://facebook.github.io/react/blog/2015/01/27/react-v0.13.0-beta-1.html#autobinding">prebinding</a>:</p>
+<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HelloComponent</span> <span class="hljs-keyword"><span class="hljs-keyword">extends</span></span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> {</span>
+ constructor() {
+  <span class="hljs-keyword">super</span>();
+  <span class="hljs-keyword">this</span>. _handleClick = <span class="hljs-keyword">this</span>. _handleClick.bind(<span class="hljs-keyword">this</span>);
+ }
+ render() { 
+  <span class="hljs-keyword">return</span> &lt;h1 onClick={<span class="hljs-keyword">this</span>._handleClick}&gt;<span class="hljs-type">Hello</span>&lt;/h1&gt;;
+ }
+ _handleClick() {
+  console.log(<span class="hljs-keyword">this</span>); <span class="hljs-comment">// this 就是一個HelloCompoenent</span>
+ }
+}
+</code></pre>
+<h2 id="-constructor-state">使用 constructor 初始化state</h2>
+<p>把<code>getgetInitialState</code> method移除, 將初始化state的動作放到constructor裡: </p>
+<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HelloComponent</span> <span class="hljs-keyword"><span class="hljs-keyword">extends</span></span> <span class="hljs-title">React</span>.<span class="hljs-title">Component</span> {</span>
+ constructor() {
+  <span class="hljs-keyword">super</span>();
+  <span class="hljs-keyword">this</span>. _handleClick = <span class="hljs-keyword">this</span>. _handleClick.bind(<span class="hljs-keyword">this</span>);
+  <span class="hljs-keyword">this</span>.state = <span class="hljs-type">Store</span>.getState();
+ }
+ <span class="hljs-comment">// ...</span>
+}
+</code></pre>
+<h2 id="-base-component-">撰寫base component --&gt; 繼承</h2>
+<p>撰寫base component來處理method prebinding: </p>
+<pre><code class="lang-js">class <span class="hljs-type">BaseComponent</span> extends <span class="hljs-type">React</span>.<span class="hljs-type">Component</span> {
+ _bind(...methods) {
+  methods.forEach( (<span class="hljs-keyword">method</span>) =&gt; this[<span class="hljs-keyword">method</span>] = this[<span class="hljs-keyword">method</span>].<span class="hljs-keyword">bind</span>(this) );
+ }
+}
+</code></pre>
+<p>以後寫的元件, 只要繼承這個base component, 就可以很方便的: </p>
+<pre><code class="lang-js"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleComponent</span> <span class="hljs-keyword"><span class="hljs-keyword">extends</span></span> <span class="hljs-title">BaseComponent</span> {</span>
+ constructor() {
+  <span class="hljs-keyword">super</span>();
+  <span class="hljs-keyword">this</span>._bind(<span class="hljs-symbol">'_handleClic</span>k', <span class="hljs-symbol">'_handleFo</span>o');
+ }
+ <span class="hljs-comment">// ...</span>
+}
+</code></pre>
+<h2 id="more">More</h2>
+<p><a href="http://www.newmediacampaigns.com/blog/refactoring-react-components-to-es6-classes">Refactoring React Components to ES6 Classes</a></p>
+<p><a href="https://babeljs.io/docs/learn-es2015/">babel: Learn ES 2015</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>

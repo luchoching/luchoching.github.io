@@ -4,7 +4,7 @@
 <p><a href="http://www.christianalfoni.com/articles/2015_04_19_The-ultimate-webpack-setup">參考這篇</a>, 翻譯與整理。</p>
 <h2 id="-">使用情境</h2>
 <p>官網的內容很多, 先縮小一下範圍, 假設一下我的使用情境: 這次我想使用webpack, 管理我的<a href="http://en.wikipedia.org/wiki/Single-page_application">SPA</a>, 做一個可以很快速產出prototyping的環境。</p>
-<p>我的SPA會大量用到boostrap和jQuery, SPA和REST API有可能會放在相同的Express server上,  我的Express server開發的時候可以hot-reload, 當我改變我的sass或是js程式碼的時候, 就會有webpack幫我在記憶體自動編譯,然後瀏覽器就會重新載入顯示更改過後的結果, 當我想要上線的時候, 透過webpack可以幫我的前端程式碼最佳化。 </p>
+<p>我的SPA會大量用到<a href="https://facebook.github.io/react/">react</a>, boostrap和jQuery, SPA和REST API有可能會放在相同的Express server上,  我的Express server開發的時候可以hot-reload, 當我改變我的sass或是js程式碼的時候, 就會有webpack幫我在記憶體自動編譯,然後瀏覽器就會重新載入顯示更改過後的結果, 當我想要上線的時候, 透過webpack可以幫我的前端程式碼最佳化。 </p>
 <h2 id="-">檔案結構</h2>
 <pre><code class="lang-bash">.
 ├── app
@@ -260,6 +260,7 @@ config<span class="hljs-built_in">.</span>plugins<span class="hljs-subst">=</spa
 </code></pre>
 <p>不管是啟動開發或是production的bundle, 都先把<code>public/build</code>的內容物清除, 執行<code>npm run dev</code>就啟動了有webpack-dev-server的環境, 這樣只要修改任何的js或css檔案都會即時的前置編譯並在瀏覽器即時顯示修改結果。</p>
 <p>執行<code>npm run build</code>就會使用<code>webpack.production.config.js</code>設定檔做編譯, 實際的將bundle好的檔案寫入到<code>public/build</code>去。</p>
+<p>完整的結果我放在<a href="https://github.com/luchoching/webpack-express-prototyping">這裡</a>。</p>
 <h2 id="more">More</h2>
 <p><a href="http://www.christianalfoni.com/articles/2015_04_19_The-ultimate-webpack-setup">The ultimate webpack setup</a></p>
 <p><a href="http://qiita.com/ktkt/items/17e4fe57f6e6ecf65677">gulp、webpackでjqueryプラグイン(scrollmagic、tweenmax等)を使う時の設定</a></p>
