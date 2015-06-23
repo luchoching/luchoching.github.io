@@ -405,6 +405,19 @@ img {
     .Header h1 a {
       color: #E91E63; }
 
+.Menu {
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+  .Menu li {
+    color: #2196F3;
+    font-weight: bold;
+    padding-left: 1em; }
+    .Menu li:hover {
+      background-color: #E91E63; }
+      .Menu li:hover a {
+        color: #ffffff; }
+
 .Posts {
   list-style: none;
   padding: 0.2em;
@@ -442,9 +455,30 @@ img {
 .Main {
   flex: 1; }
 
+.Header {
+  display: flex;
+  flex-direction: column; }
+
+.Menu {
+  display: flex;
+  flex-direction: column; }
+
 @media (min-width: 50em) {
   .Main, #disqus_thread {
     width: 50em;
-    margin: 0 auto; } }
+    margin: 0 auto; }
+
+  .Header, .Menu {
+    flex-direction: row; }
+
+  .Header {
+    justify-content: space-between; }
+    .Header h1 {
+      flex: 1; }
+    .Header .Menu {
+      justify-content: flex-end;
+      flex: 0 0 25%; }
+      .Header .Menu li {
+        padding: 0 0.5em 0 0.5em; } }
 
 /*# sourceMappingURL=main.css.map */
