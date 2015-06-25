@@ -377,6 +377,12 @@ pre {
 code {
   font-size: 90%; }
 
+blockquote {
+  padding-left: 0.5em;
+  margin: 0;
+  font-style: italic;
+  background-color: #ECEFF1; }
+
 a {
   text-decoration: none;
   color: #1976D2; }
