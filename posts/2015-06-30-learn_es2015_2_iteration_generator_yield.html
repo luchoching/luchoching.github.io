@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - learn_es2015_2_iteration_protocols</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-es6-ecmascript-6-iteration-protocols-for-of">[ES6] ECMAScript 6筆記(二) -- iteration protocols + for...of</h1>
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - learn_es2015_2_iteration_generator_yield</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-es6-ecmascript-6-iteration-protocols-for-of-generators-yield">[ES6] ECMAScript 6筆記(二) -- iteration protocols + for...of + generators, yield</h1>
 <p>參考Babel的<a href="https://babeljs.io/docs/learn-es2015/">learn-es2015</a>和 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols">MDN- iteration protocols</a>的解釋。</p>
 <p>ES6定義<code>iteratable protocol</code>和 <code>iterator protocol</code> 兩個協定。</p>
 <h2 id="the-iterable-protocol">The iterable protocol</h2>
@@ -73,9 +73,76 @@ arr.foo = <span class="hljs-string">"hello"</span>;
   console.log(n);
 }
 </code></pre>
+<h2 id="generator-function-yield">generator function + yield</h2>
+<p><code>function</code>宣告前面加上<code>*</code>號, 就表示我們定義了一個<code>genrator function</code>. 這個函式會傳回一個<code>Generator</code>物件。</p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> * <span class="hljs-title">name</span>(<span class="hljs-params">[param[, param[, ... param]]]</span>) </span>{
+  <span class="hljs-comment">//statements</span>
+}
+</code></pre>
+<p>Generators are functions which can be exited and later re-entered. Their context (variable bindings) will be saved across re-entrances.</p>
+<p>呼叫generator function不會立刻執行,會先回傳一個<code>iterator</code>物件, 當iterator物件的<code>next()</code> method被呼叫, 這個函式的主體就會開始執行,直到遇到第一個<code>yield</code>運算式為止。</p>
+<p><code>yield</code> 會從iterator指定一個值回傳, 或是連同<code>yield*</code>發送值給其他的generator function。</p>
+<p>接下來<code>next()</code> method傳回一個物件, 這個物件帶有一個包含被送出(yielded)的值的屬性,以及一個<code>done</code>屬性指出是否這個generator已經發送出其最新的值。</p>
+<p>例如: </p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">idMaker</span><span class="hljs-params">()</span>{</span>
+  var index = <span class="hljs-number">0</span>;
+  while<span class="hljs-params">(index &lt; <span class="hljs-number">3</span>)</span>
+    yield index++;
+}
+
+var gen = idMaker<span class="hljs-params">()</span>;
+
+console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>)</span>; <span class="hljs-comment">// { value: 0, done: false }</span>
+console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>)</span>; <span class="hljs-comment">// { value: 1, done: false }</span>
+console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>)</span>; <span class="hljs-comment">// { value: 2, done: false }</span>
+console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>)</span>; <span class="hljs-comment">// { value: undfined, done: true }</span>
+</code></pre>
+<p>使用 <code>yield*</code> 呼叫其他的generator function: </p>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">anotherGenerator</span><span class="hljs-params">(i)</span> {</span>
+  yield i + <span class="hljs-number">1</span>;
+  yield i + <span class="hljs-number">2</span>;
+  yield i + <span class="hljs-number">3</span>;
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">generator</span><span class="hljs-params">(i)</span>{</span>
+  yield i;
+  yield<span class="hljs-built_in">*</span> anotherGenerator<span class="hljs-params">(i)</span>;
+  yield i + <span class="hljs-number">10</span>;
+}
+
+var gen = generator<span class="hljs-params">(<span class="hljs-number">10</span>)</span>;
+
+console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>.value)</span>; <span class="hljs-comment">// 10</span>
+console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>.value)</span>; <span class="hljs-comment">// 11</span>
+console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>.value)</span>; <span class="hljs-comment">// 12</span>
+console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>.value)</span>; <span class="hljs-comment">// 13</span>
+console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>.value)</span>; <span class="hljs-comment">// 20</span>
+</code></pre>
+<p>babel範例, 改寫: </p>
+<pre><code class="lang-js"><span class="hljs-pi">'use strict'</span>;
+<span class="hljs-built_in">require</span>(<span class="hljs-string">"babel/polyfill"</span>);
+<span class="hljs-keyword">var</span> fibonacci = {
+  [<span class="hljs-built_in">Symbol</span>.iterator]: <span class="hljs-function"><span class="hljs-keyword">function</span>*(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-keyword">var</span> pre = <span class="hljs-number">0</span>, cur = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">for</span> (;;) {
+      <span class="hljs-keyword">var</span> temp = pre;
+      pre = cur;
+      cur += temp;
+      <span class="hljs-keyword">yield</span> cur;
+    }
+  }
+}                                                                                                                                       
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> n <span class="hljs-keyword">of</span> fibonacci) {
+  <span class="hljs-comment">// truncate the sequence at 1000                                                                                                      </span>
+  <span class="hljs-keyword">if</span> (n &gt; <span class="hljs-number">1000</span>)
+    <span class="hljs-keyword">break</span>;
+  <span class="hljs-built_in">console</span>.log(n);
+}
+</code></pre>
 <h2 id="more">More</h2>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols">iteration Iteration_protocols -- MDN</a></p>
 <p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of">for-of -- MDN</a></p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*">function * -- MDN</a></p>
 </div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
 var disqus_shortname = 'luchoching';
 /* * * DON'T EDIT BELOW THIS LINE * * */
