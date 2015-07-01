@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - learn_es2015_2_iteration_generator</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-es6-ecmascript-6-iteration-generator">[ES6] ECMAScript 6 筆記(二) -- iteration, generator</h1>
+<p>參考Babel的<a href="https://babeljs.io/docs/learn-es2015/">learn-es2015</a>和 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols">MDN- iteration protocols</a>的解釋。</p>
+<p>ES6定義<code>iteratable protocol</code>和 <code>iterator protocol</code> 兩個協定。</p>
+<h2 id="the-iterable-protocol">The iterable protocol</h2>
+<p><code>iterable</code> protocol 允許 JavaScript物件定義或是客製化他們自己的迭代行為(iteration behavior)。例如使用<code>for..of</code>結構來loop所有的值。</p>
+<p>像 <code>Array</code>或 <code>Map</code>已經有預設的iteration behavior, 有的沒有(例如<code>Object</code>)</p>
+<p>為了要可以iterable, 物件必須要實作 iterator method, 就是說該物件要有一個屬性有<code>Symbol.iterator</code> key, 其值為一個不帶參數的函式, 這個函式傳回一個符合 <code>iterator protocol</code>的物件。</p>
+<p>當這個物件需要被遍歷(iteratored), 例如使用<code>for..of</code> 迴圈, 其 iterator method就會被呼叫傳回<code>iterator</code>, 我們就可以利用這個iterator來loop取值。</p>
+<h2 id="the-iterator-protocol">The iterator protocol</h2>
+<p><code>iterator</code> protocol 定義一個標準的方法來產生一個值的序列(無限或有限)。</p>
+<p>一個物件只要實作了<code>next()</code> method, 就被當作是一個iterator。<code>next()</code>是一個無參數的函式, 傳回帶有兩個以下兩個屬性的物件: </p>
+<ul>
+<li>done(boolean) : 如果是false, 表示還有下個值(next value)</li>
+<li>value </li>
+</ul>
+<h2 id="example">Example</h2>
+<p>例如<code>String</code>就有內建的iterable物件了, 預設的iteraor會一個一個傳回字串的字元: </p>
+<pre><code class="lang-js"><span class="hljs-pi">'use strict'</span>;
+<span class="hljs-keyword">var</span> s = <span class="hljs-string">'hi'</span>;
+<span class="hljs-keyword">var</span> it = s[<span class="hljs-built_in">Symbol</span>.iterator]();
+<span class="hljs-built_in">console</span>.log(it + <span class="hljs-string">''</span>);  <span class="hljs-comment">// [object String Iterator]</span>
+<span class="hljs-built_in">console</span>.log(it.next()); <span class="hljs-comment">//  { value: "h", done: false }</span>
+<span class="hljs-built_in">console</span>.log(it.next()); <span class="hljs-comment">//  { value: "i", done: false }</span>
+<span class="hljs-built_in">console</span>.log(it.next()); <span class="hljs-comment">//   { value: undefined, done: true }</span>
+</code></pre>
+<p>定義我們自己的iterator: </p>
+<pre><code class="lang-js"><span class="hljs-pi">'use strict'</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">makeIterator</span>(<span class="hljs-params">array</span>)</span>{
+  <span class="hljs-keyword">var</span> nextIndex = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">return</span> {
+    next: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>{
+      <span class="hljs-keyword">return</span> nextIndex &lt; array.length?
+        {value: array[nextIndex++], done: <span class="hljs-literal">false</span>}:
+        {done: <span class="hljs-literal">true</span>};
+    }
+  };
+}
+<span class="hljs-keyword">var</span> it = makeIterator([<span class="hljs-string">'yo'</span>, <span class="hljs-string">'ya'</span>]);
+<span class="hljs-built_in">console</span>.log(it.next().value); <span class="hljs-comment">// yo</span>
+<span class="hljs-built_in">console</span>.log(it.next().value) <span class="hljs-comment">// ya;</span>
+<span class="hljs-built_in">console</span>.log(it.next().done); <span class="hljs-comment">// true</span>
+</code></pre>
+<h2 id="for-of">for...of</h2>
+<p><code>for...of</code>和<code>for...in</code> loop的差別在於, <code>for...in</code>是遍歷(iterate)屬性名(property names), 那<code>for...of</code>是遍歷屬性值(property values):</p>
+<pre><code class="lang-js"><span class="hljs-reserved">let</span> arr = [<span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">7</span>];
+arr.foo = <span class="hljs-string">"hello"</span>;
+
+<span class="hljs-keyword">for</span> (<span class="hljs-reserved">let</span> i <span class="hljs-keyword">in</span> arr) {
+  <span class="hljs-built_in">console</span>.log(i); <span class="hljs-regexp">//</span> logs <span class="hljs-string">"0"</span>, <span class="hljs-string">"1"</span>, <span class="hljs-string">"2"</span>, <span class="hljs-string">"foo"</span>
+}
+
+<span class="hljs-keyword">for</span> (<span class="hljs-reserved">let</span> i <span class="hljs-keyword">of</span> arr) {
+  <span class="hljs-built_in">console</span>.log(i); <span class="hljs-regexp">//</span> logs <span class="hljs-string">"3"</span>, <span class="hljs-string">"5"</span>, <span class="hljs-string">"7"</span>
+}
+</code></pre>
+<p>babel的範例: </p>
+<pre><code class="lang-js"><span class="hljs-keyword">let</span> fibonacci = {
+  [<span class="hljs-type">Symbol</span>.<span class="hljs-keyword">iterator</span>]() {
+    <span class="hljs-keyword">let</span> pre = <span class="hljs-number">0</span>, cur = <span class="hljs-number">1</span>;
+    <span class="hljs-keyword">return</span> {
+      next() {
+        [pre, cur] = [cur, pre + cur];
+        <span class="hljs-keyword">return</span> { done: <span class="hljs-literal">false</span>, value: cur }
+      }
+    }
+  }
+}
+
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> n <span class="hljs-keyword">of</span> fibonacci) {
+  // truncate the sequence at <span class="hljs-number">1000</span>
+  <span class="hljs-keyword">if</span> (n &gt; <span class="hljs-number">1000</span>)
+    <span class="hljs-keyword">break</span>;
+  console.log(n);
+}
+</code></pre>
+<h2 id="more">More</h2>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols">iteration Iteration_protocols -- MDN</a></p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...of">for-of -- MDN</a></p>
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*">function * -- MDN</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
