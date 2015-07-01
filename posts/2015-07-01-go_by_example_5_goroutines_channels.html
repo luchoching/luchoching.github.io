@@ -1,0 +1,181 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_5_goroutines_channels</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-go-by-example-goroutines-channels">[Go] by Example 筆記(五) -- Goroutines, Channels</h1>
+<h2 id="goroutine">Goroutine</h2>
+<p><code>goroutine</code>是一個輕量化的執行續</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">func</span> f(from <span class="hljs-typename">string</span>) {
+  <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++ {
+    fmt.Println(from, <span class="hljs-string">":"</span>, i)
+  }
+}
+<span class="hljs-keyword">func</span> main() {
+  f(<span class="hljs-string">"direct"</span>)
+  <span class="hljs-keyword">go</span> f(<span class="hljs-string">"goroutine"</span>)
+  <span class="hljs-keyword">go</span> <span class="hljs-keyword">func</span>(msg <span class="hljs-typename">string</span>) {
+    fmt.Println(msg)
+  }(<span class="hljs-string">"going"</span>)
+  <span class="hljs-keyword">var</span> input <span class="hljs-typename">string</span>
+  fmt.Scanln(&amp;input)
+  fmt.Println(<span class="hljs-string">"done"</span>)
+}
+</code></pre>
+<p>要在goroutine裏面呼叫函式, 只要使用像是 <code>go f(s)</code> 就成了, 這樣就會同步執行一個新的goroutine。</p>
+<p>上面例子, 會先執行<code>f(&quot;dorect&quot;)</code>這是同步的, 兩個goroutine為非同步的, </p>
+<p>利用<code>Scanln</code> function讓程式要跳出前必須先按下enter, 不然程式執行完就會跳出我們就看不到印出來的內容,</p>
+<p>執行結果就可能為如下: </p>
+<pre><code>$ go run routines.go 
+<span class="hljs-string">direct :</span> <span class="hljs-number">0</span>
+<span class="hljs-string">direct :</span> <span class="hljs-number">1</span>
+<span class="hljs-string">direct :</span> <span class="hljs-number">2</span>
+<span class="hljs-string">goroutine :</span> <span class="hljs-number">0</span>
+<span class="hljs-string">goroutine :</span> <span class="hljs-number">1</span>
+<span class="hljs-string">goroutine :</span> <span class="hljs-number">2</span>
+going
+
+done
+$ go run routines.go 
+<span class="hljs-string">direct :</span> <span class="hljs-number">0</span>
+<span class="hljs-string">direct :</span> <span class="hljs-number">1</span>
+<span class="hljs-string">direct :</span> <span class="hljs-number">2</span>
+<span class="hljs-string">goroutine :</span> <span class="hljs-number">0</span>
+going
+<span class="hljs-string">goroutine :</span> <span class="hljs-number">1</span>
+<span class="hljs-string">goroutine :</span> <span class="hljs-number">2</span>
+
+done
+</code></pre><p><a href="https://tour.golang.org/concurrency/1">官網的例子</a>: </p>
+<pre><code class="lang-go">package main
+import (
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"time"</span>
+)
+func <span class="hljs-keyword">say</span>(s string) {
+  for i := 0; i &lt; 5; i++ {
+    time.Sleep(200 * time.Millisecond)
+    fmt.Println(s)
+  }
+}
+func main() {
+  go <span class="hljs-keyword">say</span>(<span class="hljs-string">"world"</span>)
+  <span class="hljs-keyword">say</span>(<span class="hljs-string">"hello"</span>)
+}
+</code></pre>
+<p>結果為：</p>
+<pre><code>$ <span class="hljs-keyword">go</span> run routines.<span class="hljs-keyword">go</span> 
+hello
+world
+hello
+world
+hello
+world
+hello
+world
+hello
+</code></pre><p>再一個: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+)
+<span class="hljs-keyword">func</span> f(n <span class="hljs-typename">int</span>) {
+  <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">3</span>; i++ {
+    fmt.Println(n, <span class="hljs-string">":"</span>, i)
+  }
+}
+<span class="hljs-keyword">func</span> main() {
+  <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">4</span>; i++ {
+    <span class="hljs-keyword">go</span> f(i)
+  }
+  <span class="hljs-keyword">var</span> input <span class="hljs-typename">string</span>
+  fmt.Scanln(&amp;input)
+}
+</code></pre>
+<h2 id="channels">Channels</h2>
+<p><code>Channels</code>是連接並發goroutines的管線(pipes)。</p>
+<p>我們可以從一個goroutine發送一個數值到channels, 然後從另外一個goroutine接收這個數值。</p>
+<p>使用<code>make(chan val-type)</code>建立一個新個channel。Channel的型別由其所傳遞的值的型別決定, 例如以下我們建立了一個叫作messages的channel:</p>
+<pre><code class="lang-go">messages := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>)
+</code></pre>
+<p>發送一個值到channel 我們使用<code>channel &lt;-</code>語法, 例如: </p>
+<pre><code class="lang-go">go <span class="hljs-func"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span>{ messages &lt;- <span class="hljs-string">"ping"</span>}()
+</code></pre>
+<p>上述例子我們利用一個新的goroutine發送<code>ping</code>到mssage channel。</p>
+<p>要從channel接收一個值使用<code>&lt;-</code>語法, 例如: </p>
+<pre><code class="lang-go"><span class="hljs-rule"><span class="hljs-attribute">msg </span>:<span class="hljs-value">= &lt;-messages</span></span>
+</code></pre>
+<p>完整例子: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+)
+<span class="hljs-keyword">func</span> main() {
+  messages := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>)
+  <span class="hljs-keyword">go</span> <span class="hljs-keyword">func</span>() { messages &lt;- <span class="hljs-string">"ping"</span> }()
+  msg := &lt;-messages
+  fmt.Println(msg)
+}
+</code></pre>
+<p>會得到印出<code>ping</code>的結果。</p>
+<p>Channels提供了兩個goroutines溝通的方法, 兩個goroutine可以利用channel來做同步他們執行的結果, 例如:</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"time"</span>
+)
+<span class="hljs-keyword">func</span> pinger(c <span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>) {
+  <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; ; i++ {
+    c &lt;- <span class="hljs-string">"ping"</span>
+  }
+}
+<span class="hljs-keyword">func</span> printer(c <span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>) {
+  <span class="hljs-keyword">for</span> {
+    msg := &lt;-c
+    fmt.Println(msg)
+    time.Sleep(time.Second * <span class="hljs-number">1</span>)
+  }
+}
+<span class="hljs-keyword">func</span> main() {
+  <span class="hljs-keyword">var</span> c <span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span> = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>)
+  <span class="hljs-keyword">go</span> pinger(c)
+  <span class="hljs-keyword">go</span> printer(c)
+  <span class="hljs-keyword">var</span> input <span class="hljs-typename">string</span>
+  fmt.Scanln(&amp;input)
+}
+</code></pre>
+<p>使用channel也好像兩個goroutines做同步運算, 當<code>pinger</code>送出一個messagem到channel, <code>pinger</code>將會等<code>printer</code>收到message後才會進行下一個動作(就是.. blocking)</p>
+<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">ponger</span><span class="hljs-params">(<span class="hljs-built_in">c</span> chan string)</span></span> {
+  <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; ; i++ {
+    <span class="hljs-built_in">c</span> &lt;- <span class="hljs-string">"pong"</span>
+  }
+}
+</code></pre>
+<p>修改<code>main</code> func: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">func</span> main() {
+  <span class="hljs-keyword">var</span> c <span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span> = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>)
+
+  <span class="hljs-keyword">go</span> pinger(c)
+  <span class="hljs-keyword">go</span> ponger(c)
+  <span class="hljs-keyword">go</span> printer(c)
+
+  <span class="hljs-keyword">var</span> input <span class="hljs-typename">string</span>
+  fmt.Scanln(&amp;input)
+}
+</code></pre>
+<p>就會得到<code>ping</code>和<code>pong</code>依序連續輸出的結果。</p>
+<h2 id="more">More</h2>
+<p><a href="http://blog.golang.org/go-slices-usage-and-internals">官網 Go Slices: usage and internals</a></p>
+<p><a href="https://tour.golang.org/">官網 A Tour of Go</a></p>
+<p><a href="https://gobyexample.com">Go by Example</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
