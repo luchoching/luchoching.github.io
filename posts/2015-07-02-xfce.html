@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - xfce</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-linux-xfce-">[Linux][Xfce] 設定與快速鍵</h1>
+<p>捷徑乍看之下很無聊, 可是只要花時間熟悉一下,操作速度可是如虎添翼。</p>
+<p>以下是Xfce預設以及我自己習慣做些調整後的結果。(xubuntu 14.04LTS + xfce4.12)</p>
+<h2 id="-">應用程式捷徑</h2>
+<p>要紹定應用程式捷徑, 打開選單, <code>設定值</code> --&gt;  <code>鍵盤</code> --&gt; <code>應用程式捷徑</code>中設定。</p>
+<ul>
+<li><code>Super + T</code> 打開終端機: (注意, 在<code>終端機偏好設定</code>中要將 <code>如login shell般指令</code> 選項打開, 這樣使用捷徑鍵打開終端機的時候才會focus在該終端機)</li>
+<li><code>Super + W</code> 打開瀏覽器</li>
+<li><code>Super + E</code> 打開mousepad記事本                                                                                                    - <code>Super + P</code> 快速選擇螢幕設定, 例如兩顆螢幕鏡射或是延伸等等</li>
+<li><code>Super + S</code> 叫出logout選單, 內容包括關機, 重新啟動</li>
+<li><code>Print</code> 執行<code>xfce4-screenshooter -f</code> 擷取整個螢幕截圖(多螢幕一起)</li>
+<li><code>Alt + Print</code> 執行<code>xfce4-screenshooter -w</code> 擷取現行視窗截圖</li>
+<li><code>Super + Print</code> 執行<code>xfce4-screenshooter</code>(可以決定幾秒後截圖, 選擇截圖範圍)</li>
+<li><code>Alt + F2</code> 執行指令</li>
+<li><code>Ctrl + Esc</code> 叫出xfce4-popup-whiskermenu, 相當於點選單那個xfce老鼠圖示叫出選單</li>
+<li><code>Ctrl + Alt + Delete</code> 鎖定螢幕(注意 locker有開才有作用)                                                                                 </li>
+</ul>
+<h2 id="-">視窗管理程式捷徑</h2>
+<p>在<code>設定值</code> --&gt; <code>視窗管理程式</code> --&gt; <code>鍵盤</code>中設定。</p>
+<ul>
+<li><code>Alt + F4</code> 關閉視窗</li>
+<li><code>Alt + F5</code> 水平最大化視窗</li>
+<li><code>Alt + F6</code> 垂直最大化視窗</li>
+<li><code>Alt + F11</code> 全螢幕</li>
+<li><code>Ctrl + Alt + Home/End</code> 將視窗移到上/下個工作區</li>
+<li><code>Ctrl + Alt + Left/Right</code> 移動到左邊/右邊工作區</li>
+<li><code>Ctrl + F1</code> 移動到第1個工作區</li>
+<li><code>Ctrl + F2</code> 移動到第2個工作區(類推)</li>
+<li><code>Ctrl + Alt + D</code> 顯示桌面</li>
+<li><code>Alt + Insert</code> 在最後面加入一個新工作區</li>
+<li><code>Alt + Delete</code> 刪除最後一個工作區</li>
+<li><code>Super + Up/Down/Left/Right</code> <strong>視窗大小為螢幕(高度/寬度)一半, 鋪在螢幕上/下/左/右方</strong></li>
+</ul>
+<p>最重要的功能就是<strong>half window</strong>, 有了上面的快速鍵, 我們就可以螢幕一半寫程式, 一半開瀏覽器測試或是參考文件。 </p>
+<p>以前不知道工作區如何用, 後來發現工作區挺方便的
+若是在同一個工作區開多個視窗, 那我要切換視窗的時候, 要用<code>Alt+Tab</code>依序尋找切換, 那如果我每個視窗都安排在一個工作區,
+我只要<code>Ctrl + N</code>就可以快速的跳到該視窗了。 </p>
+<p>另外一個工作區一個全螢幕視窗來說, 對小螢幕的筆電工作起來也很方便。</p>
+<p><code>Super + Tab</code>稍微會用到, 用來切換多個相同種類應用程式的視窗, 例如我開了多個terminal這樣。</p>
+<h2 id="-">終端機</h2>
+<p>xfce4-terminal：                                                                                                                        </p>
+<ul>
+<li><code>shift + 上下</code>, <code>shift+ pageUp/pageDown</code> 終端機顯示向上/下捲動一行, 向上/下捲動一頁</li>
+</ul>
+<h2 id="-">設定視窗在兩個螢幕間切換</h2>
+<p>通常我都會用一台notebook加上一個螢幕, 視窗切換放到不同螢幕這功能太常用到了。</p>
+<p>先確認lib安裝: </p>
+<pre><code>$ sudo apt-<span class="hljs-keyword">get</span> install xdotool wmctrl
+</code></pre><p>下載<code>move-to-next-monitor</code> bash script: </p>
+<pre><code>$ <span class="hljs-built_in">mkdir</span> ~/bin &amp;&amp; <span class="hljs-keyword">cd</span> $_
+$ wget http<span class="hljs-variable">s:</span>//raw.githubusercontent.<span class="hljs-keyword">com</span>/jc00ke/bin/master/<span class="hljs-keyword">move</span>-<span class="hljs-keyword">to</span>-<span class="hljs-keyword">next</span>-monitor
+$ chmod <span class="hljs-number">755</span> <span class="hljs-keyword">move</span>-<span class="hljs-keyword">to</span>-<span class="hljs-keyword">next</span>-monitor
+</code></pre><p>建立一下捷徑: <code>設定</code>--&gt; <code>鍵盤</code> --&gt; <code>應用程式捷徑</code> --&gt; 選擇<code>加入</code>, </p>
+<p>加入的路徑就選擇<code>~/bin/move-to-next-monitor</code>,捷徑我設定為<code>Window鍵 + N</code>。</p>
+<h2 id="more">More</h2>
+<p><a href="http://unix.stackexchange.com/questions/48456/xfce-send-window-to-other-monitor-on-keystroke">Send window to other monitor on keystroke</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
