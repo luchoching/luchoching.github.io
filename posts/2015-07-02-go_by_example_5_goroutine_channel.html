@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_5_goroutines_channels</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-go-by-example-goroutines-channels">[Go] by Example 筆記(五) -- Goroutines, Channels</h1>
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_5_goroutine_channel</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-go-by-example-goroutines-channels">[Go] by Example 筆記(五) -- Goroutines, Channels</h1>
 <h2 id="goroutine">Goroutine</h2>
 <p><code>goroutine</code>是一個輕量化的執行續</p>
 <pre><code class="lang-go"><span class="hljs-keyword">package</span> main
@@ -115,6 +115,7 @@ hello
 }
 </code></pre>
 <p>會得到印出<code>ping</code>的結果。</p>
+<h2 id="channel-synchronization">Channel Synchronization</h2>
 <p>Channels提供了兩個goroutines溝通的方法, 兩個goroutine可以利用channel來做同步他們執行的結果, 例如:</p>
 <pre><code class="lang-go"><span class="hljs-keyword">package</span> main
 <span class="hljs-keyword">import</span> (
@@ -161,10 +162,80 @@ hello
 }
 </code></pre>
 <p>就會得到<code>ping</code>和<code>pong</code>依序連續輸出的結果。</p>
+<p>再來一個例子: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span> 
+  <span class="hljs-string">"time"</span>
+)
+<span class="hljs-keyword">func</span> worker(done <span class="hljs-keyword">chan</span> <span class="hljs-typename">bool</span>) {
+  fmt.Println(<span class="hljs-string">"working..."</span>)
+  time.Sleep(time.Second) 
+  fmt.Println(<span class="hljs-string">"done"</span>)
+  done &lt;- <span class="hljs-constant">true</span> 
+}
+<span class="hljs-keyword">func</span> main() {
+  done := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">bool</span>, <span class="hljs-number">1</span>)
+  <span class="hljs-keyword">go</span> worker(done)
+  &lt;-done
+}
+</code></pre>
+<p>function <code>worker</code>在做完他自身的事情後, 會透過<code>done</code> channel來告訴其他的goroutine本身的工作已經完成(<code>done &lt;- true</code>)。</p>
+<p>最後一行表示在還沒收到<code>worker</code>的結果回傳時都是block住的, 確定收到<code>done</code> channel傳回來的結果後才會繼續執行。</p>
+<p>如果把最後一行<code>&lt;-done</code>移除, 程式就會在<code>worker</code>開始前就跳出了。</p>
+<h2 id="buffered-channels">Buffered channels</h2>
+<p>Channel預設是<em>unbuffered</em>, 意味著要同時有送(<code>chan&lt;-</code>)以及收(<code>&lt;-chan</code>)兩端才行。</p>
+<p>那<code>Buffered channels</code>不需要有接收者, 提供有限數量的數值儲存。</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+  messages := make(chan string, 2)
+  messages &lt;- <span class="hljs-string">"buffered"</span>
+  messages &lt;- <span class="hljs-string">"channel"</span>
+  fmt.Println(&lt;-messages)
+  fmt.Println(&lt;-messages)
+}
+</code></pre>
+<p>上述我們建立了一個可以儲存兩個值的buffered channel, </p>
+<p>因為 channel是buffered, 所以我們可以送數值到channel而不需要有對應的接受者。</p>
+<p>那如果超過buffer大小呢? 例如我們多塞一個數值到channel去: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+  messages := make(chan string, 2)
+  messages &lt;- <span class="hljs-string">"buffered"</span>
+  messages &lt;- <span class="hljs-string">"channel"</span>
+  messages &lt;- <span class="hljs-string">"foo"</span>
+  fmt.Println(&lt;-messages)
+  fmt.Println(&lt;-messages)
+}
+</code></pre>
+<p>執行就會報錯: </p>
+<pre><code><span class="hljs-title">fatal</span> <span class="hljs-built_in">error</span>: all goroutines are asleep - deadlock!
+</code></pre><h2 id="channel-directions">Channel Directions</h2>
+<p>如果我們把channel當作function的參數, 我們可以指定這個channel參數是可以接收或是傳送數值, 這樣大大增加了程式的型別檢查安全性。</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">func</span> ping(pings <span class="hljs-keyword">chan</span>&lt;- <span class="hljs-typename">string</span>, msg <span class="hljs-typename">string</span>) {
+  pings &lt;- msg
+}
+<span class="hljs-keyword">func</span> pong(pings &lt;-<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>, pongs <span class="hljs-keyword">chan</span>&lt;- <span class="hljs-typename">string</span>) {
+  msg := &lt;-pings
+  pongs &lt;- msg
+}
+<span class="hljs-keyword">func</span> main() {
+  pings := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>, <span class="hljs-number">1</span>)
+  pongs := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>, <span class="hljs-number">1</span>)
+  ping(pings, <span class="hljs-string">"passed msg"</span>)
+  pong(pings, pongs)
+  fmt.Println(&lt;-pongs)
+}
+</code></pre>
+<p>function <code>ping</code>只接受用來傳送數值的channel, function <code>pong</code>只接收用來傳送數值的channel <code>pongs</code>, 和接收數值的channel <code>pings</code>。</p>
 <h2 id="more">More</h2>
-<p><a href="http://blog.golang.org/go-slices-usage-and-internals">官網 Go Slices: usage and internals</a></p>
 <p><a href="https://tour.golang.org/">官網 A Tour of Go</a></p>
 <p><a href="https://gobyexample.com">Go by Example</a></p>
+<p><a href="http://www.golang-book.com/">An introduction to Programming in Go</a></p>
 </div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
 var disqus_shortname = 'luchoching';
 /* * * DON'T EDIT BELOW THIS LINE * * */
