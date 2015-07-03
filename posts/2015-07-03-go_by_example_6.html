@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_6</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-go-by-exanmple-select-timeout-non-blocking-channel">[Go] by Exanmple 筆記(六) -- Select, Timeout, Non-Blocking Channel</h1>
+<h2 id="select">Select</h2>
+<p>Go的<code>select</code> statement 很像<code>switch</code>, 不過是給channels的。</p>
+<p>goruntines, channel, 加上 select 是Go的強大特色。</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"time"</span>
+)
+<span class="hljs-keyword">func</span> main() {
+  c1 := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>)
+  c2 := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>)
+  <span class="hljs-keyword">go</span> <span class="hljs-keyword">func</span>() {
+    time.Sleep(time.Second * <span class="hljs-number">1</span>)
+    c1 &lt;- <span class="hljs-string">"one"</span>
+  }()
+  <span class="hljs-keyword">go</span> <span class="hljs-keyword">func</span>() {
+    time.Sleep(time.Second * <span class="hljs-number">2</span>)
+    c2 &lt;- <span class="hljs-string">"two"</span>
+  }()
+  <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span>; i++ {
+    <span class="hljs-keyword">select</span> {
+    <span class="hljs-keyword">case</span> msg1 := &lt;-c1:
+      fmt.Println(<span class="hljs-string">"received"</span>, msg1)
+    <span class="hljs-keyword">case</span> msg2 := &lt;-c2:
+      fmt.Println(<span class="hljs-string">"received"</span>, msg2)
+    }
+  }
+}
+</code></pre>
+<p>這裡我們建立兩個channels: c1和c2 ,  隔一個時間後就會各自收到一個值。</p>
+<p>利用<code>select</code>同時等待這兩個數值, 當其中一個值到的時候就印出每個值。</p>
+<p>得到結果為: </p>
+<pre><code>received <span class="hljs-constant">one</span>
+received <span class="hljs-constant">two</span>
+</code></pre><p>整個的執行時間約為2秒, 因為兩個sleep 1秒和2秒是同步執行的。</p>
+<h2 id="timeout">timeout</h2>
+<p><code>select</code> statement通常用來實作<code>timeout</code></p>
+<p>Timeouts 對用來連接外埠資料的或是要結合執行時間的程式很重要。</p>
+<p>例如以下程式片斷: </p>
+<pre><code class="lang-go">  c1 := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>, <span class="hljs-number">1</span>)
+  <span class="hljs-keyword">go</span> <span class="hljs-keyword">func</span>() {
+    time.Sleep(time.Second * <span class="hljs-number">2</span>)
+    c1 &lt;- <span class="hljs-string">"result 1"</span>
+  }()
+</code></pre>
+<p>這個goroutine就像摹擬執行一個外部呼叫, 在2秒後傳回結果到channel c1。</p>
+<pre><code class="lang-go">  <span class="hljs-operator"><span class="hljs-keyword">select</span> {
+  <span class="hljs-keyword">case</span> res := &lt;-c1:
+    fmt.Println(res)
+  <span class="hljs-keyword">case</span> &lt;-<span class="hljs-keyword">time</span>.<span class="hljs-keyword">After</span>(<span class="hljs-keyword">time</span>.<span class="hljs-keyword">Second</span> * <span class="hljs-number">1</span>):
+    fmt.Println(<span class="hljs-string">"timeout 1"</span>)
+  }</span>
+</code></pre>
+<p>這裡的select實作了一個timeout, <code>res:=&lt;-c1</code>會等待結果, <code>&lt;-time.After</code>等待接收結果若超過1秒就timeout。</p>
+<p>因為<code>select</code>會先收到第一個ready的狀態, 所以如果接受結果超過1秒的話, 就會得到timeout。執行時間需要2秒, 因此會先select <code>&lt;-time.After</code>的case, 印出<code>timeout 1</code>。</p>
+<h2 id="non-blocking-channel-operations">Non-Blocking Channel Operations</h2>
+<p>基本上在Channel之間的收送都是blocking的, 不過我們可以利用<code>select</code>和<code>default</code>來實作non-blocking。</p>
+<pre><code class="lang-go">  messages := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">chan</span> <span class="hljs-typename">string</span>)
+  <span class="hljs-keyword">select</span> {
+  <span class="hljs-keyword">case</span> msg := &lt;-messages:
+    fmt.Println(<span class="hljs-string">"received message"</span>, msg)
+  <span class="hljs-keyword">default</span>:
+    fmt.Println(<span class="hljs-string">"no message received"</span>)
+  }
+</code></pre>
+<p>這裡我們實作了non-blocking receive。如果有收到messages, select就會選擇<code>&lt;-message</code> case列印出received messge字樣, 若沒有就立刻選擇<code>default</code> case。</p>
+<p>同理也可以製作non-blocking case, 或是混合, 例如以下為non-blocking接收messages和signals: </p>
+<pre><code class="lang-go">  select {
+  <span class="hljs-keyword">case</span> msg := &lt;-messages:
+    fmt.Println(<span class="hljs-string">"reveived message"</span>, msg)
+  <span class="hljs-keyword">case</span> sig := &lt;-signals:
+    fmt.Println(<span class="hljs-string">"reveived signal"</span>, sig)
+  <span class="hljs-keyword">default</span>:
+    fmt.Println(<span class="hljs-string">"no activity"</span>)
+  }
+</code></pre>
+<h2 id="more">More</h2>
+<p><a href="https://tour.golang.org/">官網 A Tour of Go</a></p>
+<p><a href="https://gobyexample.com">Go by Example</a></p>
+<p><a href="http://www.golang-book.com/">An introduction to Programming in Go</a></p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
