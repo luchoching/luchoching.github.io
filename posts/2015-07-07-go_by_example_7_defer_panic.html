@@ -1,0 +1,129 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_7_defer_panic</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-go-by-example-defer-panic">[Go] by Example 筆記(七) --  Defer, Panic</h1>
+<h2 id="panic">Panic</h2>
+<p>Go沒有所謂的<code>try...catch</code>來處理exception, <code>panic</code>就是我們平常所接觸的&quot;拋出一個exception&quot;。</p>
+<p>一個<code>panic</code>表示某些事情非預期的出錯了, 大多數時間我們用在把不應該出錯的正常運作快速的導向失敗(拋出異常), 或是處理我們還沒有很好處理的錯誤。</p>
+<p>例如: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">func</span> main(){
+  <span class="hljs-built_in">panic</span>(<span class="hljs-string">"a problem"</span>)
+}
+</code></pre>
+<p>就會立刻panic, 印出錯誤堆疊訊息: </p>
+<pre><code>$ go run panic<span class="hljs-class">.go</span> 
+panic: <span class="hljs-tag">a</span> problem
+
+goroutine <span class="hljs-number">1</span> [running]:
+main.<span class="hljs-function"><span class="hljs-title">main</span><span class="hljs-params">()</span></span>
+  /../sample/panic<span class="hljs-class">.go</span>:<span class="hljs-number">6</span> +<span class="hljs-number">0</span>x64
+
+goroutine <span class="hljs-number">2</span> [runnable]:
+runtime.<span class="hljs-function"><span class="hljs-title">forcegchelper</span><span class="hljs-params">()</span></span>
+  /.../.gvm/gos/go1.<span class="hljs-number">4.2</span>/src/runtime/proc<span class="hljs-class">.go</span>:<span class="hljs-number">90</span>
+runtime.<span class="hljs-function"><span class="hljs-title">goexit</span><span class="hljs-params">()</span></span>
+  /.../.gvm/gos/go1.<span class="hljs-number">4.2</span>/src/runtime/asm_amd64<span class="hljs-class">.s</span>:<span class="hljs-number">2232</span> +<span class="hljs-number">0</span>x1
+
+  ...
+runtime.<span class="hljs-function"><span class="hljs-title">goexit</span><span class="hljs-params">()</span></span>
+  /.../.gvm/gos/go1.<span class="hljs-number">4.2</span>/src/runtime/asm_amd64<span class="hljs-class">.s</span>:<span class="hljs-number">2232</span> +<span class="hljs-number">0</span>x1
+exit status <span class="hljs-number">2</span>
+</code></pre><p><code>panic</code>通常用在處理一個函式傳回一個錯誤我們不知道(或是不想)處理, 就呼叫panic。</p>
+<p>例如建立檔案: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> <span class="hljs-string">"os"</span>
+<span class="hljs-keyword">func</span> main(){
+ _,err:= os.Create(<span class="hljs-string">"./test"</span>)
+  <span class="hljs-keyword">if</span> err != <span class="hljs-constant">nil</span> {
+    <span class="hljs-built_in">panic</span>(err)
+  }
+}
+</code></pre>
+<h2 id="defer">Defer</h2>
+<p><code>Defer</code>用來確認一個function call是否在一個程式執行後被執行。通常被用來作cleanup。就像其他語言的<code>ensure</code>以及<code>finally</code></p>
+<p>例如我們現在新建一個檔案,然後寫入資料到檔案, 最後把檔案close關掉, 最後這個close的工作,就是<code>defer</code>來做:</p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-built_in">import</span> <span class="hljs-params">(
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"os"</span>
+)</span>
+
+func main<span class="hljs-params">()</span>{
+  f:= createFile<span class="hljs-params">(<span class="hljs-string">"./test"</span>)</span>
+  defer closeFile<span class="hljs-params">(f)</span>
+  writeFile<span class="hljs-params">(f)</span>
+}
+
+func createFile<span class="hljs-params">(p string)</span> <span class="hljs-built_in">*</span>os.File {
+  fmt.Println<span class="hljs-params">(<span class="hljs-string">"creating"</span>)</span>
+  f, err := os.Create<span class="hljs-params">(p)</span>
+  <span class="hljs-keyword">if</span> err <span class="hljs-built_in">!</span>= nil {
+    panic<span class="hljs-params">(err)</span>
+  }
+  return f
+}
+
+func writeFile<span class="hljs-params">(f *os.File)</span> {
+  fmt.Println<span class="hljs-params">(<span class="hljs-string">"writing"</span>)</span>
+  fmt.Fprintln<span class="hljs-params">(f, <span class="hljs-string">"data"</span>)</span>
+}
+
+func closeFile<span class="hljs-params">(f *os.File)</span> {
+  fmt.Println<span class="hljs-params">(<span class="hljs-string">"closing"</span>)</span>
+  f.Close<span class="hljs-params">()</span>
+}
+</code></pre>
+<p>這裡<code>defer</code>將會在<code>writeFile</code>執行完成後, main要關起來的時候執行。執行結果會依序輸出: </p>
+<pre><code class="lang-go">$ <span class="hljs-keyword">go</span> run <span class="hljs-keyword">defer</span>.<span class="hljs-keyword">go</span>
+creating
+writing
+closing
+</code></pre>
+<p>證明defer是最後執行的。</p>
+<h2 id="db-">db的例子</h2>
+<p>例如<a href="https://labix.org/mgo">mgo</a>的例子, 連接db資料庫, 執行完動作後最後把db連線關掉: </p>
+<pre><code class="lang-go">package main
+
+import (
+        <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"log"</span>
+        <span class="hljs-string">"gopkg.in/mgo.v2"</span>
+        <span class="hljs-string">"gopkg.in/mgo.v2/bson"</span>
+)
+
+type <span class="hljs-keyword">Person</span> struct {
+        Name string
+        Phone string
+}
+
+func main() {
+  session, err := mgo.Dial(<span class="hljs-string">"server1.example.com,server2.example.com"</span>)
+  if err != nil {
+    panic(err)
+  }
+  defer session.Close()
+
+  c := session.DB(<span class="hljs-string">"test"</span>).C(<span class="hljs-string">"people"</span>)
+  err = c.Insert(&amp;<span class="hljs-keyword">Person</span>{<span class="hljs-string">"Ale"</span>, <span class="hljs-string">"+55 53 8116 9639"</span>},
+         &amp;<span class="hljs-keyword">Person</span>{<span class="hljs-string">"Cla"</span>, <span class="hljs-string">"+55 53 8402 8510"</span>})
+  if err != nil {
+    log.Fatal(err)
+  }
+}
+</code></pre>
+<h2 id="more">More</h2>
+<p><a href="http://blog.golang.org/defer-panic-and-recover">defer, panic and recover - Go blog</a></p>
+<p><a href="http://www.goinggo.net/2013/06/understanding-defer-panic-and-recover.html">understanging defer panic and recover</a> </p>
+</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
