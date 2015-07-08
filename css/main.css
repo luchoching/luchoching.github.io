@@ -368,14 +368,21 @@ body {
   line-height: 1.5em;
   color: #263238; }
 
-pre, code {
+pre {
   background-color: #ECEFF1; }
+  pre code {
+    background-color: #ECEFF1;
+    color: #607D8B; }
 
 pre {
   padding: 0.5em; }
 
 code {
-  font-size: 90%; }
+  color: #1976D2;
+  background-color: #ECEFF1;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  border-radius: 0.5em; }
 
 blockquote {
   padding-left: 0.5em;
@@ -407,18 +414,21 @@ img {
   .Header h1 {
     margin: 0;
     padding: 0.2em;
-    font-size: 1.2em; }
+    font-size: 1.2em;
+    border-bottom: 1px solid white; }
     .Header h1 a {
       color: #E91E63; }
 
 .Menu {
   list-style: none;
   margin: 0;
-  padding: 0; }
+  padding: 0;
+  font-size: 0.9em; }
   .Menu li {
     color: #2196F3;
     font-weight: bold;
-    padding-left: 1em; }
+    padding-left: 1em;
+    border-bottom: 1px solid white; }
     .Menu li:hover {
       background-color: #E91E63; }
       .Menu li:hover a {
@@ -426,13 +436,16 @@ img {
 
 .Posts {
   list-style: none;
-  padding: 0.2em;
-  margin: 0.2em; }
+  padding: 0em;
+  margin: 0em; }
   .Posts li {
-    margin-top: 0.2em;
-    padding: 0.1em; }
+    font-size: 0.5em;
+    padding: 0.2em;
+    border-bottom: 1px dotted #B0BEC5; }
     .Posts li:hover {
       background-color: #ECEFF1; }
+      .Posts li:hover a {
+        color: #E91E63; }
 
 .Main {
   padding: 0.5em; }
@@ -476,6 +489,9 @@ img {
 
   .Header, .Menu {
     flex-direction: row; }
+
+  .Posts li {
+    font-size: 0.9em; }
 
   .Header {
     justify-content: space-between; }
