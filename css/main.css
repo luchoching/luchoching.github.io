@@ -365,17 +365,11 @@ th {
   src: url(../fonts/NotoSansCJKtc-Regular.otf) format("otf"); }
 body {
   font-family: "Noto Sans CJK Regular", sans-serif;
-  line-height: 1.5em;
+  line-height: 1.4;
   color: #263238; }
 
-pre {
-  background-color: #ECEFF1; }
-  pre code {
-    background-color: #ECEFF1;
-    color: #607D8B; }
-
-pre {
-  padding: 0.5em; }
+pre code {
+  font-size: 0.8em; }
 
 code {
   color: #1976D2;
@@ -415,7 +409,8 @@ img {
     margin: 0;
     padding: 0.2em;
     font-size: 1.2em;
-    border-bottom: 1px solid white; }
+    border-bottom: 1px solid white;
+    text-shadow: 1px 1px 2px #ffffff; }
     .Header h1 a {
       color: #E91E63; }
 
@@ -448,13 +443,20 @@ img {
         color: #E91E63; }
 
 .Main {
-  padding: 0.5em; }
+  padding: 0.5em;
+  padding-top: 0; }
   .Main h1 {
-    color: #2196F3;
+    color: #E91E63;
     margin: 0;
     padding: 0.2em;
-    font-size: 1.5em;
-    border-bottom: 1px solid #ECEFF1; }
+    font-size: 1.4em;
+    background-color: #ECEFF1; }
+  .Main h2 {
+    color: #E91E63;
+    border-bottom: 1px solid #CFD8DC;
+    padding: 0;
+    margin: 0;
+    margin-top: 1em; }
 
 #disqus_thread {
   padding: 0.2em; }
@@ -489,6 +491,9 @@ img {
 
   .Header, .Menu {
     flex-direction: row; }
+
+  .Header h1 {
+    border: none; }
 
   .Posts li {
     font-size: 0.9em; }

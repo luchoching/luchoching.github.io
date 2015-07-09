@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><link rel="stylesheet" href="../css/github.css"><link rel="stylesheet" href="../css/main.css"><title>Cho-Ching's Blog - go_by_example_2</title></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-go-by-example-arrays-slices-maps-range">[Go] by Example 筆記(二) -- Arrays, Slices, Maps, Range</h1>
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - go_by_example_2</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-go-by-example-arrays-slices-maps-range">[Go] by Example 筆記(二) -- Arrays, Slices, Maps, Range</h1>
 <p>延續<a href="/posts/2015-05-18-go_by_example_1.html">(一)</a>的內容, 討論Go的資料結構</p>
 <h2 id="array">Array</h2>
 <p>對Go來說, array就是一個有特定長度的元素的有號序列。</p>
@@ -50,6 +50,7 @@ fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span cla
 <span class="hljs-tag">i</span> = s[:<span class="hljs-number">5</span>]
 <span class="hljs-tag">i</span> = s[<span class="hljs-number">2</span>:]
 </code></pre>
+<p><code>s[2:]</code>表示<strong>建立一個s的sub-slice, 這個sub-slice是s的第2個字元到最後一個字元</strong>。</p>
 <p>slice也可以直接宣告初始值: </p>
 <pre><code class="lang-go">l := <span class="hljs-literal">[]</span><span class="hljs-built_in">string</span>{<span class="hljs-string">"a"</span>, <span class="hljs-string">"b"</span>, <span class="hljs-string">"c"</span>}
 </code></pre>
