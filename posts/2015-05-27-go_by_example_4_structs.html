@@ -98,12 +98,33 @@ func (r <span class="hljs-built_in">rect</span>) perim() float64 {
 measure(r)
 measure(c)
 </code></pre>
+<h3 id="empty-interface">Empty Interface</h3>
+<p>Interface就代表兩個事情: </p>
+<ul>
+<li>interface 是一組methods的集合</li>
+<li>interface 也是type的一種</li>
+</ul>
+<p><code>Interface{}</code> type表示 empty interface, 一個沒有任何method的interface。</p>
+<p>例如: </p>
+<pre><code class="lang-go"><span class="hljs-tag">func</span> <span class="hljs-tag">DoSomething</span>(v interface{}) {
+  <span class="hljs-comment">// ...</span>
+}
+</code></pre>
+<p>表示我們可以傳任何type到Dosomething函式中, 但是v原來的type會被轉換成<code>interface{}</code> type。</p>
+<p>在看API的時候會常常看到empty interface: </p>
+<pre><code class="lang-go"><span class="hljs-function">func <span class="hljs-title">Println</span>(<span class="hljs-params">a ...<span class="hljs-keyword">interface</span>{}</span>) (<span class="hljs-params">n <span class="hljs-keyword">int</span>, err error</span>) </span>{
+  <span class="hljs-keyword">return</span> Fprintln(os.Stdout, a...)
+}
+</code></pre>
+<p><code>...interface{}</code>表示可以餵入任意數量與任意型別的參數。</p>
 <h2 id="more">More</h2>
+<p><a href="http://jordanorelli.com/post/32665860244/how-to-use-interfaces-in-go">how to use interface in go - by jordan orelli</a></p>
+<p><a href="http://stackoverflow.com/questions/23148812/what-is-the-meaning-of-interface-in-golang">what is the meaning of interface in golang</a></p>
 <p>這系列筆記文章都來自於以下局部翻譯或整理: </p>
 <p><a href="https://tour.golang.org/">官網 A Tour of Go</a></p>
 <p><a href="https://gobyexample.com">Go by Example</a></p>
 <p><a href="http://www.golang-book.com/">An introduction to programming in Go</a></p>
-</div><div id="disqus_thread"></div><h3><a href="/"><< 回到文章列表</a></h3><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
 var disqus_shortname = 'luchoching';
 /* * * DON'T EDIT BELOW THIS LINE * * */
 (function() {
