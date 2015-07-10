@@ -36,6 +36,7 @@ $ ./hello
 </code></pre>
 <h2 id="values-types-">Values( Types )</h2>
 <p>Golang value types包括了 string, interger, float, boolean --&gt; 就如你所想的一樣, 跟我們所熟悉的很像。</p>
+<p>參考<a href="http://golang.org/pkg/builtin/">官網 Package builtin</a>, value type包括: bool, byte, complex128, complex64, error, float32, float64, int, int16, int32, int64, int8, rune(int32 alias), string, uint(unsigned integer, 至少32bits大小), unit16, unit32, unit64, uint8, uintptr(為integer type, 但是大到足夠處理任何pointer)</p>
 <p>String litetals 可以用雙引號(<strong>&quot;</strong>)來表示, 或是用反向單引號(<strong>`</strong>)來表示, 反向單引號就是鍵盤左上角在esc鍵下方那顆</p>
 <p>差別在於雙引號可以接受特殊跳脫字元, 例如<code>\n</code>, 用反向單引號就如實印出來這樣,不會將跳脫字元轉成特殊字元。</p>
 <p>字串可以直接用加號相加。</p>
@@ -57,7 +58,7 @@ HelloWorld
 <h2 id="variables">Variables</h2>
 <p>使用 <code>var</code> keyword來宣告一個或多個變數並起可以同時賦予值, 宣告的方式就是var, 變數名, 變數type這樣。</p>
 <p>如果宣告變數沒有給初始值的話, Go就會給一個<strong>zero-value</strong> 。 對int來說, zero-value就是0, boolean type就是false, string type就是<code>&quot;&quot;</code>。</p>
-<p><code>:=</code>是一個簡寫的方式, Go就會自動判斷<code>:=</code>是屬於哪種type。在function外面,每個statements都要由一個關鍵字開始(<code>var</code>, <code>func</code>或是其他)不能直接用<code>:=</code>。</p>
+<p><code>:=</code>是一個簡寫的方式, Go就會自動判斷<code>:=</code>是屬於哪種type。在function外面,每個statements都要由一個關鍵字開始(<code>var</code>, <code>func</code>或是其他)不能直接用<code>:=</code>。一開始這裡會常忘記: <strong>:= 只能用在function內部</strong> :</p>
 <pre><code class="lang-go"><span class="hljs-keyword">package</span> main
 <span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span> 
 
