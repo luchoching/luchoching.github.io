@@ -37,6 +37,7 @@ fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span cla
 <p>也可以限制slice的容量(capcity): </p>
 <pre><code class="lang-go"><span class="hljs-tag">b</span> := <span class="hljs-function"><span class="hljs-title">make</span><span class="hljs-params">([]int, <span class="hljs-number">0</span>, <span class="hljs-number">5</span>)</span></span>  <span class="hljs-comment">// len(b)=0, cap(b)=5</span>
 </code></pre>
+<p>如果沒有宣告容量, slice的容量等於長度。例如上上個例子<code>make([]string, 3)</code>這個slice的容量也為3。</p>
 <p>操作方法都跟array一樣。</p>
 <p>只是slice多了許多好用的操作, 例如<code>append</code>: </p>
 <pre><code class="lang-go">s = <span class="hljs-function"><span class="hljs-title">append</span><span class="hljs-params">(s, <span class="hljs-string">"d"</span>, <span class="hljs-string">"e"</span>)</span></span>
