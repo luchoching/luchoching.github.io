@@ -128,6 +128,12 @@ fmt.Println(math.<span class="hljs-literal">Sin</span>(<span class="hljs-keyword
 }
 </code></pre>
 <p>Go沒有<code>?:</code>(ternary if)。</p>
+<p>在if述句裏面可以直接做變數命名賦值, 除了讓程式碼看起來更簡潔以外, 這個在if述句宣告的變數的作用域就在這個if block中。 像常用的錯誤處理就不需要先宣告<code>var err</code>然後在每個要做錯誤處理的地方到處覆寫, 例如:</p>
+<pre><code class="lang-go">
+<span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> := responder.Cfg.<span class="hljs-keyword">Set</span>(<span class="hljs-string">"key"</span>, <span class="hljs-string">"value"</span>); <span class="hljs-keyword">err</span>!=nil {
+  <span class="hljs-comment">//...</span>
+}
+</code></pre>
 <h2 id="switch">Switch</h2>
 <p>就跟大家印象相同。</p>
 <p>可以把多個expressions放在相同的case statement上,</p>

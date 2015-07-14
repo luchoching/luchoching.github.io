@@ -84,6 +84,7 @@ func (r <span class="hljs-built_in">rect</span>) perim() float64 {
     <span class="hljs-keyword">return</span> <span class="hljs-number">2</span> * math.<span class="hljs-type">Pi</span> * <span class="hljs-built_in">c</span>.radius
 }
 </code></pre>
+<p>Go沒有<code>implement</code>這樣的keyword, Go會自動判定該型別是否有完全實作整個interface所定義的methods。</p>
 <p>假設我們的function傳入的參數是interface type, 那麼只要是實作這個interface的type都可以使用這個function: </p>
 <pre><code class="lang-go">func measure<span class="hljs-params">(g geometry)</span> {
   fmt.Println<span class="hljs-params">(g)</span>
