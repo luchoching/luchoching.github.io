@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - go_by_example_8_readfile</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-go-by-example-reading-files">[Go] by Example 筆記(八) -- Reading files</h1>
+<h2 id="-">讀取整個檔案</h2>
+<p>最基本讀取檔案的方式, 就是讀取整個檔案到記憶體中去。</p>
+<p>Go提供了 <a href="https://golang.org/pkg/io/ioutil/">ioutil</a> package, 實現了一些實用的I/O函式,以下 利用<code>ioutil.ReadFile</code>:</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"io/ioutil"</span>
+)
+<span class="hljs-function">func <span class="hljs-title">check</span><span class="hljs-params">(e <span class="hljs-keyword">error</span>)</span> </span>{
+  <span class="hljs-keyword">if</span> e != nil {
+    panic(e)
+  }
+}
+<span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+  dat, err := ioutil.ReadFile(<span class="hljs-string">"./test"</span>)
+  check(err)
+  fmt.Print(string(dat))
+}
+</code></pre>
+<p><code>ioutil.ReadFile</code>定義: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">func</span> ReadFile(filename <span class="hljs-typename">string</span>) ([]<span class="hljs-typename">byte</span>, error)
+</code></pre>
+<p>注意引用ioutil是<code>io/ioutil</code>而不是<code>ioutil</code></p>
+<p>將檔案讀取成byte型式的slice。</p>
+<p>檔案不大的時候, <code>ioutil.ReadFile</code>提供了很方便的選擇, 注意ReadFile成功時候<code>err == nil</code>而不是<code>err == EOF</code>。</p>
+<h2 id="-">打開檔案</h2>
+<p>如果想要對讀取檔案做更多的控制, 那就需要利用Go的 <a href="https://golang.org/pkg/os/">os</a> package, os package提供跟平台有關的操作介面例如檔案操作。 這裡利用<code>os.Open</code>函式: </p>
+<pre><code class="lang-go">import (
+  <span class="hljs-string">"os"</span>
+  <span class="hljs-string">"log"</span>
+)
+<span class="hljs-keyword">file</span>, <span class="hljs-keyword">err</span>:=os.<span class="hljs-keyword">Open</span>(<span class="hljs-string">"file.go"</span>) <span class="hljs-comment">//for read access.</span>
+defer <span class="hljs-keyword">file</span>.<span class="hljs-keyword">Close</span>()
+<span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> != nil {
+  <span class="hljs-keyword">log</span>.Fatal(<span class="hljs-keyword">err</span>)
+}
+</code></pre>
+<p>注意打開檔案後做完所有處理後, 我們利用<code>defer file.Close()</code>將開啟的檔案關閉。</p>
+<p>打開檔案失敗的話, 錯誤訊息就會自我解釋: </p>
+<pre><code class="lang-bash"><span class="hljs-built_in">open</span> <span class="hljs-built_in">file</span>.go: no such <span class="hljs-built_in">file</span> <span class="hljs-operator">or</span> <span class="hljs-built_in">directory</span>
+</code></pre>
+<p><code>os.Open</code>傳回一個<code>*File</code>型別, <code>File</code>實作<code>io.Reader</code> interface:</p>
+<pre><code class="lang-go">func <span class="hljs-keyword">Open</span>(name string) (<span class="hljs-keyword">file</span> *<span class="hljs-keyword">File</span>, <span class="hljs-keyword">err</span> <span class="hljs-keyword">error</span>)
+</code></pre>
+<p><code>os.Open</code>或是<code>os.Create</code>都是呼叫<code>os.OpenFile</code>:</p>
+<pre><code class="lang-go">func OpenFile(<span class="hljs-property">name</span> <span class="hljs-type">string</span>, flag int, perm FileMode) (<span class="hljs-type">file</span> *File, err <span class="hljs-keyword">error</span>)
+</code></pre>
+<p>flag例如是<code>O_RDONLY</code>只允許讀取, perm像是<code>0666</code>這樣。<code>os.Open</code>就是呼叫os.OpenFile, 傳入的flag參數為<code>O_RDONLY</code>(只允許讀取)。</p>
+<h3 id="type-file">type File</h3>
+<p><code>os.File</code>可以執行的動作如下:  </p>
+<p><img src="http://imgur.com/NJ0aTNnl.png" alt="os.File"></p>
+<p>例如把檔案的資料讀到一個bytes slice, <code>file.Read(data)</code>傳回讀取到的bytes計數：</p>
+<pre><code class="lang-go">data := make([]byte, 100)
+<span class="hljs-keyword">count</span>, <span class="hljs-keyword">err</span> := <span class="hljs-keyword">file</span>.<span class="hljs-keyword">Read</span>(data)
+
+<span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> != nil {
+  <span class="hljs-keyword">log</span>.Fatal(<span class="hljs-keyword">err</span>)
+}
+fmt.Printf(<span class="hljs-string">"read %d bytes: %q\n"</span>, <span class="hljs-keyword">count</span>, data[:<span class="hljs-keyword">count</span>])
+</code></pre>
+<h2 id="-">一行一行讀取</h2>
+<p>Go <a href="http://golang.org/pkg/bufio/">bufio</a> package實作 buffered I/O, 包裹<code>io.Reader</code>或是<code>io.Writer</code>變成新的Reader以及Writer, 新的Reader和Writer就提供了buffer的功能, 特別用在文字處理上。</p>
+<p>這裡我們使用<code>ReadBytes(&#39;\n&#39;)</code>或是<code>ReadString(&#39;\n&#39;)</code>或是用<code>Scanner</code>(簡單使用還是推荐用Scanner)來達成一行一行讀取檔案的目的。</p>
+<h3 id="func-newscanner-r-io-reader-scanner">func NewScanner(r io.Reader) *Scanner</h3>
+<p>我們利用<code>bufio.NewScnner</code>取得檔案或是STDIN的<code>*Scanner</code>。</p>
+<p><code>Scanner</code>型別提供一個用來讀取資料方便的介面。像是一個用newline符號來分行的文字檔案。<a href="http://golang.org/pkg/bufio/#Scanner">#Scanner</a></p>
+<p><code>Scanner</code>型別可以使用的function包括: </p>
+<p><img src="http://imgur.com/cOwfuAyl.png" alt="bufio.Scanner"></p>
+<p>實作一行一行讀取檔案如下: </p>
+<pre><code class="lang-go">package main
+<span class="hljs-built_in">import</span> <span class="hljs-params">(
+  <span class="hljs-string">"bufio"</span>
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"os"</span>
+)</span>
+func main<span class="hljs-params">()</span> {
+  f, err := os.Open<span class="hljs-params">(<span class="hljs-string">"./test"</span>)</span>
+  check<span class="hljs-params">(err)</span>
+  defer f.Close<span class="hljs-params">()</span>
+  scanner := bufio.NewScanner<span class="hljs-params">(f)</span>
+  <span class="hljs-keyword">for</span> scanner.Scan<span class="hljs-params">()</span> {
+    fmt.Println<span class="hljs-params">(scanner.Text<span class="hljs-params">()</span>)</span>
+  }
+}
+</code></pre>
+<p>利用<code>scanner.Scan()</code>判定是否還有下一行, 再利用<code>scanner.Text()</code>或是 <code>scanner.Bytes[]</code>讀取每行資料。</p>
+<h3 id="-ioutil">使用 ioutil</h3>
+<p>當然，另外一種作法就是使用<code>ioutil.ReadFile</code>讀取整個檔案, 再利用<code>strings.Split</code>切割: </p>
+<pre><code class="lang-go">package main
+<span class="hljs-built_in">import</span> <span class="hljs-params">(
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"io/ioutil"</span>
+  <span class="hljs-string">"strings"</span>
+)</span>
+func main<span class="hljs-params">()</span> {
+  doc, err := ioutil.ReadFile<span class="hljs-params">(<span class="hljs-string">"./test.md"</span>)</span>
+  <span class="hljs-keyword">if</span> err <span class="hljs-built_in">!</span>= nil {
+    panic<span class="hljs-params">(err)</span>
+  }
+  lines := strings.Split<span class="hljs-params">(string<span class="hljs-params">(doc)</span>, <span class="hljs-string">"\n"</span>)</span>
+  <span class="hljs-keyword">for</span> _, line := range lines {
+    fmt.Printf<span class="hljs-params">(<span class="hljs-string">"%q\n"</span>, line)</span>
+  } 
+}
+</code></pre>
+<p>問題是這樣最後會多出一行...? . </p>
+<h2 id="more">More</h2>
+<p><a href="https://gobyexample.com/reading-files">go by example - reading files</a></p>
+<p><a href="http://stackoverflow.com/questions/5884154/golang-read-text-file-into-string-array-and-write">golang - read text file into string array and write</a></p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
