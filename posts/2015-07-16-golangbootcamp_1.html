@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - golangbootcamp_1</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-golang-golangbootcamp-">[Golang] golangbootcamp 補遺(一)</h1>
+<p>閱讀<a href="http://www.golangbootcamp.com/">golang bootcamp</a> 筆記補遺。</p>
+<h2 id="variables-inferred-typing">Variables &amp; inferred typing</h2>
+<p>變數宣告可用括號一起宣告: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">var</span> (
+  name, location  <span class="hljs-keyword">string</span>
+  age             <span class="hljs-keyword">int</span>
+)
+</code></pre>
+<p>也可以直接賦值:</p>
+<pre><code class="lang-go"><span class="hljs-keyword">var</span> (
+  name     <span class="hljs-keyword">string</span> = <span class="hljs-string">"Prince Oberyn"</span>
+  age      <span class="hljs-keyword">int</span>    =  <span class="hljs-number">32</span>
+  location <span class="hljs-keyword">string</span> = <span class="hljs-string">"Dorne"</span>
+)
+</code></pre>
+<p>inferred typing, 直接依照initializer給的值決定其型別:</p>
+<pre><code class="lang-go">var (
+  <span class="hljs-variable">name     =</span> <span class="hljs-string">"Prince Oberyn"</span>
+  <span class="hljs-variable">age      =</span>  <span class="hljs-number">32</span>
+  <span class="hljs-variable">location =</span> <span class="hljs-string">"Dorne"</span>
+)
+</code></pre>
+<p>變數可以是任何型別, 包括function: </p>
+<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  action := <span class="hljs-func"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> {
+    <span class="hljs-comment">//doing something</span>
+  }
+  action()
+}
+</code></pre>
+<p>在function裏面才可以用<code>:=</code>賦值。所有在function之外的通通都是特定keyword開頭,例如<code>var</code>,<code>func</code>等等。</p>
+<p><a href="http://blog.golang.org/gos-declaration-syntax">Golang Blog - go&#39;s declaration syntax</a></p>
+<h2 id="constants">Constants</h2>
+<p>Constants只能是 character, string, boolean, 或是 numeric value。</p>
+<p>不能用<code>:=</code>宣告</p>
+<pre><code class="lang-go">const <span class="hljs-variable">Pi =</span> <span class="hljs-number">3.14</span>
+const (
+        <span class="hljs-variable">StatusOK                   =</span> <span class="hljs-number">200</span>
+        <span class="hljs-variable">StatusCreated              =</span> <span class="hljs-number">201</span>
+        <span class="hljs-variable">StatusAccepted             =</span> <span class="hljs-number">202</span>
+        <span class="hljs-variable">StatusNonAuthoritativeInfo =</span> <span class="hljs-number">203</span>
+        <span class="hljs-variable">StatusNoContent            =</span> <span class="hljs-number">204</span>
+        <span class="hljs-variable">StatusResetContent         =</span> <span class="hljs-number">205</span>
+        <span class="hljs-variable">StatusPartialContent       =</span> <span class="hljs-number">206</span>
+)
+</code></pre>
+<h2 id="print">Print</h2>
+<p>使用Go的 <a href="https://golang.org/pkg/fmt/">fmt/</a> package。</p>
+<p><code>fmt.Prinln</code>會印出變數值,並且加入new line。</p>
+<p><code>fmt.Printf</code>用在當我們要用特定義格式(format specifier)輸出的時候</p>
+<p>format specifier有很多, 常用的像<code>%d</code>印出10進位數字,  <code>%s</code>印出字串, <code>%q</code>印出加上雙引號的字串</p>
+<p>例如用在輸出slice ,使用<code>%s</code> format string 會輸出: </p>
+<pre><code>[<span class="hljs-tag">a</span> <span class="hljs-tag">b</span> c]
+</code></pre><p>若改用<code>%q</code>, 會輸出: </p>
+<pre><code>[<span class="hljs-string">"a"</span> <span class="hljs-string">"b"</span> <span class="hljs-string">"c"</span>]
+</code></pre><p>使用<code>fmt.Printf</code>要分行必須加<code>\n</code>。</p>
+<pre><code class="lang-go"><span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+  name := <span class="hljs-string">"Caprica-Six"</span>
+  aka := fmt.Sprintf(<span class="hljs-string">"Number %d"</span>, 6)
+  fmt.Printf(<span class="hljs-string">"%s is also known as %s"</span>,
+    name, aka)
+}
+</code></pre>
+<p><code>fmt.Printf</code>和<code>fmt.Println</code>傳回所列印出的字數(int)和錯誤(若有的話), <code>fmt.Sprintf</code>傳回字串型別</p>
+<p>那<code>fmt.FPrintf</code>就是利用<code>io.Writer</code>將列印的訊息寫到檔案去。</p>
+<h2 id="packages-and-imports">Packages and imports</h2>
+<p>所有的Go程式都是由<code>packages</code>所組成, 程式從<code>main</code> package開始執行。</p>
+<p>如果要寫的程式是要可以執行的(不是library), 那麼就一定要定義一個<code>main</code> package, 並且在<code>main</code> package裏面包含 <code>main()</code> function。<code>main()</code> 函式就是我們寫的程式的進入點。</p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  <span class="hljs-built_in">print</span>(<span class="hljs-string">"Hello, World!\n"</span>)
+}
+</code></pre>
+<p>通常不是Go內建的標準函式庫都使用web url來當作namespace。</p>
+<p>例如我要使用<a href="https://github.com/russross/blackfriday">blackfriday</a>的markdown processor pacakage, 那import述句就會寫成: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">import</span> <span class="hljs-string">"github.com/russross/blackfriday"</span>
+</code></pre>
+<h2 id="code-location-gopath">Code location --&gt; GOPATH</h2>
+<p>上面import述句告訴compiler要從<code>github.com/russross/blackfriday</code>路徑來import該blackfriday package, 不過compiler並不會自動下載(pull down)這個repository, 我們需要手動下載, 這裡利用Go所提供的<code>go get</code>指令來取得(當然事先要確認有安裝git): </p>
+<pre><code><span class="hljs-keyword">go</span> <span class="hljs-built_in">get</span> github.<span class="hljs-keyword">com</span>/russross/blackfriday
+</code></pre><p>這樣就會下載,編譯並安裝該package到我們的<code>$GOPATH</code>去。</p>
+<pre><code><span class="hljs-variable">$ </span>ls <span class="hljs-variable">$GOPATH</span>
+bin pkg src
+</code></pre><p><code>bin</code>包含Go編譯過的二進位檔案, 我們可以在我們的系統路徑加上bin的路徑。</p>
+<p><code>pkg</code>包含已經編譯過的可用的函式庫, 這樣編譯器可以直接聯結他們使用而不需要再重新編譯。</p>
+<p><code>src</code>包含所有由import路徑所管理的source code: </p>
+<pre><code>$ ls <span class="hljs-variable">$GOPATH</span>/src
+<span class="hljs-number">9</span>fans<span class="hljs-class">.net</span> github<span class="hljs-class">.com</span>
+
+$ ls <span class="hljs-variable">$GOPATH</span>/src/github.com/russross
+blackfriday
+</code></pre><p>當我們開始寫一個新program或是library, 建議寫在<code>src</code>資料夾裏面,並且使用完整標準的路徑, 例如<code>github.com/&lt;your_username&gt;/&lt;projectname&gt;</code>。</p>
+<h2 id="exported-names">Exported names</h2>
+<p>當我們引用(import)一個package後, 我們可以使用該package所提供(export)出的變數或是函式等等。</p>
+<p>對於Go來說, 只要是<strong>大寫</strong>開頭的名字, 就是可以被引用的, 例如<code>Foo</code>就是一個該package可用的名字, <code>foo</code>就沒有提供, 為該package私用。</p>
+<p>例如: </p>
+<pre><code class="lang-go"><span class="hljs-built_in">import</span> <span class="hljs-params">(
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"math"</span>
+)</span>
+
+func main<span class="hljs-params">()</span> {
+  fmt.Println<span class="hljs-params">(math.Pi)</span>
+}
+</code></pre>
+<p>執行ok. 那以下: </p>
+<pre><code><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  fmt.<span class="hljs-type">Println</span>(math.pi)
+}
+</code></pre><p>就會告知：</p>
+<pre><code>cannot refer <span class="hljs-keyword">to</span> unexported <span class="hljs-property">name</span> math.<span class="hljs-constant">pi</span>
+</code></pre><p><a href="http://golang.org/pkg/">Go ducumentation</a> 或是 <a href="godoc.org">godoc.org</a> 來尋找各個package或提供的exported names。</p>
+<h2 id="pointer-mutability">Pointer  --&gt; Mutability</h2>
+<p>預設function的參數是passed by value,  一個函式庫收到一個value參數並不會改變原來的值: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+
+<span class="hljs-keyword">type</span> Artist <span class="hljs-keyword">struct</span> {
+  Name, Genre <span class="hljs-typename">string</span>
+  Songs       <span class="hljs-typename">int</span>
+}
+
+<span class="hljs-keyword">func</span> newRelease(a Artist) <span class="hljs-typename">int</span> {
+  a.Songs++
+  <span class="hljs-keyword">return</span> a.Songs
+}
+
+<span class="hljs-keyword">func</span> main() {
+  me := Artist{Name: <span class="hljs-string">"Matt"</span>, Genre: <span class="hljs-string">"Electro"</span>, Songs: <span class="hljs-number">42</span>}
+  fmt.Printf(<span class="hljs-string">"%s released their %dth song\n"</span>, me.Name, newRelease(me))
+  fmt.Printf(<span class="hljs-string">"%s has a total of %d songs"</span>, me.Name, me.Songs)
+}
+</code></pre>
+<p>結果為: </p>
+<pre><code>Matt released their <span class="hljs-number">43</span>th song
+Matt has <span class="hljs-operator">a</span> total <span class="hljs-operator">of</span> <span class="hljs-number">42</span> songs
+</code></pre><p>如果要改變傳遞過來的值, 就<em>pass it by reference</em> 了: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+
+<span class="hljs-keyword">type</span> Artist <span class="hljs-keyword">struct</span> {
+  Name, Genre <span class="hljs-typename">string</span>
+  Songs       <span class="hljs-typename">int</span>
+}
+
+<span class="hljs-keyword">func</span> newRelease(a *Artist) <span class="hljs-typename">int</span> {
+  a.Songs++
+  <span class="hljs-keyword">return</span> a.Songs
+}
+
+<span class="hljs-keyword">func</span> main() {
+  me := &amp;Artist{Name: <span class="hljs-string">"Matt"</span>, Genre: <span class="hljs-string">"Electro"</span>, Songs: <span class="hljs-number">42</span>}
+  fmt.Printf(<span class="hljs-string">"%s released their %dth song\n"</span>, me.Name, newRelease(me))
+  fmt.Printf(<span class="hljs-string">"%s has a total of %d songs"</span>, me.Name, me.Songs)
+}
+</code></pre>
+<p>得到結果為: </p>
+<pre><code>Matt released their <span class="hljs-number">43</span>th song
+Matt has <span class="hljs-operator">a</span> total <span class="hljs-operator">of</span> <span class="hljs-number">43</span> songs
+</code></pre><h2 id="more">More</h2>
+<p><a href="http://golang.org/doc/effective_go.html#interface_conversions">effective go - interface conversions and type assertions</a></p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
