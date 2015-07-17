@@ -55,6 +55,29 @@ const (
 </code></pre><p>若改用<code>%q</code>, 會輸出: </p>
 <pre><code>[<span class="hljs-string">"a"</span> <span class="hljs-string">"b"</span> <span class="hljs-string">"c"</span>]
 </code></pre><p>使用<code>fmt.Printf</code>要分行必須加<code>\n</code>。</p>
+<p>另外使用<code>%v</code>會印出預設的格式, 那<code>%+v</code>會印出結構加上field name, 例如:</p>
+<pre><code class="lang-go">ype User <span class="hljs-keyword">struct</span> {
+  Id       <span class="hljs-typename">int</span>
+  Name     <span class="hljs-typename">string</span>
+  Location <span class="hljs-typename">string</span>
+}
+
+<span class="hljs-keyword">type</span> Player <span class="hljs-keyword">struct</span> {
+  User
+  GameId         <span class="hljs-typename">int</span>
+}
+
+<span class="hljs-keyword">func</span> main() {
+  p := Player{}
+  p.Id = <span class="hljs-number">42</span>
+  p.Name = <span class="hljs-string">"Matt"</span>
+  p.Location = <span class="hljs-string">"LA"</span>
+  p.GameId = <span class="hljs-number">90404</span>
+  fmt.Printf(<span class="hljs-string">"%v\n"</span>, p) <span class="hljs-comment">//印出{{42 Matt LA} 90404}</span>
+  fmt.Printf(<span class="hljs-string">"%+v\n"</span>, p) <span class="hljs-comment">//印出{User:{Id:42 Name:Matt Location:LA} GameId:90404}</span>
+}
+</code></pre>
+<p><code>fmt.Printf</code>和<code>fmt.Println</code>傳回所列印出的字數(int)和錯誤(若有的話), <code>fmt.Sprintf</code>傳回字串型別:</p>
 <pre><code class="lang-go"><span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
   name := <span class="hljs-string">"Caprica-Six"</span>
   aka := fmt.Sprintf(<span class="hljs-string">"Number %d"</span>, 6)
@@ -62,7 +85,6 @@ const (
     name, aka)
 }
 </code></pre>
-<p><code>fmt.Printf</code>和<code>fmt.Println</code>傳回所列印出的字數(int)和錯誤(若有的話), <code>fmt.Sprintf</code>傳回字串型別</p>
 <p>那<code>fmt.FPrintf</code>就是利用<code>io.Writer</code>將列印的訊息寫到檔案去。</p>
 <h2 id="packages-and-imports">Packages and imports</h2>
 <p>所有的Go程式都是由<code>packages</code>所組成, 程式從<code>main</code> package開始執行。</p>
