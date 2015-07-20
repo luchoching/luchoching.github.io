@@ -236,7 +236,7 @@ goroutine <span class="hljs-number">1</span> [<span class="hljs-property">runnin
 
 <span class="hljs-keyword">func</span> WordCount(s <span class="hljs-typename">string</span>) <span class="hljs-keyword">map</span>[<span class="hljs-typename">string</span>]<span class="hljs-typename">int</span> {
   words := strings.Fields(s)
-  count := <span class="hljs-keyword">map</span>[<span class="hljs-typename">string</span>]<span class="hljs-typename">int</span>{}
+  count := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-typename">string</span>]<span class="hljs-typename">int</span>{})
   <span class="hljs-keyword">for</span> _, word := <span class="hljs-keyword">range</span> words {
     count[word]++
   }
