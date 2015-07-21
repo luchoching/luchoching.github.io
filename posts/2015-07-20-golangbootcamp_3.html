@@ -175,6 +175,7 @@ goroutine <span class="hljs-number">1</span> [<span class="hljs-property">runnin
   fmt.Printf(<span class="hljs-string">"%#v"</span>, celebs)
 }
 </code></pre>
+<p><strong>注意Golang不保證在map裏面key的順序!</strong></p>
 <p>注意Printf使用<code>%#v</code>會列印出map的語法: </p>
 <pre><code><span class="hljs-built_in">map</span>[AA:<span class="hljs-number">1</span> BB:<span class="hljs-number">3</span> CC:<span class="hljs-number">5</span>]
 <span class="hljs-built_in">map</span>[<span class="hljs-built_in">string</span>]<span class="hljs-keyword">int</span>{<span class="hljs-string">"CC"</span>:<span class="hljs-number">5</span>, <span class="hljs-string">"AA"</span>:<span class="hljs-number">1</span>, <span class="hljs-string">"BB"</span>:<span class="hljs-number">3</span>}

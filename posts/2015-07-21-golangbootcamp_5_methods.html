@@ -1,0 +1,139 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - golangbootcamp_5_methods</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-golang-golangbootcamp-methods">[Golang] golangbootcamp 補遺(五) -- Methods</h1>
+<p>延續閱讀<a href="http://www.golangbootcamp.com/">golang bootcamp</a> 筆記補遺。</p>
+<h2 id="oop-">OOP?</h2>
+<p>技術上來說, Go並不屬於物件導向程式語言, 因為其不支援繼承, 而是用<code>interface</code>的概念取代。</p>
+<p><code>method</code>在物件導向的術語來說, 就是一個物件(object)的實體(instance)的函式(function)。</p>
+<p>Go沒有類別(classes), 然而可以用定義struct型別加上methods來思考。</p>
+<h2 id="code-organization">Code organization</h2>
+<p>建議用以下組織的方式撰寫Go: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> models
+
+<span class="hljs-comment">// list of packages to import</span>
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+)
+
+<span class="hljs-comment">// list of constants</span>
+<span class="hljs-keyword">const</span> (
+  ConstExample = <span class="hljs-string">"const before vars"</span>
+)
+
+<span class="hljs-comment">// list of variables</span>
+<span class="hljs-keyword">var</span> (
+  ExportedVar    = <span class="hljs-number">42</span>
+  nonExportedVar = <span class="hljs-string">"so say we all"</span>
+)
+
+<span class="hljs-comment">// Main type(s) for the file,</span>
+<span class="hljs-comment">// try to keep the lowest amount of structs per file when possible.</span>
+<span class="hljs-keyword">type</span> User <span class="hljs-keyword">struct</span> {
+  FirstName, LastName <span class="hljs-typename">string</span>
+  Location            *UserLocation
+}
+
+<span class="hljs-keyword">type</span> UserLocation <span class="hljs-keyword">struct</span> {
+  City    <span class="hljs-typename">string</span>
+  Country <span class="hljs-typename">string</span>
+}
+
+<span class="hljs-comment">// List of functions</span>
+<span class="hljs-keyword">func</span> NewUser(firstName, lastName <span class="hljs-typename">string</span>) *User {
+  <span class="hljs-keyword">return</span> &amp;User{FirstName: firstName,
+    LastName: lastName,
+    Location: &amp;UserLocation{
+      City:    <span class="hljs-string">"Santa Monica"</span>,
+      Country: <span class="hljs-string">"USA"</span>,
+    },
+  }
+}
+
+<span class="hljs-comment">// List of methods</span>
+<span class="hljs-keyword">func</span> (u *User) Greeting() <span class="hljs-typename">string</span> {
+  <span class="hljs-keyword">return</span> fmt.Sprintf(<span class="hljs-string">"Dear %s %s"</span>, u.FirstName, u.LastName)
+}
+</code></pre>
+<p>當然, 我們可以在任何型別(type)上定義新的method, 而非只有structs。</p>
+<p>但是不能定義從不同package來的型別, 或是在basic type上定義新的method。</p>
+<h2 id="type-aliasing">Type aliasing</h2>
+<p>要在不是屬於我們的型別上加method(例如 basic types), 那就定義一個alias:</p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-built_in">import</span> <span class="hljs-params">(
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"strings"</span>
+)</span>
+
+type MyStr string
+
+func <span class="hljs-params">(s MyStr)</span> Uppercase<span class="hljs-params">()</span> string {
+  return strings.ToUpper<span class="hljs-params">(string<span class="hljs-params">(s)</span>)</span>
+}
+
+func main<span class="hljs-params">()</span> {
+  fmt.Println<span class="hljs-params">(MyStr<span class="hljs-params">(<span class="hljs-string">"test"</span>)</span>.Uppercase<span class="hljs-params">()</span>)</span>
+}
+</code></pre>
+<h2 id="method-receivers">Method receivers</h2>
+<p>Method 可以跟型別(例如<code>User</code>)或是指到該型別的指標(例如<code>*User</code>)做關聯, 那要使用<strong>pointer receiver</strong>的原因, 其中之一為避免每次呼叫method, 都要重新拷貝值(如果value type是大型struct的時候會更有效率), 例如: </p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+)
+
+type <span class="hljs-type">User</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{
+  <span class="hljs-type">FirstName</span>, <span class="hljs-type">LastName</span> string
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-params">(u *User)</span></span> <span class="hljs-type">Greeting</span>() string {
+  <span class="hljs-keyword">return</span> fmt.<span class="hljs-type">Sprintf</span>(<span class="hljs-string">"Dear %s %s"</span>, u.<span class="hljs-type">FirstName</span>, u.<span class="hljs-type">LastName</span>)
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  u := &amp;<span class="hljs-type">User</span>{<span class="hljs-string">"Matt"</span>, <span class="hljs-string">"Aimonetti"</span>}
+  fmt.<span class="hljs-type">Println</span>(u.<span class="hljs-type">Greeting</span>())
+}
+</code></pre>
+<p><code>Greeting</code>如果是使用value type當參數, 意味每次呼叫<code>Greeting()</code>,就會拷貝一次<code>User</code> struct, 改成用指標的話, 就只有拷貝指標,這樣拷貝的成本就比較低廉。</p>
+<p>另外一個理由是, 我們想要藉由method來修改receiver所指向的目標, 例如: </p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"math"</span>
+)
+
+type <span class="hljs-type">Vertex</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{
+  <span class="hljs-type">X</span>, <span class="hljs-type">Y</span> float64
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-params">(v *Vertex)</span></span> <span class="hljs-type">Scale</span>(f float64) {
+  v.<span class="hljs-type">X</span> = v.<span class="hljs-type">X</span> * f
+  v.<span class="hljs-type">Y</span> = v.<span class="hljs-type">Y</span> * f
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-params">(v *Vertex)</span></span> <span class="hljs-type">Abs</span>() float64 {
+  <span class="hljs-keyword">return</span> math.<span class="hljs-type">Sqrt</span>(v.<span class="hljs-type">X</span>*v.<span class="hljs-type">X</span> + v.<span class="hljs-type">Y</span>*v.<span class="hljs-type">Y</span>)
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  v := &amp;<span class="hljs-type">Vertex</span>{<span class="hljs-number">3</span>, <span class="hljs-number">4</span>}
+  v.<span class="hljs-type">Scale</span>(<span class="hljs-number">5</span>)
+  fmt.<span class="hljs-type">Println</span>(v, v.<span class="hljs-type">Abs</span>()) <span class="hljs-comment">//&amp;{15 20} 25</span>
+}
+</code></pre>
+<p>指定struct值的時候, 若省略<code>&amp;</code> 而寫成<code>v := Vertex{3,4}</code>, Go也會自動判斷。不過還是寫上<code>&amp;</code>利於程式碼的閱讀。</p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - golangbootcamp_4_control_flow</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-golang-golangbootcamp-control-flow">[Golang] golangbootcamp 補遺(四) -- Control Flow</h1>
+<p>閱讀<a href="http://www.golangbootcamp.com/">golang bootcamp</a> 筆記補遺。</p>
+<h2 id="if">if</h2>
+<p><code>if</code>跟C或是Java的很像, 除了<code>()</code>不見以外。但是<code>{}</code>必要。</p>
+<pre><code class="lang-go"><span class="hljs-keyword">if</span> answer != <span class="hljs-number">42</span> {
+  <span class="hljs-keyword">return</span> <span class="hljs-string">"Wrong answer"</span>
+}
+</code></pre>
+<p><code>if</code>也像<code>for</code>一樣, 可以在條件式判斷之前, 先執行簡短的述句(statement)。</p>
+<p>如下面例子, 先執行述句(<code>err := foo()</code>), 再來執行條件式判斷(<code>err!=nil</code>):</p>
+<pre><code class="lang-go"><span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> := foo(); <span class="hljs-keyword">err</span>!=nil {
+  panic(<span class="hljs-keyword">err</span>)
+}
+</code></pre>
+<p>在if述句條件式宣告的變數, 其變數範圍就在這個<code>if</code>區塊(block)裏面。</p>
+<h2 id="for">for</h2>
+<p>Go只有為一個一個looping迴圈結構, 就是<code>for</code> loop。</p>
+<p><code>for</code>跟C或Java的長的很像, 除了<code>()</code>不見以外。但是<code>{}</code>必要。</p>
+<p>跟C或Java一樣, pre和post statement都可以為空: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">sum</span> := <span class="hljs-number">1</span>
+<span class="hljs-keyword">for</span> ; <span class="hljs-keyword">sum</span> &lt; <span class="hljs-number">1000</span>; {
+  <span class="hljs-keyword">sum</span> ++
+}
+</code></pre>
+<p>上面例子也等於把<code>for</code> 當作 <code>while</code>, 
+若有使用 <a href="https://golang.org/cmd/gofmt/">gofmt</a>, 都會自動格式化成如下: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">sum</span> := <span class="hljs-number">1</span>
+<span class="hljs-keyword">for</span> <span class="hljs-keyword">sum</span> &lt; <span class="hljs-number">1000</span> {
+ <span class="hljs-keyword">sum</span> ++
+}
+</code></pre>
+<p>利用<code>for</code>做無窮迴圈: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">for</span> {
+  <span class="hljs-regexp">//</span><span class="hljs-keyword">do</span> something <span class="hljs-keyword">in</span> a <span class="hljs-keyword">loop</span> forever
+}
+</code></pre>
+<h2 id="switch">switch</h2>
+<p>通常是拿<code>switch</code>來避掉變得複雜及醜陋的<code>if else</code>述句: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"time"</span>
+)
+
+<span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+  now := time.Now().Unix()
+  mins := now % 2
+  <span class="hljs-keyword">switch</span> mins {
+  <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:
+    fmt.Println(<span class="hljs-string">"even"</span>)
+  <span class="hljs-keyword">case</span> 1:
+    fmt.Println(<span class="hljs-string">"odd"</span>)
+  }
+}
+</code></pre>
+<h3 id="case-statement">case statement</h3>
+<p>switch case 只能比較相同型別</p>
+<p>可以設定<code>default</code> case, </p>
+<p>可以使用運算式, 例如: <code>case 3-2:</code></p>
+<p>可以有多個值, 例如: <code>case 0, 1, 3:</code></p>
+<p>可以使用<code>fallthrough</code>執行符合case以下的所有條件述句: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+
+<span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+  n := 2
+  <span class="hljs-keyword">switch</span> n {
+  <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:
+    fmt.Println(<span class="hljs-string">"is zero"</span>)
+    fallthrough
+  <span class="hljs-keyword">case</span> 1:
+    fmt.Println(<span class="hljs-string">"is &lt;= 1"</span>)
+    fallthrough
+  <span class="hljs-keyword">case</span> 2:
+    fmt.Println(<span class="hljs-string">"is &lt;= 2"</span>)
+    fallthrough
+  <span class="hljs-keyword">case</span> 3:
+    fmt.Println(<span class="hljs-string">"is &lt;= 3"</span>)
+    fallthrough
+  <span class="hljs-keyword">case</span> 4:
+    fmt.Println(<span class="hljs-string">"is &lt;= 4"</span>)
+    fallthrough
+  <span class="hljs-keyword">case</span> 5:
+    fmt.Println(<span class="hljs-string">"is &lt;= 5"</span>)
+    fallthrough
+  <span class="hljs-keyword">default</span>:
+    fmt.Println(<span class="hljs-string">"Try again!"</span>)
+  }
+}
+</code></pre>
+<p>會印出: </p>
+<pre><code><span class="hljs-keyword">is</span> &lt;= <span class="hljs-number">2</span>
+<span class="hljs-keyword">is</span> &lt;= <span class="hljs-number">3</span>
+<span class="hljs-keyword">is</span> &lt;= <span class="hljs-number">4</span>
+<span class="hljs-keyword">is</span> &lt;= <span class="hljs-number">5</span>
+<span class="hljs-keyword">Try</span> again!
+</code></pre><p>利用<code>break</code>跳出switch回圈:</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"time"</span>
+)
+
+<span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+  n := 1
+  <span class="hljs-keyword">switch</span> n {
+  <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:
+    fmt.Println(<span class="hljs-string">"is zero"</span>)
+    fallthrough
+  <span class="hljs-keyword">case</span> 1:
+    fmt.Println(<span class="hljs-string">"&lt;= 1"</span>)
+    fallthrough
+  <span class="hljs-keyword">case</span> 2:
+    fmt.Println(<span class="hljs-string">"&lt;= 2"</span>)
+    fallthrough
+  <span class="hljs-keyword">case</span> 3:
+    fmt.Println(<span class="hljs-string">"&lt;= 3"</span>)
+    <span class="hljs-keyword">if</span> time.Now().Unix()%2 == 0 {
+      fmt.Println(<span class="hljs-string">"un pasito pa lante maria"</span>)
+      <span class="hljs-keyword">break</span>
+    }
+    fallthrough
+  <span class="hljs-keyword">case</span> <span class="hljs-number">4</span>:
+    fmt.Println(<span class="hljs-string">"&lt;= 4"</span>)
+    fallthrough
+  <span class="hljs-keyword">case</span> 5:
+    fmt.Println(<span class="hljs-string">"&lt;= 5"</span>)
+  }
+}
+</code></pre>
+<h2 id="-">練習題</h2>
+<p>50個錢幣要給10個人, 依照每個人母音不同給錢 --&gt; a: 1 coin e: 1 coin i: 2 coins o: 3 coins u: 4 coins</p>
+<p>一個人最多分到10個錢幣</p>
+<p>輸出應該如下: </p>
+<pre><code>map[<span class="hljs-string">Matthew:</span><span class="hljs-number">2</span> <span class="hljs-string">Peter:</span><span class="hljs-number">2</span> <span class="hljs-string">Giana:</span><span class="hljs-number">4</span> <span class="hljs-string">Adriano:</span><span class="hljs-number">7</span> <span class="hljs-string">Elizabeth:</span><span class="hljs-number">5</span> <span class="hljs-string">Sarah:</span><span class="hljs-number">2</span> <span class="hljs-string">Augustus:</span><span class="hljs-number">10</span> <span class="hljs-string">Heidi:</span><span class="hljs-number">5</span> <span class="hljs-string">Emilie:</span><span class="hljs-number">6</span> <span class="hljs-string">Aaron:</span><span class="hljs-number">5</span>]
+Coins <span class="hljs-string">left:</span> <span class="hljs-number">2</span>
+</code></pre><p>先給以下程式碼接著寫: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+
+<span class="hljs-keyword">var</span> (
+  coins = <span class="hljs-number">50</span>
+  users = []<span class="hljs-typename">string</span>{
+    <span class="hljs-string">"Matthew"</span>, <span class="hljs-string">"Sarah"</span>, <span class="hljs-string">"Augustus"</span>, <span class="hljs-string">"Heidi"</span>, <span class="hljs-string">"Emilie"</span>,
+    <span class="hljs-string">"Peter"</span>, <span class="hljs-string">"Giana"</span>, <span class="hljs-string">"Adriano"</span>, <span class="hljs-string">"Aaron"</span>, <span class="hljs-string">"Elizabeth"</span>,
+  }
+  distribution = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-typename">string</span>]<span class="hljs-typename">int</span>, <span class="hljs-built_in">len</span>(users))
+)
+
+<span class="hljs-keyword">func</span> main() {
+  fmt.Println(distribution)
+  fmt.Println(<span class="hljs-string">"Coins left:"</span>, coins)
+}
+</code></pre>
+<h3 id="-">解答</h3>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+
+<span class="hljs-keyword">var</span> (
+  coins = <span class="hljs-number">50</span>
+  users = []<span class="hljs-typename">string</span>{
+    <span class="hljs-string">"Matthew"</span>, <span class="hljs-string">"Sarah"</span>, <span class="hljs-string">"Augustus"</span>, <span class="hljs-string">"Heidi"</span>, <span class="hljs-string">"Emilie"</span>,
+    <span class="hljs-string">"Peter"</span>, <span class="hljs-string">"Giana"</span>, <span class="hljs-string">"Adriano"</span>, <span class="hljs-string">"Aaron"</span>, <span class="hljs-string">"Elizabeth"</span>,
+  }
+  distribution = <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-typename">string</span>]<span class="hljs-typename">int</span>, <span class="hljs-built_in">len</span>(users))
+)
+
+<span class="hljs-keyword">func</span> main() {
+  coinsForUser := <span class="hljs-keyword">func</span>(name <span class="hljs-typename">string</span>) <span class="hljs-typename">int</span> {
+    <span class="hljs-keyword">var</span> total <span class="hljs-typename">int</span>
+    <span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; <span class="hljs-built_in">len</span>(name); i++ {
+      <span class="hljs-keyword">switch</span> <span class="hljs-typename">string</span>(name[i]) {
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"a"</span>, <span class="hljs-string">"A"</span>:
+        total++
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"e"</span>, <span class="hljs-string">"E"</span>:
+        total++
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"i"</span>, <span class="hljs-string">"I"</span>:
+        total = total + <span class="hljs-number">2</span>
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"o"</span>, <span class="hljs-string">"O"</span>:
+        total = total + <span class="hljs-number">3</span>
+      <span class="hljs-keyword">case</span> <span class="hljs-string">"u"</span>, <span class="hljs-string">"U"</span>:
+        total = total + <span class="hljs-number">4</span>
+      }
+    }
+    <span class="hljs-keyword">if</span> total &gt; <span class="hljs-number">10</span> {
+      total = <span class="hljs-number">10</span>
+    }
+    <span class="hljs-keyword">return</span> total
+  }
+
+  <span class="hljs-keyword">for</span> _, name := <span class="hljs-keyword">range</span> users {
+    v := coinsForUser(name)
+    distribution[name] = v
+    coins = coins - v
+  }
+  fmt.Println(distribution)
+  fmt.Println(<span class="hljs-string">"Coins left:"</span>, coins)
+}
+</code></pre>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
