@@ -1,0 +1,160 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - golangbootcamp_6_interface</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-golang-golangbootcamp-interface">[Golang] golangbootcamp 補遺(六) -- Interface</h1>
+<p>閱讀<a href="http://www.golangbootcamp.com/">golang bootcamp</a> 筆記補遺。</p>
+<p><code>interface</code>也是型別(type)的一種, 定義一組methods的集合。</p>
+<p>A value of interface type can hold any value that implements those methods.</p>
+<p>下面例子我們建立一個只接收<code>Namer</code> interface type參數的<code>Greet</code>函式, <code>Namer</code>這個interface型別我們只定義一個method叫作<code>Name()</code>。傳給<code>Greet()</code>的參數只要是任何有定義<code>Name()</code>的值都可以接受:</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+)
+
+<span class="hljs-keyword">type</span> Namer <span class="hljs-keyword">interface</span> {
+  Name() <span class="hljs-typename">string</span>
+}
+
+<span class="hljs-keyword">type</span> User <span class="hljs-keyword">struct</span> {
+  FirstName, LastName <span class="hljs-typename">string</span>
+}
+
+<span class="hljs-keyword">func</span> (u *User) Name() <span class="hljs-typename">string</span> {
+  <span class="hljs-keyword">return</span> fmt.Sprintf(<span class="hljs-string">"%s %s"</span>, u.FirstName, u.LastName)
+}
+
+<span class="hljs-keyword">func</span> Greet(n Namer) <span class="hljs-typename">string</span> {
+  <span class="hljs-keyword">return</span> fmt.Sprintf(<span class="hljs-string">"Dear %s"</span>, n.Name())
+}
+
+<span class="hljs-keyword">func</span> main() {
+  u := &amp;User{<span class="hljs-string">"Matt"</span>, <span class="hljs-string">"Aimonetti"</span>}
+  fmt.Println(Greet(u))
+}
+</code></pre>
+<p><strong>以前我們都依照有哪些種類的data來抽象化我們的設計, 現在interface是依照我們的型別有哪些行為(actions)來做抽象化。</strong></p>
+<p>我們可以繼續定義實作相同interface的新型別, <code>Greet</code>函式一樣可以使用: </p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+)
+
+type <span class="hljs-type">Namer</span> interface {
+  <span class="hljs-type">Name</span>() string
+}
+
+type <span class="hljs-type">User</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{
+  <span class="hljs-type">FirstName</span>, <span class="hljs-type">LastName</span> string
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-params">(u *User)</span></span> <span class="hljs-type">Name</span>() string {
+  <span class="hljs-keyword">return</span> fmt.<span class="hljs-type">Sprintf</span>(<span class="hljs-string">"%s %s"</span>, u.<span class="hljs-type">FirstName</span>, u.<span class="hljs-type">LastName</span>)
+}
+
+type <span class="hljs-type">Customer</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{
+  <span class="hljs-type">Id</span>       int
+  <span class="hljs-type">FullName</span> string
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-params">(<span class="hljs-built_in">c</span> *Customer)</span></span> <span class="hljs-type">Name</span>() string {
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">c</span>.<span class="hljs-type">FullName</span>
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">Greet</span><span class="hljs-params">(n Namer)</span></span> string {
+  <span class="hljs-keyword">return</span> fmt.<span class="hljs-type">Sprintf</span>(<span class="hljs-string">"Dear %s"</span>, n.<span class="hljs-type">Name</span>())
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  u := &amp;<span class="hljs-type">User</span>{<span class="hljs-string">"Matt"</span>, <span class="hljs-string">"Aimonetti"</span>}
+  fmt.<span class="hljs-type">Println</span>(<span class="hljs-type">Greet</span>(u))
+  <span class="hljs-built_in">c</span> := &amp;<span class="hljs-type">Customer</span>{<span class="hljs-number">42</span>, <span class="hljs-string">"Francesc"</span>}
+  fmt.<span class="hljs-type">Println</span>(<span class="hljs-type">Greet</span>(<span class="hljs-built_in">c</span>))
+}
+</code></pre>
+<h2 id="interfaces-are-satisfied-implicitly">Interfaces are satisfied implicitly</h2>
+<p>Implicit interfaces decouple implementation packages from the packages that define the interfaces: neither depends on the other.</p>
+<p>Go也鼓勵更精細的設計interface, 因為我們不需要去找出每個interface的實作, 然後在每個實作標記新的interface的名字。</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"os"</span>
+)
+
+<span class="hljs-keyword">type</span> Reader <span class="hljs-keyword">interface</span> {
+  Read(b []<span class="hljs-typename">byte</span>) (n <span class="hljs-typename">int</span>, err error)
+}
+
+<span class="hljs-keyword">type</span> Writer <span class="hljs-keyword">interface</span> {
+  Write(b []<span class="hljs-typename">byte</span>) (n <span class="hljs-typename">int</span>, err error)
+}
+
+<span class="hljs-keyword">type</span> ReadWriter <span class="hljs-keyword">interface</span> {
+  Reader
+  Writer
+}
+
+<span class="hljs-keyword">func</span> main() {
+  <span class="hljs-keyword">var</span> w Writer
+
+  <span class="hljs-comment">// os.Stdout implements Writer</span>
+  w = os.Stdout
+
+  fmt.Fprintf(w, <span class="hljs-string">"hello, writer\n"</span>)
+}
+</code></pre>
+<p>在<a href="http://golang.org/pkg/io/">io</a> package裏面已經定義了與上例相同的<code>Reader</code>和<code>Writer</code> interface。, </p>
+<h2 id="errors">Errors</h2>
+<p>我們常看到的<code>error</code>型別事實上就是一個interface type。一個<code>error</code>的變數可以是任何實作<code>Error()</code>的值, <code>Error()</code>可以用string的方式描述自己 : </p>
+<pre><code class="lang-go"><span class="hljs-keyword">type</span> error <span class="hljs-interface"><span class="hljs-keyword">interface</span> </span>{
+  <span class="hljs-built_in">Error</span>() <span class="hljs-built_in">string</span>
+}
+</code></pre>
+<p>因此我們可以靠著實作<code>error</code> interface的struct型別, 建立我們自定義的error type: </p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-keyword">import</span> (
+    <span class="hljs-string">"fmt"</span>
+    <span class="hljs-string">"time"</span>
+)
+
+type <span class="hljs-type">MyError</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{
+    <span class="hljs-type">When</span> time.<span class="hljs-type">Time</span>
+    <span class="hljs-type">What</span> string
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-params">(e *MyError)</span></span> <span class="hljs-type">Error</span>() string {
+    <span class="hljs-keyword">return</span> fmt.<span class="hljs-type">Sprintf</span>(<span class="hljs-string">"at %v, %s"</span>,
+        e.<span class="hljs-type">When</span>, e.<span class="hljs-type">What</span>)
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">run</span><span class="hljs-params">()</span></span> error {
+    <span class="hljs-keyword">return</span> &amp;<span class="hljs-type">MyError</span>{
+        time.<span class="hljs-type">Now</span>(),
+        <span class="hljs-string">"it didn't work"</span>,
+    }
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+    <span class="hljs-keyword">if</span> err := run(); err != <span class="hljs-literal">nil</span> {
+        fmt.<span class="hljs-type">Println</span>(err)
+    }
+}
+</code></pre>
+<h2 id="more">More</h2>
+<p><a href="http://blog.golang.org/error-handling-and-go">Go blog - error handling in Go</a></p>
+<p><a href="http://jordanorelli.com/post/32665860244/how-to-use-interfaces-in-go">jodan orelli - how to use interfaces in go</a></p>
+<p><a href="http://research.swtch.com/interfaces">Go Data Structures: Interfaces</a></p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
