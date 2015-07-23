@@ -1,0 +1,152 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - go_template</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-golang-template-">[Golang] Template(一)</h1>
+<p><a href="http://golang.org/pkg/html/template/">http/template/</a> package實作用來生成HTML的data-driven templates, 並且可以防止<a href="https://zh.wikipedia.org/wiki/%E4%BB%A3%E7%A2%BC%E6%B3%A8%E5%85%A5">code injection</a>。</p>
+<p><code>html/template</code>提供跟 <a href="http://golang.org/pkg/text/template/">text/template</a> 相同介面, 不管是不是輸出HTML建議都用這個<code>html/template</code> package。</p>
+<p>以下內容部份整理與翻譯自官網http/template, 以及 <a href="http://gohugo.io/templates/go-templates/">Go Template Primer</a>。</p>
+<h2 id="-">使用樣板</h2>
+<p>例如, 要發給參加婚宴賓客的回覆(<a href="http://golang.org/pkg/text/template/#example_Template">出處</a>):</p>
+<pre><code class="lang-go">package main
+<span class="hljs-keyword">import</span> (
+  <span class="hljs-string">"html/template"</span>
+  <span class="hljs-string">"os"</span>
+)
+<span class="hljs-keyword">const</span> letter = `
+<span class="hljs-type">Dear</span> {<span class="hljs-decorator">{.Name}},
+{{if .Attended}}
+It was a pleasure to see you at the wedding.{{else}}
+It is a shame you couldn't make it to the wedding.{{end}}
+{{with .Gift}}
+Thank you for the lovely {{.}</span>}.
+{{<span class="hljs-keyword">end</span>}}
+<span class="hljs-type">Best</span> wishes,
+<span class="hljs-type">Josie</span>
+`
+
+//<span class="hljs-type">Prepare</span> some data to insert into <span class="hljs-keyword">template</span>
+<span class="hljs-keyword">type</span> <span class="hljs-type">Recipient</span> struct {
+  <span class="hljs-type">Name</span>, <span class="hljs-type">Gift</span> <span class="hljs-type">string</span>
+  <span class="hljs-type">Attended</span>   <span class="hljs-type">bool</span>
+}
+
+func main() {
+  recipients := []<span class="hljs-type">Recipient</span>{
+    {<span class="hljs-string">"Aunt Mildred"</span>, <span class="hljs-string">"bone china tea set"</span>, <span class="hljs-literal">true</span>},
+    {<span class="hljs-string">"Uncle John"</span>, <span class="hljs-string">"moleskin pants"</span>, <span class="hljs-literal">false</span>},
+    {<span class="hljs-string">"Cousin Rodney"</span>, <span class="hljs-string">""</span>, <span class="hljs-literal">false</span>},
+  }
+  //<span class="hljs-type">Create</span> a new <span class="hljs-keyword">template</span> <span class="hljs-keyword">and</span> parse the letter into it.
+  t := <span class="hljs-keyword">template</span>.<span class="hljs-type">Must</span>(<span class="hljs-keyword">template</span>.<span class="hljs-type">New</span>(<span class="hljs-string">"letter"</span>).<span class="hljs-type">Parse</span>(letter))
+  //<span class="hljs-type">Execute</span> the <span class="hljs-keyword">template</span> <span class="hljs-keyword">for</span> each recipient
+  <span class="hljs-keyword">for</span> _, r := <span class="hljs-type">range</span> recipients {
+    err := t.<span class="hljs-type">Execute</span>(os.<span class="hljs-type">Stdout</span>, r)
+    <span class="hljs-keyword">if</span> err != <span class="hljs-keyword">nil</span> {
+      panic(err)
+    } 
+  }
+}
+</code></pre>
+<p>輸出結果: </p>
+<pre><code>Dear Aunt Mildred,
+
+It was a pleasure <span class="hljs-keyword">to</span> see you <span class="hljs-keyword">at</span> <span class="hljs-keyword">the</span> wedding.
+Thank you <span class="hljs-keyword">for</span> <span class="hljs-keyword">the</span> lovely bone china tea <span class="hljs-keyword">set</span>.
+
+Best wishes,
+Josie
+
+Dear Uncle John,
+
+It <span class="hljs-keyword">is</span> a shame you couldn't make <span class="hljs-keyword">it</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">the</span> wedding.
+Thank you <span class="hljs-keyword">for</span> <span class="hljs-keyword">the</span> lovely moleskin pants.
+
+Best wishes,
+Josie
+
+Dear Cousin Rodney,
+
+It <span class="hljs-keyword">is</span> a shame you couldn't make <span class="hljs-keyword">it</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">the</span> wedding.
+
+Best wishes,
+Josie
+</code></pre><p>上述例子步驟分述如下。</p>
+<h3 id="-">產生樣板字串</h3>
+<p>用來生成樣板用的: </p>
+<pre><code class="lang-go"><span class="xml">const letter = `
+Dear </span><span class="hljs-expression">{{<span class="hljs-variable">.Name</span>}}</span><span class="xml">,
+</span><span class="hljs-expression">{{<span class="hljs-variable"><span class="hljs-keyword">if</span></span> <span class="hljs-variable">.Attended</span>}}</span><span class="xml">
+It was a pleasure to see you at the wedding.</span><span class="hljs-expression">{{<span class="hljs-variable"><span class="hljs-keyword">else</span></span>}}</span><span class="xml">
+It is a shame you couldn't make it to the wedding.</span><span class="hljs-expression">{{<span class="hljs-variable">end</span>}}</span><span class="xml">
+</span><span class="hljs-expression">{{<span class="hljs-variable"><span class="hljs-keyword">with</span></span> <span class="hljs-variable">.Gift</span>}}</span><span class="xml">
+Thank you for the lovely </span><span class="hljs-expression">{{<span class="hljs-variable">.</span>}}</span><span class="xml">.
+</span><span class="hljs-expression">{{<span class="hljs-variable">end</span>}}</span><span class="xml">
+Best wishes,
+Josie
+`</span>
+</code></pre>
+<p>有用過<a href="https://en.wikipedia.org/wiki/Comparison_of_web_template_engines">樣板引擎</a>的朋友應該都會很快就能適應(<a href="http://golang.org/pkg/text/template/#pkg-overview">語法參考</a>)</p>
+<p>變數和函式都用<code>{{}}</code>。</p>
+<p>注意使用<code>Actions</code>像是<code>{{if}}</code>等述句單獨放一行的話,就會獨占一行空間。</p>
+<h3 id="-struct-">要塞入樣板的資料結構(struct)</h3>
+<p>Go的樣板只接受struct資料餵入: </p>
+<pre><code class="lang-go"><span class="hljs-typedef"><span class="hljs-keyword">type</span> <span class="hljs-type">Recipient</span> struct <span class="hljs-container">{
+  <span class="hljs-type">Name</span>, <span class="hljs-type">Gift</span> <span class="hljs-title">string</span>
+  <span class="hljs-type">Attended</span>   <span class="hljs-title">bool</span>
+}</span></span>
+</code></pre>
+<h3 id="-">準備我們要塞入的資料</h3>
+<pre><code class="lang-go"><span class="hljs-string">recipients :</span>= []Recipient{
+  {<span class="hljs-string">"Aunt Mildred"</span>, <span class="hljs-string">"bone china tea set"</span>, <span class="hljs-literal">true</span>},
+  {<span class="hljs-string">"Uncle John"</span>, <span class="hljs-string">"moleskin pants"</span>, <span class="hljs-literal">false</span>},
+  {<span class="hljs-string">"Cousin Rodney"</span>, <span class="hljs-string">""</span>, <span class="hljs-literal">false</span>},
+}
+</code></pre>
+<h3 id="-">產生樣板</h3>
+<p>利用樣板字串產生一個樣板,並且幫這個樣板取名字</p>
+<pre><code class="lang-go">t := <span class="hljs-keyword">template</span>.<span class="hljs-type">Must</span>(<span class="hljs-keyword">template</span>.<span class="hljs-type">New</span>(<span class="hljs-string">"letter"</span>).<span class="hljs-type">Parse</span>(letter))
+</code></pre>
+<p>如果樣板字串是來自於外部檔案, 那麼就利用<code>template.ParseFiles()</code>:</p>
+<pre><code class="lang-go">t := <span class="hljs-keyword">template</span>.<span class="hljs-type">Must</span>(<span class="hljs-keyword">template</span>.<span class="hljs-type">ParseFiles</span>(<span class="hljs-string">"tmpl/Letter.html"</span>))
+</code></pre>
+<h3 id="-">套用樣板</h3>
+<p>將準備好的資料套用樣板, 輸出最後結果</p>
+<pre><code class="lang-go"><span class="hljs-keyword">for</span> _, r := <span class="hljs-keyword">range</span> recipients {
+  <span class="hljs-keyword">err</span> := t.Execute(os.Stdout, r)
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> != nil {
+    panic(<span class="hljs-keyword">err</span>)
+  } 
+}
+</code></pre>
+<h2 id="-iteration">樣板語法 -- iteration</h2>
+<p>跟Go一樣, 用超多<code>range</code>來遍歷各個資料結構像是map, array或是slice, </p>
+<p>using context: </p>
+<pre><code class="lang-go">{{ range<span class="hljs-instruction"> array </span>}}
+  {{ . }}
+{{ end }}
+</code></pre>
+<p>或是宣告變數名稱: </p>
+<pre><code class="lang-go"><span class="xml"></span><span class="hljs-expression">{{<span class="hljs-variable">range</span> $<span class="hljs-variable">element</span> := <span class="hljs-variable">array</span>}}</span><span class="xml">
+  </span><span class="hljs-expression">{{ $<span class="hljs-variable">element</span> }}</span><span class="xml">
+</span><span class="hljs-expression">{{ <span class="hljs-variable">end</span> }}</span><span class="xml"></span>
+</code></pre>
+<p>多宣告index: </p>
+<pre><code class="lang-go"><span class="xml"></span><span class="hljs-expression">{{<span class="hljs-variable">range</span> $<span class="hljs-variable">index</span>, $<span class="hljs-variable">element</span> := <span class="hljs-variable">array</span>}}</span><span class="xml">
+  </span><span class="hljs-expression">{{ $<span class="hljs-variable">index</span> }}</span><span class="xml">
+  </span><span class="hljs-expression">{{ $<span class="hljs-variable">element</span> }}</span><span class="xml">
+</span><span class="hljs-expression">{{ <span class="hljs-variable">end</span> }}</span><span class="xml"></span>
+</code></pre>
+<h2 id="more">More</h2>
+<p><a href="http://stackoverflow.com/questions/18175630/go-template-executetemplate-include-html">go template excute template include html</a></p>
+<p><a href="http://gohugo.io/templates/go-templates/">Go Template Primer</a></p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
