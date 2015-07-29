@@ -1,0 +1,171 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - golang_install_workspace_gopath</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-golang-install-workspace-gopath">[Golang] Install, workspace, GOPATH</h1>
+<p>Go更新不頻繁, 好像沒啥必要用<a href="https://github.com/moovweb/gvm">gvm</a>這樣的工具了, 回頭整理一下<a href="https://golang.org/doc/install">Go- Getting started</a> 和 <a href="https://golang.org/doc/code.html">Go - How to Write Go Code</a>。</p>
+<h2 id="-">安裝</h2>
+<p>環境是 ubuntu 14.04 LTS , </p>
+<p><a href="https://golang.org/dl/">下載</a></p>
+<p>解壓縮: </p>
+<pre><code class="lang-bash">$ sudo tar -C /usr/local -xzf go<span class="hljs-variable">$VERSION</span>.<span class="hljs-variable">$OS</span>-<span class="hljs-variable">$ARCH</span><span class="hljs-class">.tar</span><span class="hljs-class">.gz</span>
+</code></pre>
+<p>在<code>$HOME/.profile</code>加入: </p>
+<pre><code class="lang-bash">export <span class="hljs-constant">PATH=</span><span class="hljs-variable">$PATH</span><span class="hljs-symbol">:/usr/local/go/bin</span>
+</code></pre>
+<p>察看安裝結果: </p>
+<pre><code class="lang-bash">$ <span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span>
+<span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span> go1.<span class="hljs-number">4.2</span> linux/amd64
+</code></pre>
+<h2 id="workspaces">Workspaces</h2>
+<p>Go的程式碼必須放置在<em>workspace</em>(工作區域)內。 </p>
+<p>一個workspace就是一個目錄, 包含以下子目錄: </p>
+<ul>
+<li><code>src</code>: Go source code, 就是一堆go package 檔案。 </li>
+<li><code>pkg</code>: 包含package objects </li>
+<li><code>bin</code>: 執行檔(可執行的指令)</li>
+</ul>
+<p><code>go</code>工具會build(編譯) source package並且把邊好的binary安裝到<code>pkg</code>和<code>bin</code>目錄。</p>
+<p><code>src</code>的子目錄會包括多個version control repositories(像是 Git或是 Mercurial)。</p>
+<p>範例: </p>
+<pre><code>bin/
+  hello                       # <span class="hljs-keyword">command</span> <span class="hljs-built_in">executable</span>
+  outyet                      # <span class="hljs-keyword">command</span> <span class="hljs-built_in">executable</span>
+pkg/
+  linux_amd64/
+    github.<span class="hljs-keyword">com</span>/golang/example/
+      stringutil.<span class="hljs-keyword">a</span>            # package object
+src/
+  github.<span class="hljs-keyword">com</span>/golang/example/
+    .git/                     # Git repository metadata
+    hello/
+      hello.<span class="hljs-keyword">go</span>                # <span class="hljs-keyword">command</span> <span class="hljs-keyword">source</span>
+    outyet/
+      main.<span class="hljs-keyword">go</span>                 # <span class="hljs-keyword">command</span> <span class="hljs-keyword">source</span>
+      main_test.<span class="hljs-keyword">go</span>            # test <span class="hljs-keyword">source</span>
+    stringutil/
+      <span class="hljs-built_in">reverse</span>.<span class="hljs-keyword">go</span>              # package <span class="hljs-keyword">source</span>
+      reverse_test.<span class="hljs-keyword">go</span>         # test <span class="hljs-keyword">source</span>
+</code></pre><p>這個workspace包含一個repository(example), 這個repository由兩個commands(hello, outyet)以及一個library(stringutil)所組成。</p>
+<p><em>Commands</em> 和 <em>libraries</em> 由不同種類的source packages所編譯(build)而成 <a href="https://golang.org/doc/code.html#PackageNames">說明</a></p>
+<h2 id="gopath-">GOPATH 環境變數</h2>
+<p><code>GOPATH</code>環境變數用來指定我們的workspace所在位置。這應該是唯一撰寫Go程式碼需要設定的環境變數,注意不能跟我們Go的安裝路徑相同: </p>
+<pre><code><span class="hljs-variable">$ </span>mkdir <span class="hljs-variable">$HOME</span>/go
+</code></pre><p>在<code>$HOME/.profile</code>中加入: </p>
+<pre><code><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$GOPATH</span>/bin
+</code></pre><h2 id="package-paths">Package paths</h2>
+<p>避免命名衝突, 建議使用像是github帳號當作base path, 例如 <code>github.com/user</code>。</p>
+<pre><code class="lang-bash">$ mkdir -<span class="hljs-tag">p</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/user
+</code></pre>
+<h2 id="your-first-program-command-source-">Your first program (Command source)</h2>
+<p>要編譯並執行一個簡單的程式, 那首先就是選一個package path, 那我們就在我們的base path下面建立我們的package path, 例如: </p>
+<pre><code class="lang-bash"><span class="hljs-variable">$ </span>mkdir <span class="hljs-variable">$GOPATH</span>/src/github.com/user/hello
+</code></pre>
+<p><code>hello.go</code>: </p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  fmt.<span class="hljs-type">Printf</span>(<span class="hljs-string">"Hello, world.\n"</span>)
+}
+</code></pre>
+<p>使用<code>go install</code>來編譯並安裝: </p>
+<pre><code class="lang-go">go <span class="hljs-operator"><span class="hljs-keyword">install</span> github.com/<span class="hljs-keyword">user</span>/hello</span>
+</code></pre>
+<p>或是到hello目錄下, 直接執行<code>go install</code>, 如果有錯誤會印出錯誤, 順利執行就沒有任何顯示。</p>
+<p>執行<code>go install</code>後產生可執行的binary檔案到worksapce的<code>bin</code>目錄下：</p>
+<pre><code class="lang-bash"><span class="hljs-variable">$ </span><span class="hljs-variable">$GOPATH</span>/bin/hello
+<span class="hljs-constant">Hello,</span> world.
+</code></pre>
+<h2 id="your-first-library">Your first library</h2>
+<p>步驟跟寫一般程式一樣, 先選擇一個package path(這裡選擇<code>github.com/user/stringutil</code>), 再建立該package目錄: </p>
+<pre><code class="lang-bash"><span class="hljs-variable">$ </span>mkdir <span class="hljs-variable">$GOPATH</span>/src/github.com/user/stringutil
+</code></pre>
+<p>在目錄下<code>reverse.go</code>:</p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> stringutil
+
+<span class="hljs-keyword">func</span> Reverse(s <span class="hljs-typename">string</span>) <span class="hljs-typename">string</span> {
+  r := []<span class="hljs-typename">rune</span>(s)
+  <span class="hljs-keyword">for</span> i, j := <span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(r)-<span class="hljs-number">1</span>; i &lt; <span class="hljs-built_in">len</span>(r)/<span class="hljs-number">2</span>; i, j = i+<span class="hljs-number">1</span>, j-<span class="hljs-number">1</span> {
+    r[i], r[j] = r[j], r[i]
+  }
+  <span class="hljs-keyword">return</span> <span class="hljs-typename">string</span>(r)
+}
+</code></pre>
+<p>利用<code>go build</code>測試並且編譯我們的package: </p>
+<pre><code class="lang-go">$ <span class="hljs-keyword">go</span> build github.<span class="hljs-keyword">com</span>/user/stringutil
+</code></pre>
+<p>再來修改我們的<code>hello.go</code>看是否可以順利使用我們新建的library: </p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-built_in">import</span> <span class="hljs-params">(
+  <span class="hljs-string">"fmt"</span>
+  <span class="hljs-string">"github.com/user/stringutil"</span>
+)</span>
+
+func main<span class="hljs-params">()</span> {
+  fmt.Printf<span class="hljs-params">(stringutil.Reverse<span class="hljs-params">(<span class="hljs-string">"!oG ,olleH"</span>)</span>)</span>
+}
+</code></pre>
+<p><code>go install</code>會同時安裝其相關套件, 所以重新<code>go install  github.com/user/hello</code>也會安裝<code>stringutil</code> package。</p>
+<p>檢查目錄結構會包含: </p>
+<pre><code>bin/
+  hello                 # <span class="hljs-keyword">command</span> <span class="hljs-built_in">executable</span>
+pkg/
+  linux_amd64/          # this will reflect your OS <span class="hljs-built_in">and</span> architecture
+    github.<span class="hljs-keyword">com</span>/user/
+      stringutil.<span class="hljs-keyword">a</span>      # package object
+src/
+  github.<span class="hljs-keyword">com</span>/user/
+    hello/
+      hello.<span class="hljs-keyword">go</span>          # <span class="hljs-keyword">command</span> <span class="hljs-keyword">source</span>
+    stringutil/
+      <span class="hljs-built_in">reverse</span>.<span class="hljs-keyword">go</span>        # package <span class="hljs-keyword">source</span>
+</code></pre><h2 id="testing">Testing</h2>
+<p>Go 提供了 <a href="http://golang.org/pkg/testing/">testing</a> package 和 <code>go test</code>工具。</p>
+<p>要撰寫測試, 就是建立一個名稱結尾為<code>_test.go</code>的檔案, 該檔案裏面要包含一個<code>TestXXX(t *testing.T)</code>的函式。</p>
+<p>例如建立<code>$GOPATH/src/github.com/user/stringutil/reverse_test.go</code>: </p>
+<pre><code class="lang-go">package stringutil
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">"testing"</span>
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">TestReverse</span><span class="hljs-params">(t *testing.T)</span></span> {
+  cases := []<span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{
+    <span class="hljs-keyword">in</span>, want string
+  }{
+    {<span class="hljs-string">"Hello, world"</span>, <span class="hljs-string">"dlrow ,olleH"</span>},
+    {<span class="hljs-string">"Hello, 世界"</span>, <span class="hljs-string">"界世 ,olleH"</span>},
+    {<span class="hljs-string">""</span>, <span class="hljs-string">""</span>},
+  }
+  <span class="hljs-keyword">for</span> <span class="hljs-number">_</span>, <span class="hljs-built_in">c</span> := range cases {
+    got := <span class="hljs-type">Reverse</span>(<span class="hljs-built_in">c</span>.<span class="hljs-keyword">in</span>)
+    <span class="hljs-keyword">if</span> got != <span class="hljs-built_in">c</span>.want {
+      t.<span class="hljs-type">Errorf</span>(<span class="hljs-string">"Reverse(%q) == %q, want %q"</span>, <span class="hljs-built_in">c</span>.<span class="hljs-keyword">in</span>, got, <span class="hljs-built_in">c</span>.want)
+    }
+  }
+}
+</code></pre>
+<p>執行測試: </p>
+<pre><code>$ <span class="hljs-keyword">go</span> test github.<span class="hljs-keyword">com</span>/user/stringutil
+ok    github.<span class="hljs-keyword">com</span>/user/stringutil <span class="hljs-number">0.165</span><span class="hljs-keyword">s</span>
+</code></pre><h2 id="remote-packages">remote packages</h2>
+<p>使用 <code>go get</code>獲取遠端的package來用: </p>
+<pre><code><span class="hljs-variable">$ </span>go get github.com/golang/example/hello
+<span class="hljs-variable">$ </span><span class="hljs-variable">$GOPATH</span>/bin/hello
+<span class="hljs-constant">Hello,</span> <span class="hljs-constant">Go </span>examples!
+</code></pre><p>注意<code>go get</code>每次都會抓最新的版本..</p>
+<h2 id="more">More</h2>
+<p><a href="https://golang.org/doc/install">Go- Getting started</a></p>
+<p><a href="https://golang.org/doc/code.html">Go - How to Write Go Code</a></p>
+<p><a href="https://talks.golang.org/2014/organizeio.slide#1">Organizing Go code - David CrawsShaw 2014</a></p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>

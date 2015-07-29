@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - golangbootcamp_2</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-golang-golangbootcamp-">[Golang] golangbootcamp 補遺(二)</h1>
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - golangbootcamp_2</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-golang-golangbootcamp-structs">[Golang] golangbootcamp 補遺(二) -- structs</h1>
 <p>閱讀<a href="http://www.golangbootcamp.com/">golang bootcamp</a> 筆記補遺。</p>
 <h2 id="structs">Structs</h2>
 <p>如果有物件導向經驗, 可以想像struct像是輕量化的class, 有composition(組合)但是沒有inheritance(繼承)。</p>
@@ -20,6 +20,17 @@ var (
 
 func main() {
   <span class="hljs-keyword">fmt</span>.Println(p, q, r, s)
+}
+</code></pre>
+<p>一口氣宣告與賦值的寫法: </p>
+<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>{
+  cases := []<span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{
+    <span class="hljs-keyword">in</span>, want string
+  }{
+    {<span class="hljs-string">"Hello, world"</span>, <span class="hljs-string">"dlrow ,olleH"</span>},
+    {<span class="hljs-string">"Hello, 世界"</span>, <span class="hljs-string">"界世 ,olleH"</span>},
+    {<span class="hljs-string">""</span>, <span class="hljs-string">""</span>},
+  }
 }
 </code></pre>
 <h2 id="composition-inheritance">Composition --&gt; inheritance</h2>

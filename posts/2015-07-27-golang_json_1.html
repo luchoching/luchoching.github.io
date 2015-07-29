@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - golang_json_1</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-golang-json-">[Golang] JSON (一)</h1>
+<p>翻譯與筆記<a href="http://blog.golang.org/json-and-go">json and go</a>。</p>
+<pre><code class="lang-go"><span class="hljs-keyword">import</span> <span class="hljs-string">"encoding/json"</span>
+</code></pre>
+<h2 id="encoding">encoding</h2>
+<p>使用<code>Marshal</code> function: </p>
+<pre><code class="lang-go">func Marshal(v <span class="hljs-class"><span class="hljs-keyword">interface</span></span>{}) ([]<span class="hljs-keyword">byte</span>, <span class="hljs-keyword">error</span>)
+</code></pre>
+<p>例如: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main                                                                                    
+<span class="hljs-keyword">import</span> (                                                                                        
+  <span class="hljs-string">"encoding/json"</span>                                                                               
+)                                                                                               
+<span class="hljs-keyword">type</span> Message <span class="hljs-keyword">struct</span> {                                                                           
+  Name, Body <span class="hljs-typename">string</span>                                                                             
+  Time       <span class="hljs-typename">int64</span>                                                                              
+}                                                                                               
+<span class="hljs-keyword">func</span> main() {                                                                                   
+  m := Message{<span class="hljs-string">"Alice"</span>, <span class="hljs-string">"Hello"</span>, <span class="hljs-number">1294706395881547000</span>}                                           
+  b, err := json.Marshal(m)                                                                     
+  <span class="hljs-keyword">if</span> err != <span class="hljs-constant">nil</span> {                                                                               
+    <span class="hljs-built_in">panic</span>(err)                                                                                  
+  }                                                                                             
+}
+</code></pre>
+<p>b 為<code>[]byte</code>:  </p>
+<pre><code>[]<span class="hljs-function"><span class="hljs-title">byte</span><span class="hljs-params">(`{<span class="hljs-string">"Name"</span>:<span class="hljs-string">"Alice"</span>,<span class="hljs-string">"Body"</span>:<span class="hljs-string">"Hello"</span>,<span class="hljs-string">"Time"</span>:<span class="hljs-number">1294706395881547000</span>}`)</span></span>
+</code></pre><p>只有可以被表示為有效的JSON的資料結構可以被編碼: </p>
+<ul>
+<li>JSON object 只支援<code>string</code>當作key, 所以要編碼Go的<code>map</code>型別的時候, map必須是<code>map[string]T</code>才行。</li>
+<li><code>Channel</code>, <code>complex</code>, 以及<code>function</code> 型別不能被編碼。</li>
+<li>Cyclic data structures are not supported; they will cause Marshal to go into an infinite loop.</li>
+<li>Pointers will be encoded as the values they point to (or &#39;null&#39; if the pointer is nil).
+The json package only accesses the exported fields of struct types (those that begin with an uppercase letter). Therefore only the the exported fields of a struct will be present in the JSON output.</li>
+</ul>
+<h2 id="decoding">Decoding</h2>
+<p>使用<code>Unmarshal</code> function: </p>
+<pre><code class="lang-go">func Unmarshal(data []<span class="hljs-keyword">byte</span>, v <span class="hljs-class"><span class="hljs-keyword">interface</span></span>{}) <span class="hljs-keyword">error</span>
+</code></pre>
+<p>先建立一個struct可以來擺放我們解碼後的資料, 像是<code>var m Message</code>:</p>
+<pre><code class="lang-go">package main                                                                                    
+
+import (                                                                                        
+  <span class="hljs-string">"encoding/json"</span>                                                                               
+  <span class="hljs-string">"fmt"</span>                                                                                         
+)                                                                                               
+
+<span class="hljs-keyword">type</span> Message struct {                                                                           
+  Name, Body string                                                                             
+  Time       int64                                                                              
+}                                                                                               
+
+func main() {                                                                                   
+  b := []byte(`{<span class="hljs-string">"Name"</span>:<span class="hljs-string">"Alice"</span>,<span class="hljs-string">"Body"</span>:<span class="hljs-string">"Hello"</span>,<span class="hljs-string">"Time"</span>:1294706395881547000}`)                     
+  <span class="hljs-keyword">var</span> <span class="hljs-keyword">m</span> Message                                                                                 
+
+  <span class="hljs-keyword">err</span> := json.Unmarshal(b, &amp;<span class="hljs-keyword">m</span>)                                                                  
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> != nil {                                                                               
+    panic(<span class="hljs-keyword">err</span>)                                                                                  
+  }                                                                                             
+  fmt.Printf(<span class="hljs-string">"%+v"</span>, <span class="hljs-keyword">m</span>)                                                                          
+
+}
+</code></pre>
+<p>如果<code>b</code>包含了正確的JSON格式, 並且符合<code>m</code>結構, 結果就會存在<code>m</code>裏面: </p>
+<pre><code class="lang-go">{<span class="hljs-attribute">Name</span>:Alice <span class="hljs-attribute">Body</span>:Hello <span class="hljs-attribute">Time</span>:<span class="hljs-number">1294706395881547000</span>}
+</code></pre>
+<p>如果<code>b</code>的內容不完全符合我們要塞進去的struct格式:</p>
+<pre><code class="lang-go"><span class="hljs-tag">b</span> := []<span class="hljs-function"><span class="hljs-title">byte</span><span class="hljs-params">(`{<span class="hljs-string">"Name"</span>:<span class="hljs-string">"Bob"</span>,<span class="hljs-string">"Food"</span>:<span class="hljs-string">"Pickle"</span>}`)</span></span>
+</code></pre>
+<p>那麼得到結果為: </p>
+<pre><code class="lang-go">{<span class="hljs-attribute">Name</span>:Bob <span class="hljs-attribute">Body</span>: <span class="hljs-attribute">Time</span>:<span class="hljs-number">0</span>}
+</code></pre>
+<p>Go只會塞入符合struct欄位的資料, 像是<code>Food</code>就會忽略掉。</p>
+<p>如果你只想要<strong>擷取來源JSON的某部份資料</strong>(特別是很大的JSON內容)的時候, 將會很有用。</p>
+<h2 id="-json-interface-">當無法知道來源JSON資料結構的時候? --&gt; interface{}</h2>
+<p>空的interface <code>interface{}</code>可以當作是一般性的container type, 利用<code>type assertion</code>來轉成特定的型別: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main                                                                                    
+
+<span class="hljs-keyword">import</span> (                                                                                        
+  <span class="hljs-string">"fmt"</span>                                                                                         
+  <span class="hljs-string">"math"</span>                                                                                        
+)                                                                                               
+
+<span class="hljs-keyword">func</span> main() {                                                                                   
+  <span class="hljs-keyword">var</span> i <span class="hljs-keyword">interface</span>{}                                                                             
+  i = <span class="hljs-string">"a string"</span>                                                                                
+  i = <span class="hljs-number">2011</span>                                                                                      
+  i = <span class="hljs-number">2.777</span>                                                                                     
+
+  r := i.(<span class="hljs-typename">float64</span>)                                                                              
+  fmt.Println(<span class="hljs-string">"the circle's area"</span>, math.Pi*r*r)                                                 
+}
+</code></pre>
+<p>如果不知道來源JSON轉過來的具體型別, 利用type switch來判斷: </p>
+<pre><code class="lang-go"><span class="hljs-keyword">switch</span> <span class="hljs-string">v :</span>= i.(type) {
+<span class="hljs-keyword">case</span> <span class="hljs-string">int:</span>
+    fmt.Println(<span class="hljs-string">"twice i is"</span>, v*<span class="hljs-number">2</span>)
+<span class="hljs-keyword">case</span> <span class="hljs-string">float64:</span>
+    fmt.Println(<span class="hljs-string">"the reciprocal of i is"</span>, <span class="hljs-number">1</span>/v)
+<span class="hljs-keyword">case</span> <span class="hljs-string">string:</span>
+    <span class="hljs-string">h :</span>= len(v) / <span class="hljs-number">2</span>
+    fmt.Println(<span class="hljs-string">"i swapped by halves is"</span>, v[<span class="hljs-string">h:</span>]+v[:h])
+<span class="hljs-string">default:</span>
+    <span class="hljs-comment">// i isn't one of the types above</span>
+}
+</code></pre>
+<p>json packages 使用 <code>map[string]interface{}</code>來儲存。</p>
+<h2 id="more">More</h2>
+<p><a href="http://blog.golang.org/json-and-go">json and go</a></p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
