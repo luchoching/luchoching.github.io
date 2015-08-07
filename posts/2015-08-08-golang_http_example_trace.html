@@ -1,0 +1,280 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - golang_http_example_trace</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-golang-http-example-code-tracing">[Golang] HTTP example --&gt; code tracing</h1>
+<p>練習追蹤golang source, 順便熟悉一下golang語法, 以及探索 <code>net/http</code>函式庫。</p>
+<h2 id="example">Example</h2>
+<p>來自於 <a href="https://golang.org/doc/articles/wiki/#tmp_3">golang wiki</a>:</p>
+<pre><code class="lang-go">package main
+
+<span class="hljs-keyword">import</span> (
+    <span class="hljs-string">"fmt"</span>
+    <span class="hljs-string">"net/http"</span>
+)
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">handler</span><span class="hljs-params">(w http.ResponseWriter, r *http.Request)</span></span> {
+    fmt.<span class="hljs-type">Fprintf</span>(w, <span class="hljs-string">"Hi there, I love %s!"</span>, r.<span class="hljs-type">URL</span>.<span class="hljs-type">Path</span>[<span class="hljs-number">1</span>:])
+}
+
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+    http.<span class="hljs-type">HandleFunc</span>(<span class="hljs-string">"/"</span>, handler)
+    http.<span class="hljs-type">ListenAndServe</span>(<span class="hljs-string">":8080"</span>, <span class="hljs-literal">nil</span>)
+}
+</code></pre>
+<p>執行結果: </p>
+<pre><code class="lang-bash"><span class="hljs-variable">$ </span>curl <span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/localhost:8080/monkeys</span>
+<span class="hljs-constant">Hi </span>there, <span class="hljs-constant">I </span>love monkeys!
+</code></pre>
+<p>看來我們程式的動作包括: </p>
+<ul>
+<li>import <code>net/http</code> package。</li>
+<li>定義<code>handler</code> function。函式本身引入兩個參數: <code>http.ResponseWriter</code>和指向一個<code>http.Request</code>的指標。</li>
+<li>在<code>main()</code>function, 我們使用<code>http.HandleFunc(&lt;path&gt;, &lt;function&gt;)</code>來將所有連到<code>/</code>的requests導到我們的<code>handler</code> function。</li>
+<li>最後, 我們啟動一個在<code>localhost:8080</code>的http server。這個server並未指定任何handler(使用預設的<code>DefaultServeMux</code>當作我們的multiplexer)</li>
+</ul>
+<h2 id="http-responsewriter">http.ResponseWriter</h2>
+<p><code>handler</code> function要傳入兩個參數, 其中一個是 <a href="http://golang.org/pkg/net/http/#ResponseWriter">http.ResponseWriter</a> 其source code如下:</p>
+<pre><code class="lang-go">//A ResponseWriter interface is used by an HTTP <span class="hljs-operator"><span class="hljs-keyword">handler</span> <span class="hljs-keyword">to</span> contruct an HTTP response.
+type ResponseWriter interface {
+  // Header <span class="hljs-keyword">returns</span> the header map that will be sent <span class="hljs-keyword">by</span> WriteHeader.
+  // Changing the header <span class="hljs-keyword">after</span> a <span class="hljs-keyword">call</span> <span class="hljs-keyword">to</span> WriteHeader (<span class="hljs-keyword">or</span> <span class="hljs-keyword">Write</span>) has
+  // <span class="hljs-keyword">no</span> effect.
+  Header() Header
+
+  // <span class="hljs-keyword">Write</span> writes the <span class="hljs-keyword">data</span> <span class="hljs-keyword">to</span> the <span class="hljs-keyword">connection</span> <span class="hljs-keyword">as</span> part <span class="hljs-keyword">of</span> an HTTP reply.
+  // <span class="hljs-keyword">If</span> WriteHeader has <span class="hljs-keyword">not</span> yet been called, <span class="hljs-keyword">Write</span> calls WriteHeader(http.StatusOK)
+  // <span class="hljs-keyword">before</span> writing the <span class="hljs-keyword">data</span>.  <span class="hljs-keyword">If</span> the Header does <span class="hljs-keyword">not</span> contain a
+  // Content-Type line, <span class="hljs-keyword">Write</span> adds a Content-Type <span class="hljs-keyword">set</span> <span class="hljs-keyword">to</span> the result <span class="hljs-keyword">of</span> passing
+  // the initial <span class="hljs-number">512</span> bytes <span class="hljs-keyword">of</span> written <span class="hljs-keyword">data</span> <span class="hljs-keyword">to</span> DetectContentType.
+  <span class="hljs-keyword">Write</span>([]byte) (<span class="hljs-built_in">int</span>, error)
+
+  // WriteHeader sends an HTTP response header <span class="hljs-keyword">with</span> <span class="hljs-keyword">status</span> code.
+  // <span class="hljs-keyword">If</span> WriteHeader <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> called explicitly, the <span class="hljs-keyword">first</span> <span class="hljs-keyword">call</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">Write</span>
+  // will <span class="hljs-keyword">trigger</span> an implicit WriteHeader(http.StatusOK).
+  // Thus explicit calls <span class="hljs-keyword">to</span> WriteHeader <span class="hljs-keyword">are</span> mainly used <span class="hljs-keyword">to</span>
+  // send error codes.
+  WriteHeader(<span class="hljs-built_in">int</span>)
+}</span>
+</code></pre>
+<p><code>http.ResponseWriter</code>為一個interface, 用在HTTP handler裏面, 用來建立一個HTTP respose。</p>
+<p>這個interface定義了3個行為： </p>
+<ul>
+<li><code>Write</code>： 可以寫入資料到connection, 當作HTTP reply的一部份</li>
+<li><code>WriteHeader</code>: 傳送一個包含status code的HTTP response header</li>
+<li><code>Header</code>: 傳回一個header map給<code>WriterHeader</code>傳送</li>
+</ul>
+<p>如果沒有明確呼叫<code>WriteHeader</code>, <code>Write</code>會在寫入資料前自動呼叫<code>WriteHeader(http.StatusOK)</code>, 如果<code>Header</code>沒有包含<code>Content-Type</code>, <code>Write</code>會依照寫入資料的前512bytes來判斷content-type。</p>
+<h3 id="json-handler">JSON handler</h3>
+<p>理解<code>http.ResponseWriter</code> interface type後, 我們可以舉一反三, 將原來handler改寫, 讓其傳回JSON: </p>
+<pre><code class="lang-go"><span class="hljs-built_in">import</span> <span class="hljs-string">"json"</span>
+
+func handler<span class="hljs-params">(w http.ResponseWriter, r *http.Request)</span> {
+  w.Header<span class="hljs-params">()</span>.Set<span class="hljs-params">(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"application/json; charset=utf-8"</span>)</span> 
+
+  myItems := []string{<span class="hljs-string">"item1"</span>, <span class="hljs-string">"item2"</span>, <span class="hljs-string">"item3"</span>}
+  a, _ := json.Marshal<span class="hljs-params">(myItems)</span>
+
+  w.Write<span class="hljs-params">(a)</span>  
+}
+</code></pre>
+<h2 id="http-request">http.Request</h2>
+<p><a href="http://golang.org/pkg/net/http/#Request">http.Request</a> 表示由client發送, server所收到的一個HTTP request。</p>
+<p>就是一個表示initail request的struct type, 註解直接看source, 簡寫如下: </p>
+<pre><code class="lang-go"><span class="hljs-typedef"><span class="hljs-keyword">type</span> <span class="hljs-type">Request</span> struct <span class="hljs-container">{
+  <span class="hljs-type">Method</span> <span class="hljs-title">string</span>
+  <span class="hljs-type">URL</span> *<span class="hljs-title">url</span>.<span class="hljs-type">URL</span>
+  <span class="hljs-type">Proto</span>      <span class="hljs-title">string</span> // "<span class="hljs-type">HTTP</span>/1.0"
+  <span class="hljs-type">ProtoMajor</span> <span class="hljs-title">int</span>    // 1
+  <span class="hljs-type">ProtoMinor</span> <span class="hljs-title">int</span>    // 0
+  <span class="hljs-type">Header</span> <span class="hljs-type">Header</span>
+  <span class="hljs-type">Body</span> <span class="hljs-title">io</span>.<span class="hljs-type">ReadCloser</span>
+  <span class="hljs-type">ContentLength</span> <span class="hljs-title">int64</span>
+  <span class="hljs-type">TransferEncoding</span> []<span class="hljs-title">string</span>
+  <span class="hljs-type">Close</span> <span class="hljs-title">bool</span>
+  <span class="hljs-type">Host</span> <span class="hljs-title">string</span>
+  <span class="hljs-type">Form</span> <span class="hljs-title">url</span>.<span class="hljs-type">Values</span>
+  <span class="hljs-type">PostForm</span> <span class="hljs-title">url</span>.<span class="hljs-type">Values</span>
+  <span class="hljs-type">MultipartForm</span> *<span class="hljs-title">multipart</span>.<span class="hljs-type">Form</span>
+  <span class="hljs-type">Trailer</span> <span class="hljs-type">Header</span>
+  <span class="hljs-type">RemoteAddr</span> <span class="hljs-title">string</span>
+  <span class="hljs-type">RequestURI</span> <span class="hljs-title">string</span>
+  <span class="hljs-type">TLS</span> *<span class="hljs-title">tls</span>.<span class="hljs-type">ConnectionState</span>
+}</span></span>
+</code></pre>
+<p>The field semantics differ slightly between client and server usage. In addition to the notes on the fields below, see the documentation for Request.Write and RoundTripper.</p>
+<h2 id="http-handlefunc">http.HandleFunc</h2>
+<p><code>http.HandleFunc</code>在 <code>DefaultServeMux</code>的 <strong>ServeMux</strong> <a href="https://en.wikipedia.org/wiki/Multiplexing">multiplexer</a> 所對應的路徑(pattern)註冊一個handler function。</p>
+<p>source code:</p>
+<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">HandleFunc</span><span class="hljs-params">(pattern string, handler <span class="hljs-keyword">func</span><span class="hljs-params">(ResponseWriter, *Request)</span></span></span>) {
+  <span class="hljs-type">DefaultServeMux</span>.<span class="hljs-type">HandleFunc</span>(pattern, handler)
+}
+</code></pre>
+<p><code>DefaultServeMux</code>: </p>
+<pre><code class="lang-go"><span class="hljs-comment">// DefaultServeMux is the default ServeMux used by Serve.</span>
+<span class="hljs-tag">var</span> DefaultServeMux = <span class="hljs-function"><span class="hljs-title">NewServeMux</span><span class="hljs-params">()</span></span>
+</code></pre>
+<p><code>NewServeMux</code>: </p>
+<pre><code class="lang-go"><span class="hljs-comment">// NewServeMux allocates and returns a new ServeMux.</span>
+<span class="hljs-keyword">func</span> NewServeMux() *ServeMux { <span class="hljs-keyword">return</span> &amp;ServeMux{m: <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-typename">string</span>]muxEntry)} }
+</code></pre>
+<p><code>ServeMux</code>以及<code>muxEntry</code> struct:</p>
+<pre><code class="lang-go"><span class="hljs-comment">//ServeMux also takes care of sanitizing the URL request path,</span>
+<span class="hljs-comment">// redirecting any request containing . or .. elements to an</span>
+<span class="hljs-comment">// equivalent .- and ..-free URL.</span>
+<span class="hljs-keyword">type</span> ServeMux <span class="hljs-keyword">struct</span> {
+  mu    sync.RWMutex
+  m     <span class="hljs-keyword">map</span>[<span class="hljs-typename">string</span>]muxEntry
+  hosts <span class="hljs-typename">bool</span> <span class="hljs-comment">// whether any patterns contain hostnames</span>
+}
+
+<span class="hljs-keyword">type</span> muxEntry <span class="hljs-keyword">struct</span> {
+  explicit <span class="hljs-typename">bool</span>
+  h        Handler
+  pattern  <span class="hljs-typename">string</span>
+}
+</code></pre>
+<h2 id="servemux">ServeMux</h2>
+<p>由上可看到: </p>
+<pre><code class="lang-go"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">ServeMux</span> <span class="hljs-title">struct</span> {</span>
+  <span class="hljs-comment">// contains filtered or unexported fields</span>
+}
+</code></pre>
+<p>翻譯自官網定義: </p>
+<p><code>ServeMux</code>是一個HTTP request multiplexer, 會對進來的request跟已經註冊的一堆patterns做比對,  呼叫對應的handler。</p>
+<p><code>/favicon.ico</code>是固定的路徑(rooted path), 和<code>/images/</code>是表示為rooted subtrees, 是不同的。</p>
+<p>較長的URL pattern有較高的優先權, 例如我們有註冊兩個handler是給<code>/images/</code>和<code>/images/thumbnails/</code>的, 那只要request路徑是<code>/images/thumbnails/</code>開始的, 就會呼叫註冊在<code>/images/thumbnails/</code>的handler, 那其他<code>/images/</code>的handler才會接收其他<code>/images/</code>的requests。</p>
+<p>所有沒有符合已經註冊的patterns的路徑就會跑到<code>/</code>。</p>
+<h2 id="http-listenandserve">http.ListenAndServe</h2>
+<pre><code class="lang-go">http.<span class="hljs-function"><span class="hljs-title">ListenAndServe</span><span class="hljs-params">(<span class="hljs-string">":8080"</span>, nil)</span></span>
+</code></pre>
+<p><code>http.ListenAndServe</code> 監聽 TCP network address, 然後呼叫帶著handler的服務來處理連線進來的request。</p>
+<p><code>Handler</code>通常為<code>nil</code>, 表示預設使用了<code>DefaultServeMux</code>。</p>
+<p>source code如下: </p>
+<pre><code class="lang-go">func ListenAndServe(addr string, <span class="hljs-operator"><span class="hljs-keyword">handler</span> <span class="hljs-keyword">Handler</span>) error {
+  <span class="hljs-keyword">server</span> := &amp;<span class="hljs-keyword">Server</span>{Addr: addr, <span class="hljs-keyword">Handler</span>: <span class="hljs-keyword">handler</span>}
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">server</span>.ListenAndServe()
+}</span>
+</code></pre>
+<p>看來我們取得了一個新的型別為<code>Server</code> struct的<code>server</code>, 然後呼叫<code>server</code>的<code>ListenAndServe()</code> method。</p>
+<p>type <code>Server</code> struct: </p>
+<pre><code class="lang-go"><span class="hljs-comment">// A Server defines parameters for running an HTTP server.</span>
+<span class="hljs-comment">// The zero value for Server is a valid configuration.</span>
+type <span class="hljs-type">Server</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{
+  <span class="hljs-type">Addr</span>           string        <span class="hljs-comment">// TCP address to listen on, ":http" if empty</span>
+  <span class="hljs-type">Handler</span>        <span class="hljs-type">Handler</span>       <span class="hljs-comment">// handler to invoke, http.DefaultServeMux if nil</span>
+  <span class="hljs-type">ReadTimeout</span>    time.<span class="hljs-type">Duration</span> <span class="hljs-comment">// maximum duration before timing out read of the request</span>
+  <span class="hljs-type">WriteTimeout</span>   time.<span class="hljs-type">Duration</span> <span class="hljs-comment">// maximum duration before timing out write of the response</span>
+  <span class="hljs-type">MaxHeaderBytes</span> int           <span class="hljs-comment">// maximum size of request headers, DefaultMaxHeaderBytes if 0</span>
+  <span class="hljs-type">TLSConfig</span>      *tls.<span class="hljs-type">Config</span>   <span class="hljs-comment">// optional TLS config, used by ListenAndServeTLS</span>
+
+  <span class="hljs-comment">// TLSNextProto optionally specifies a function to take over</span>
+  <span class="hljs-comment">// ownership of the provided TLS connection when an NPN</span>
+  <span class="hljs-comment">// protocol upgrade has occurred.  The map key is the protocol</span>
+  <span class="hljs-comment">// name negotiated. The Handler argument should be used to</span>
+  <span class="hljs-comment">// handle HTTP requests and will initialize the Request's TLS</span>
+  <span class="hljs-comment">// and RemoteAddr if not already set.  The connection is</span>
+  <span class="hljs-comment">// automatically closed when the function returns.</span>
+  <span class="hljs-type">TLSNextProto</span> <span class="hljs-built_in">map</span>[string]<span class="hljs-func"><span class="hljs-keyword">func</span><span class="hljs-params">(*Server, *tls.Conn, Handler)</span></span>
+
+  <span class="hljs-comment">// ConnState specifies an optional callback function that is</span>
+  <span class="hljs-comment">// called when a client connection changes state. See the</span>
+  <span class="hljs-comment">// ConnState type and associated constants for details.</span>
+  <span class="hljs-type">ConnState</span> <span class="hljs-func"><span class="hljs-keyword">func</span><span class="hljs-params">(net.Conn, ConnState)</span></span>
+
+  <span class="hljs-comment">// ErrorLog specifies an optional logger for errors accepting</span>
+  <span class="hljs-comment">// connections and unexpected behavior from handlers.</span>
+  <span class="hljs-comment">// If nil, logging goes to os.Stderr via the log package's</span>
+  <span class="hljs-comment">// standard logger.</span>
+  <span class="hljs-type">ErrorLog</span> *log.<span class="hljs-type">Logger</span>
+  <span class="hljs-comment">// contains filtered or unexported fields</span>
+}
+</code></pre>
+<p><code>func (srv *Server) ListenAndServe() error</code>: </p>
+<pre><code class="lang-go">func (srv *Server) ListenAndServe() <span class="hljs-keyword">error</span> {
+  addr := srv.Addr
+  <span class="hljs-keyword">if</span> addr == <span class="hljs-string">""</span> {
+    addr = <span class="hljs-string">":http"</span>
+  }
+  ln, <span class="hljs-keyword">err</span> := <span class="hljs-keyword">net</span>.Listen(<span class="hljs-string">"tcp"</span>, addr)
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> != nil {
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">err</span>
+  }
+  <span class="hljs-keyword">return</span> srv.Serve(tcpKeepAliveListener{ln.(*<span class="hljs-keyword">net</span>.TCPListener)})
+}
+</code></pre>
+<p>如果address為空, 就用<code>:http</code>替代, 利用<code>net.Listen</code>建立TCP連線, 利用<code>srv.Serve()</code>接收傳入的連線, 建立新的service goroutine。 service goroutine會讀取requests然後呼叫<code>srv.Handler</code>來處理回應他們。</p>
+<p><code>func (srv *Server) Serve(l net.Listener) error</code>:</p>
+<pre><code class="lang-go">func (srv *Server) Serve(<span class="hljs-keyword">l</span> <span class="hljs-keyword">net</span>.Listener) <span class="hljs-keyword">error</span> {
+  defer <span class="hljs-keyword">l</span>.<span class="hljs-keyword">Close</span>()
+  <span class="hljs-keyword">var</span> tempDelay time.Duration <span class="hljs-comment">// how long to sleep on accept failure</span>
+  <span class="hljs-keyword">for</span> {
+    rw, <span class="hljs-keyword">e</span> := <span class="hljs-keyword">l</span>.Accept()
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">e</span> != nil {
+      <span class="hljs-keyword">if</span> ne, ok := <span class="hljs-keyword">e</span>.(<span class="hljs-keyword">net</span>.<span class="hljs-keyword">Error</span>); ok &amp;&amp; ne.Temporary() {
+        <span class="hljs-keyword">if</span> tempDelay == 0 {
+          tempDelay = 5 * time.Millisecond
+        } <span class="hljs-keyword">else</span> {
+          tempDelay *= 2
+        }
+        <span class="hljs-keyword">if</span> max := 1 * time.Second; tempDelay &gt; max {
+          tempDelay = <span class="hljs-literal">max</span>
+        }
+        srv.logf(<span class="hljs-string">"http: Accept error: %v; retrying in %v"</span>, <span class="hljs-keyword">e</span>, tempDelay)
+        time.<span class="hljs-keyword">Sleep</span>(tempDelay)
+        <span class="hljs-keyword">continue</span>
+      }
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">e</span>
+    }
+    tempDelay = 0
+    c, <span class="hljs-keyword">err</span> := srv.newConn(rw)
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> != nil {
+      <span class="hljs-keyword">continue</span>
+    }
+    c.setState(c.rwc, StateNew) <span class="hljs-comment">// before Serve can return</span>
+    go c.serve()
+  }
+}
+</code></pre>
+<p><code>func (srv *Server) newConn(rwc net.Conn) (c *conn, err error)</code>:</p>
+<pre><code class="lang-go"><span class="hljs-comment">// Create new connection from rwc.</span>
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-params">(srv *Server)</span></span> newConn(rwc net.<span class="hljs-type">Conn</span>) (<span class="hljs-built_in">c</span> *conn, err error) {
+  <span class="hljs-built_in">c</span> = <span class="hljs-keyword">new</span>(conn)
+  <span class="hljs-built_in">c</span>.remoteAddr = rwc.<span class="hljs-type">RemoteAddr</span>().<span class="hljs-type">String</span>()
+  <span class="hljs-built_in">c</span>.server = srv
+  <span class="hljs-built_in">c</span>.rwc = rwc
+  <span class="hljs-built_in">c</span>.w = rwc
+  <span class="hljs-keyword">if</span> debugServerConnections {
+    <span class="hljs-built_in">c</span>.rwc = newLoggingConn(<span class="hljs-string">"server"</span>, <span class="hljs-built_in">c</span>.rwc)
+  }
+  <span class="hljs-built_in">c</span>.sr = liveSwitchReader{r: <span class="hljs-built_in">c</span>.rwc}
+  <span class="hljs-built_in">c</span>.lr = io.<span class="hljs-type">LimitReader</span>(&amp;<span class="hljs-built_in">c</span>.sr, noLimit).(*io.<span class="hljs-type">LimitedReader</span>)
+  br := newBufioReader(<span class="hljs-built_in">c</span>.lr)
+  bw := newBufioWriterSize(checkConnErrorWriter{<span class="hljs-built_in">c</span>}, <span class="hljs-number">4</span>&lt;&lt;<span class="hljs-number">10</span>)
+  <span class="hljs-built_in">c</span>.buf = bufio.<span class="hljs-type">NewReadWriter</span>(br, bw)
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">c</span>, <span class="hljs-literal">nil</span>
+}
+</code></pre>
+<p><code>func (c *conn) setState(nc net.Conn, state ConnState)</code>:</p>
+<pre><code class="lang-go">func (c *conn) <span class="hljs-built_in">set</span>State(nc net.Conn, <span class="hljs-keyword">state</span> ConnState) {
+  if hook := c.server.ConnState; hook != nil {
+    hook(nc, <span class="hljs-keyword">state</span>)
+  }
+}
+</code></pre>
+<p><code>func (c *conn) serve()</code> (一大串) </p>
+<p>感謝有很方便的函式庫, 幫我們處理了很多底層的細節阿! </p>
+<p>再來就是要練習與追蹤net函式庫了。</p>
+<h2 id="more">More</h2>
+<p><a href="http://golang.org/pkg/net/http/">net/http lib</a></p>
+<p><a href="http://soryy.com/blog/2014/not-another-go-net-http-tutorial/">Not Another Go/Golang net/http Tutorial</a>。</p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
