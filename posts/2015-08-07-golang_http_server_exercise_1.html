@@ -123,7 +123,8 @@ func main() {
 <p><code>StripPrefix</code>會傳回一個移除所給prefix的handler, 例如這裡如果我們的request是<code>/static/css/main.css</code>, 那麼<code>StripPrefix</code>就會刪掉<code>/static/</code>變成<code>/css/main.css</code>, 然後將修改過後的request傳給由<code>http.FileServer()</code>所傳回來的handler。 </p>
 <p>這裡我們的FileServer所指定的<code>static</code>為static files的根目錄。那我們要的<code>/css/main.css</code>的確在我們的<code>static</code>目錄裏面, 這樣就會得到我們要的結果。</p>
 <h2 id="more">More</h2>
-<p><a href="http://stackoverflow.com/questions/27945310/why-do-i-need-to-use-http-stripprefix-to-access-my-static-files">why do i need to use http stripprefix to access my static files</a></p>
+<p><a href="http://stackoverflow.com/questions/27945310/why-do-i-need-to-use-http-stripprefix-to-access-my-static-files">stackoverflow - why do i need to use http stripprefix to access my static files</a></p>
+<p><a href="http://stackoverflow.com/questions/17206467/go-how-to-render-multiple-templates-in-golang">stackoverflow- how to render multipe templates in golang</a></p>
 <div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
 var disqus_shortname = 'luchoching';
 /* * * DON'T EDIT BELOW THIS LINE * * */

@@ -102,6 +102,10 @@ go安裝好了,把編輯環境弄一下也是很正常的事。 ]謝vim下有澎
 <p>如果要自動完成,要安裝<a href="https://github.com/Valloric/YouCompleteMe">YouCompleteMe</a>, 如果要秀source code tag infomation, 要安裝<a href="https://github.com/majutsushi/tagbar">tagbar</a></p>
 <p>如果要使用godoc查找資料, 要先安裝godoc tool, 就可以使用像是<code>:GoDoc fmt println</code>來查看文件, 
 或是直接在所使用function上, 執行<code>:GoDoc</code> 就會列出該函式說明, 或是執行<code>:GoDef</code>查看該函式source code。</p>
+<p>在<code>.vimrc</code>加入: </p>
+<pre><code class="lang-go"><span class="hljs-built_in">let</span> g:go_fmt_<span class="hljs-built_in">command</span> = <span class="hljs-string">"goimports"</span>
+</code></pre>
+<p>執行<code>:GoImports</code> 就會檢查有用到無用到的library, 在<code>import</code>區段補足或是刪除後儲存檔案(不過我不愛用 :P)</p>
 <p>執行 <code>:GoPath</code> 就會秀出$GOPATH。</p>
 <p>執行 <code>:GoTest</code> 就會執行 <code>go test</code></p>
 <p>執行 <code>:GoRun</code> 就相當於執行<code>go run 你的go程式.go</code>。</p>
