@@ -122,6 +122,21 @@ func main() {
 <p><img src="http://imgur.com/9F6H5A3l.png" alt="go"></p>
 <p><code>StripPrefix</code>會傳回一個移除所給prefix的handler, 例如這裡如果我們的request是<code>/static/css/main.css</code>, 那麼<code>StripPrefix</code>就會刪掉<code>/static/</code>變成<code>/css/main.css</code>, 然後將修改過後的request傳給由<code>http.FileServer()</code>所傳回來的handler。 </p>
 <p>這裡我們的FileServer所指定的<code>static</code>為static files的根目錄。那我們要的<code>/css/main.css</code>的確在我們的<code>static</code>目錄裏面, 這樣就會得到我們要的結果。</p>
+<h2 id="-">錯誤處理</h2>
+<p>在<code>handler</code>加上一些錯誤處理, URL pattern只允許&quot;/&quot;, method只允許&quot;GET&quot;:</p>
+<pre><code class="lang-go">func handler(w http.<span class="hljs-type">ResponseWriter</span>, r *http.<span class="hljs-type">Request</span>) {
+  <span class="hljs-keyword">if</span> r.<span class="hljs-type">URL</span>.<span class="hljs-type">Path</span> != <span class="hljs-string">"/"</span> {
+    http.<span class="hljs-type">Error</span>(w, <span class="hljs-string">"Not found"</span>, http.<span class="hljs-type">StatusNotFound</span>)
+    <span class="hljs-keyword">return</span>
+  }
+  <span class="hljs-keyword">if</span> r.<span class="hljs-type">Method</span> != <span class="hljs-string">"GET"</span> {
+    http.<span class="hljs-type">Error</span>(w, <span class="hljs-string">"Method not allowed"</span>, http.<span class="hljs-type">StatusMethodNotAllowed</span>)
+    <span class="hljs-keyword">return</span>
+  }
+    t := <span class="hljs-keyword">template</span>.<span class="hljs-type">Must</span>(<span class="hljs-keyword">template</span>.<span class="hljs-type">ParseFiles</span>(path.<span class="hljs-type">Join</span>(<span class="hljs-string">"templates"</span>, <span class="hljs-string">"Hello.html"</span>)))
+    t.<span class="hljs-type">Execute</span>(w, <span class="hljs-keyword">nil</span>)
+}
+</code></pre>
 <h2 id="more">More</h2>
 <p><a href="http://stackoverflow.com/questions/27945310/why-do-i-need-to-use-http-stripprefix-to-access-my-static-files">stackoverflow - why do i need to use http stripprefix to access my static files</a></p>
 <p><a href="http://stackoverflow.com/questions/17206467/go-how-to-render-multiple-templates-in-golang">stackoverflow- how to render multipe templates in golang</a></p>
