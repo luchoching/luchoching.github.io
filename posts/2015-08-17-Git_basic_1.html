@@ -136,6 +136,8 @@ Changes <span class="hljs-keyword">to</span> be committed:
 
   <span class="hljs-keyword">new</span> <span class="hljs-keyword">file</span>:   README
 </code></pre><p><code>git add</code>為多用途指令, 可以用來tracking new files, stage files, 也可以用來處理merge檔案問題, 所以要把<code>git add</code>當作是<strong>add this conetent to the next commit</strong>, 而不是把這個檔案加到project中</p>
+<p>可以<code>git add file1, file2...</code>, <code>git add dir</code>, <code>git add .</code></p>
+<p><code>git add -p</code> 可以讓我們逐步選擇哪個檔案要add, 並且會列出差異讓我們判斷。</p>
 <h3 id="git-status-s">git status -s</h3>
 <p><img src="http://imgur.com/A6jDP5ql.png" alt="gss-s"></p>
 <p><code>??</code>表示untracked new file, <code>A</code>表示stagged new file, 紅色<code>M</code>表示tracked,但修改內容還未staged, 右邊綠色<code>M</code>表示tracked, 修改內容也已經staged</p>
@@ -167,9 +169,26 @@ doc/<span class="hljs-keyword">*</span><span class="hljs-keyword">*</span>/<span
 <ul>
 <li>檔案哪些行被新增/刪除了</li>
 </ul>
-<p><code>git diff</code>比較我們在working directory跟staging area的檔案, 結果告知哪些行改變了但還沒staged</p>
-<p><code>git diff --staged</code> 顯示我們目前staged 和最後的commit的差異。</p>
-<p>例如: </p>
+<p><code>git diff</code>比較我們在working directory跟staging area的檔案, 結果告知哪些行改變了但還沒staged:</p>
+<pre><code>$ git diff
+diff <span class="hljs-comment">--git a/Rakefile b/Rakefile</span>
+index <span class="hljs-number">8</span>f94139..f14abb9 <span class="hljs-number">100644</span>
+<span class="hljs-comment">--- a/Rakefile</span>
++++ b/Rakefile
+@@ -<span class="hljs-number">2</span>,<span class="hljs-number">6</span> +<span class="hljs-number">2</span>,<span class="hljs-number">8</span> @@ <span class="hljs-built_in">require</span> <span class="hljs-string">'rubygems'</span>
+ Gem::manage_gems
+ <span class="hljs-built_in">require</span> <span class="hljs-string">'rake/gempackagetask'</span>
+
++test = <span class="hljs-number">1</span>
++
+ spec = Gem::Specification.<span class="hljs-built_in">new</span> <span class="hljs-built_in">do</span> |s|
+     s.<span class="hljs-built_in">platform</span>  =   Gem::Platform::RUBY
+     s.name      =   <span class="hljs-string">"simplegit"</span>
+</code></pre><p><code>git diff --stat</code> 僅列出摘要:</p>
+<pre><code>$ git diff <span class="hljs-comment">--stat</span>
+ Rakefile | <span class="hljs-number">2</span> ++
+ <span class="hljs-number">1</span> <span class="hljs-type">file</span> changed, <span class="hljs-number">2</span> insertions(+)
+</code></pre><p><code>git diff --staged</code> 顯示我們目前staged 和最後的commit的差異。 例如: </p>
 <pre><code>$ git status
 Changes to be committed:
   (<span class="hljs-operator"><span class="hljs-keyword">use</span> <span class="hljs-string">"git reset HEAD &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> unstage)
@@ -229,6 +248,8 @@ index 264e6ae..53d07a8 100644
  <span class="hljs-number">1</span> file <span class="hljs-keyword">changed</span>, <span class="hljs-number">2</span> deletions(-)</span>
 </code></pre><p>訊息顯示commit到mater分支, SHA-1檢查碼(6e4bee4), 改了多少檔案, 有幾行被新增刪除</p>
 <p>每次我們執行一次commit, 我們就紀錄了一個我們專案的snapshot, 可以用來回復或是比對之前之後的紀錄。 </p>
+<p><code>git commit -a</code>: commit a snapshot of all changes in the working directory.</p>
+<p><strong>commit messaage很重要</strong> , <a href="http://chris.beams.io/posts/git-commit/">How to Write a Git Commit Message</a> 做了很詳細的提醒(more!)</p>
 <h2 id="removing-files">Removing Files</h2>
 <p>要從Git移除一個檔案, 必須要從你的tracked file中移除。更明確的說, 就是從你的staging area中移除, 並且執行commit。</p>
 <p><code>git rm</code> 會將這個檔案從working directory中移除, 因此下回你也不會看到這個檔案作為untracked file 出現！　</p>
@@ -317,7 +338,9 @@ Changes to be committed:
   (use <span class="hljs-string">"git reset HEAD &lt;file&gt;..."</span> to unstage)
 
   renamed:    <span class="hljs-tag">a</span><span class="hljs-class">.txt</span> -&gt; aa.txt
-</code></pre><div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+</code></pre><h2 id="more">More</h2>
+<p><a href="http://chris.beams.io/posts/git-commit/">How to Write a Git Commit Message</a></p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
 var disqus_shortname = 'luchoching';
 /* * * DON'T EDIT BELOW THIS LINE * * */
 (function() {
