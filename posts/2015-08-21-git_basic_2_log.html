@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - git_basic_2_log</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-git-basics-viewing-the-commit-history-git-log">[Git] basics --  Viewing the Commit History - git log</h1>
+<p>以下部份翻譯ProGit <a href="https://git-scm.com/book/zh-tw/v1/%E9%96%8B%E5%A7%8B">中文版v1</a> / <a href="https://git-scm.com/book/en/v2">英文版v2</a>, 加上自己一些測試。</p>
+<hr>
+<p><code>git log --stat</code>列出多少檔案被修改,以及其被修改的行數紀錄:</p>
+<p><img src="http://imgur.com/24CeVYJl.png" alt="git stat"></p>
+<p><code>git log -p -2</code> shows the difference introduced in each commit, and limits the output to only the last two entries.</p>
+<p><img src="http://imgur.com/LxrYAzBl.png" alt="git log -p"></p>
+<p><code>git log --oneline --decorate --graph</code>, 用來取代像是圖形介面如gitk的好方法!:  </p>
+<p><img src="http://imgur.com/dTCPXRnl.png" alt="log decorate"></p>
+<p><code>git log --graph</code>秀出branch和merge history:</p>
+<pre><code>$ git <span class="hljs-built_in">log</span> <span class="hljs-comment">--pretty=format:"%h %s" --graph</span>
+* <span class="hljs-number">2</span>d3acf9 ignore errors <span class="hljs-built_in">from</span> SIGCHLD <span class="hljs-command"><span class="hljs-keyword">on</span> <span class="hljs-title">trap</span></span>
+* *  <span class="hljs-number">5e3</span>ee11 Merge branch <span class="hljs-string">'master'</span> <span class="hljs-operator">of</span> git://github.com/dustin/grit
+* |\
+* | * <span class="hljs-number">420</span>eac9 Added <span class="hljs-operator">a</span> method <span class="hljs-keyword">for</span> getting <span class="hljs-operator">the</span> current branch.
+* * | <span class="hljs-number">30e367</span>c timeout code <span class="hljs-operator">and</span> tests
+* * | <span class="hljs-number">5</span>a09431 <span class="hljs-built_in">add</span> timeout protection <span class="hljs-built_in">to</span> grit
+* * | e1193f8 support <span class="hljs-keyword">for</span> heads <span class="hljs-operator">with</span> slashes <span class="hljs-operator">in</span> them
+* |/
+* * d6016bc <span class="hljs-built_in">require</span> <span class="hljs-built_in">time</span> <span class="hljs-keyword">for</span> xmlschema
+* *  <span class="hljs-number">11</span>d191e Merge branch <span class="hljs-string">'defunkt'</span> <span class="hljs-keyword">into</span> <span class="hljs-built_in">local</span>
+</code></pre><h2 id="-pretty">--pretty</h2>
+<p><code>git log --pretty=oneline</code></p>
+<p><code>git log --pretty=format:</code></p>
+<p><a href="http://git-scm.com/docs/pretty-formats">pretty format 參考</a></p>
+<h2 id="filter-log">filter log</h2>
+<p><a href="https://www.atlassian.com/git/tutorials/git-log/filtering-the-commit-history">Filtering the Commit History</a></p>
+<p>By date: <code>git log --after=&quot;2015-08-06&quot; --before=&quot;2015-08-17&quot;</code></p>
+<p>By message: <code>git log --grep=&quot;JRA-224:&quot;</code>, 加<code>-i</code> 忽略大小寫</p>
+<p>By file: 我只對某些特定檔案有興趣 <code>git log foo.py bar.py</code>, 其他參數要加在檔案路徑之前, 例如<code>git log --stat -2 package.json server.js</code></p>
+<p>By Content: 例如找說<code>Hello World</code>在什麼時候加入到哪個檔案的, 可用<code>git log -S&quot;Hello World&quot;</code>, <code>git log -G</code>為regex</p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
