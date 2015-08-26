@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - git_basic_7_branching_and_merging</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-git-basic-branching-and-merging">[Git] Basic Branching and Merging</h1>
+<p>以下部份翻譯ProGit <a href="https://git-scm.com/book/zh-tw/v1/%E9%96%8B%E5%A7%8B">中文版v1</a> / <a href="https://git-scm.com/book/en/v2">英文版v2</a>, 加上自己一些測試。</p>
+<hr>
+<h2 id="basic-branching">Basic Branching</h2>
+<p>假設已經開始開發專案, 並且已經有一些commits了: </p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/basic-branching-1.png" alt="b1"></p>
+<p>再來這時決定要解決issue-tracking system上的 issue #53: </p>
+<pre><code>$ git checkout -<span class="hljs-tag">b</span> iss53
+</code></pre><p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/basic-branching-2.png" alt="b2"></p>
+<p>在iss53 branch上我們做了一些commits, iss53 branch指標理所當然就往前了: </p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/basic-branching-3.png" alt="b3"></p>
+<p>再來接到說網站有緊急issue要優先處理, </p>
+<p>我們不需要同時發佈(deploy)這個bug fix加上iss53所做的修改, 首先做的事情就侍從iss53 branch 切換到master branch</p>
+<p>不過注意, <strong>如果你的working directory或是 staging area還有未commit的改變, 這會和你正要checkout出去的分支產生衝突, Git會阻止你切換branch</strong></p>
+<p>例如: </p>
+<pre><code>$ git checkout  master 
+error: Your <span class="hljs-built_in">local</span> changes <span class="hljs-built_in">to</span> <span class="hljs-operator">the</span> following <span class="hljs-built_in">files</span> would be overwritten <span class="hljs-keyword">by</span> checkout:
+  README
+Please, commit your changes <span class="hljs-operator">or</span> stash them <span class="hljs-keyword">before</span> you can <span class="hljs-keyword">switch</span> branches.
+Aborting
+</code></pre><p>除非將工作區域清乾淨(commit), 或是利用<strong>namely, stashing以及commit amending</strong>來解決</p>
+<p>清好了才可以<code>git checkout master</code></p>
+<p>This is an important point to remember: when you switch branches, Git resets your working directory to look like it did the last time you committed on that branch. It adds, removes, and modifies files automatically to make sure your working copy is what the branch looked like on your last commit to it.</p>
+<p>再來我們要做一個<code>hotfix</code> branch來把整個解決bug的事情做完:</p>
+<pre><code>$ git checkout -<span class="hljs-tag">b</span> hotfix
+$ vim index<span class="hljs-class">.html</span>
+$ git commit -<span class="hljs-tag">a</span> -m <span class="hljs-string">'fixed the broken email address'</span>
+</code></pre><p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/basic-branching-4.png" alt="b4"></p>
+<p>測試hotfix若ok, 就可以把hotfix 合併回去master: </p>
+<pre><code>$ git checkout master
+$ git <span class="hljs-operator"><span class="hljs-keyword">merge</span> hotfix
+Updating f42c576..<span class="hljs-number">3</span>a0874c
+<span class="hljs-keyword">Fast</span>-forward
+ <span class="hljs-keyword">index</span>.html | <span class="hljs-number">2</span> ++
+ <span class="hljs-number">1</span> file <span class="hljs-keyword">changed</span>, <span class="hljs-number">2</span> insertions(+)</span>
+</code></pre><p>如果順著一個分支走下去可以到達另一個分支的話，那麼 Git 在合併兩者時，只會簡單地把指標右移，因為這種單線的歷史分支不存在任何需要解決的分歧，所以這種合併過程可以稱為<code>fast-forward</code>。</p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/basic-branching-5.png" alt="b5"></p>
+<p>hotfix分支已經用不到了, 因為master branch指向的是同一個地方, 那就可以刪掉hotfix, 然後回到iss53 branch工作: </p>
+<pre><code><span class="hljs-variable">$ </span>git branch -d hotfix
+<span class="hljs-variable">$ </span>git checkout iss53
+<span class="hljs-variable">$ </span>vim index.html
+<span class="hljs-variable">$ </span>git commit -a -m <span class="hljs-string">'finished new footer'</span>
+</code></pre><p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/basic-branching-6.png" alt="b6"></p>
+<p>注意這個時候 hotfix修改的內容並未包含到 iss53中, </p>
+<p>如果要納入這次的bug修改, 可以用<code>git merge master</code>把master合併到iss53, 或是等iss53完成後, 再將iss53的更新併入到master。</p>
+<h2 id="basic-merging">Basic Merging</h2>
+<p>假設iss53已經做完了, 可以合併到master去, 做法跟合併hotfix一樣: </p>
+<pre><code>$ git checkout master
+Switched <span class="hljs-built_in">to</span> branch <span class="hljs-string">'master'</span>
+$ git <span class="hljs-built_in">merge</span> iss53
+Merge made <span class="hljs-keyword">by</span> <span class="hljs-operator">the</span> <span class="hljs-string">'recursive'</span> strategy.
+index.html |    <span class="hljs-number">1</span> +
+<span class="hljs-number">1</span> <span class="hljs-built_in">file</span> changed, <span class="hljs-number">1</span> insertion(+)
+</code></pre><p>Git做了三向merge : </p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/basic-merging-1.png" alt="b7"></p>
+<p>C2(共同祖先), C4 和 C5(兩個分支的末端)</p>
+<p>這次沒有只是將pointer往前, Git建立一個新的snapshot commit, 這個commit有兩個parent(a merge commit):</p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/basic-merging-2.png" alt="b7"></p>
+<p>Git會判斷用哪一個祖先來當作最佳的merge base</p>
+<p>一樣merge後不再需要iss53 branch, 就可以刪除:</p>
+<pre><code>$ git <span class="hljs-keyword">branch </span>-d iss53
+</code></pre><h2 id="basic-merge-conflicts">Basic merge conflicts</h2>
+<p>大多數時間合併沒有這麼順利</p>
+<p>如果我們在兩個branch都改相同的檔案然後合併, Git不能清楚的合併他們, 可能就會看到如下的訊息:</p>
+<pre><code>$ git merge iss53
+<span class="hljs-type">Auto</span>-merging index.html
+<span class="hljs-type">CONFLICT</span> (content): <span class="hljs-type">Merge</span> conflict <span class="hljs-keyword">in</span> index.html
+<span class="hljs-type">Automatic</span> merge failed; fix conflicts <span class="hljs-keyword">and</span> then commit the <span class="hljs-literal">result</span>.
+</code></pre><p>Git沒有辦法自動建立一個新的merge commit, 會先暫停等你解決衝突後再繼續。</p>
+<p><code>git status</code>:</p>
+<pre><code>$ git status
+<span class="hljs-keyword">On</span> branch master
+You have unmerged paths.
+  (fix conflicts <span class="hljs-keyword">and</span> run <span class="hljs-string">"git commit"</span>)
+
+Unmerged paths:
+  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git add ..."</span> <span class="hljs-keyword">to</span> mark resolution)
+
+    both modified:      index.html
+
+no changes added <span class="hljs-keyword">to</span> commit (<span class="hljs-keyword">use</span> <span class="hljs-string">"git add"</span> <span class="hljs-keyword">and</span>/<span class="hljs-keyword">or</span> <span class="hljs-string">"git commit -a"</span>)
+</code></pre><p><code>git status -s</code>:</p>
+<pre><code>$ git <span class="hljs-keyword">status</span>
+UU <span class="hljs-built_in">index</span>.html
+</code></pre><p>必須要編輯衝突的檔案來解決問題:</p>
+<pre><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+<span class="hljs-header">div id="footer"&gt;contact : email.support@github.com/div&gt;
+=======</span>
+div id="footer"&gt;
+<span class="hljs-code"> please contact us at support@github.com</span>
+/div&gt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; iss53
+</code></pre><p><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> 就是我們HEAD指向所在(就是master), 到<code>=======</code>就是master branch所紀錄的內容, </p>
+<p><code>=======</code> 到<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; iss53</code>就是iss53 branch所紀錄的內容</p>
+<p>解決方法要碼就是二者擇一, 或是由你親自整合到一起,例如以下：</p>
+<pre><code><span class="hljs-keyword">div</span> <span class="hljs-property">id</span>=<span class="hljs-string">"footer"</span>&gt;
+please contact us <span class="hljs-keyword">at</span> email.support@github.com
+/<span class="hljs-keyword">div</span>&gt;
+</code></pre><p>選擇了兩者各自的部份內容, 然後移除所有的標記線</p>
+<p>再來執行<code>git add</code>標記衝突已經解決, 再執行<code>git commit</code>完成merge</p>
+<h3 id="-merge-tool">使用merge tool</h3>
+<pre><code>$ git mergetool
+
+This message is displayed because <span class="hljs-string">'merge.tool'</span> is <span class="hljs-operator">not</span> configured.
+See <span class="hljs-string">'git mergetool --tool-help'</span> <span class="hljs-operator">or</span> <span class="hljs-string">'git help config'</span> <span class="hljs-keyword">for</span> more details.
+<span class="hljs-string">'git mergetool'</span> will now attempt <span class="hljs-built_in">to</span> use <span class="hljs-constant">one</span> <span class="hljs-operator">of</span> <span class="hljs-operator">the</span> following tools:
+opendiff kdiff3 tkdiff xxdiff meld tortoisemerge gvimdiff diffuse diffmerge ecmerge p4merge araxis bc3 codecompare vimdiff emerge
+Merging:
+index.html
+
+Normal <span class="hljs-built_in">merge</span> conflict <span class="hljs-keyword">for</span> <span class="hljs-string">'index.html'</span>:
+  {<span class="hljs-built_in">local</span>}: modified <span class="hljs-built_in">file</span>
+  {remote}: modified <span class="hljs-built_in">file</span>
+Hit <span class="hljs-constant">return</span> <span class="hljs-built_in">to</span> <span class="hljs-built_in">start</span> <span class="hljs-built_in">merge</span> resolution tool (opendiff):
+</code></pre><p>Git預設使用<code>opendiff</code></p>
+<p>那我是想用<code>vimdiff</code></p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
