@@ -1,0 +1,39 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - git_8_branch_management_and_workflows</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-git-branch-management-workflows">[Git] Branch Management &amp; Workflows</h1>
+<p><code>git branch -v</code> 可以察看每個branch最新的commit</p>
+<pre><code>$ git branch -v
+  iss53   <span class="hljs-number">93</span>b412c fix javascript issue
+* master  <span class="hljs-number">7</span>a98805 Merge branch <span class="hljs-string">'iss53'</span>
+  testing <span class="hljs-number">782</span>fd34 <span class="hljs-built_in">add</span> scott <span class="hljs-built_in">to</span> <span class="hljs-operator">the</span> author list <span class="hljs-operator">in</span> <span class="hljs-operator">the</span> readmes
+</code></pre><p><code>git branch --merged</code> 和 <code>git branch --no-merged</code>察看哪些branch已經merge或是還沒</p>
+<p><code>git branch -d testing</code>會提示該branch還未merge, 若真的要delete要用<code>git branch-D</code></p>
+<h2 id="long-running-branches-">Long-Running Branches 長期分支</h2>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/lr-branches-2.png" alt="b1"></p>
+<p><code>master</code>  --  possibly only code that has been or will be released.</p>
+<p><code>develop</code> -- 不一定stable, 但是有達到stable state後, 就會把他merge到master</p>
+<p><code>topic</code> --- 像<code>iss53</code>, 通過測試並且不會產生bug後, 在合併到develop去</p>
+<p>branch事實上就是討論指標的移動, stable branches 指標總是在主線的很後面, 而前沿分支總是比較靠前:</p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/lr-branches-1.png" alt="b2"></p>
+<p> Some larger projects also have a <code>proposed</code> or pu (proposed updates) branch that has integrated branches that may not be ready to go into the next or master branch. The idea is that your branches are at various levels of stability; when they reach a more stable level, they’re merged into the branch above them. </p>
+<p> Again, having multiple long-running branches isn’t necessary, but it’s often helpful, especially when you’re dealing with very large or complex projects.</p>
+<h2 id="multiple-topic-branches">multiple Topic Branches</h2>
+<p>任何大小的project都適用</p>
+<p>你可以把作出的改變保持在特性分支中幾分鐘，幾天甚至幾個月，等它們成熟以後再合併，而不用在乎它們建立的順序或者進度。</p>
+<p>例如以下我們先在master工作到C1, 開新branch處理iss91問題, 做到C6的時候, 又冒出可以解決該問題的新方法, 又回到C4分出分支iss91v2, 做到C8的時候, 又回到主幹master提交了C9和C10, 再回到iss91v2工作, 提交C11, 再來又冒出不太確定的想法, 從master的C10又開了新的分支dumbidea做實驗: </p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/topic-branches-1.png" alt="b3"></p>
+<p>最後決定使用第二個解決方案iss91v2, 另外也保留dumbidea, 那我們就拋棄iss91(就是捨棄C5和C6), 在master中把iss91v2和dumbidea合併, 最後的commit history會變成如下: </p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/topic-branches-2.png" alt="b4"></p>
+<p>要決定採用哪種branching scheme, 要確認讀了<a href="https://git-scm.com/book/en/v2/Distributed-Git-Distributed-Workflows">Git distributed workflow</a></p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
