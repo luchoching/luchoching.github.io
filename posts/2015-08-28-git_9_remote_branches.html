@@ -1,0 +1,123 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - git_9_remote_branches</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-git-remote-branches">[Git] Remote Branches</h1>
+<p>以下部份翻譯ProGit <a href="https://git-scm.com/book/zh-tw/v1/%E9%96%8B%E5%A7%8B">中文版v1</a> / <a href="https://git-scm.com/book/en/v2">英文版v2</a>, 加上自己一些測試。</p>
+<hr>
+<h2 id="remote-branches">remote branches</h2>
+<p>Remote references 就是一些在你遠端repositiries的reference(pointers), 包括了branches, tags等等</p>
+<p><code>git ls-remote</code>列出有哪些remote references: </p>
+<pre><code>$ git ls-remote
+From git@github.com:luchoching/myJblog.git
+<span class="hljs-number">81022d132</span>fdfc<span class="hljs-number">372b77e5</span>ff4172f2be<span class="hljs-number">4610e370</span>a  HEAD
+<span class="hljs-number">8c20268</span>ecccc24d630de<span class="hljs-number">375c42a8</span>bc6e6defd252  refs/heads/add_page_bar
+<span class="hljs-number">81022d132</span>fdfc<span class="hljs-number">372b77e5</span>ff4172f2be<span class="hljs-number">4610e370</span>a  refs/heads/master
+ff<span class="hljs-number">57d7d9a80</span>a57f96be<span class="hljs-number">0e894e7</span>c4cdb<span class="hljs-number">880c84609</span>  refs/heads/materail-style
+df<span class="hljs-number">3566a53b1</span>d19bae<span class="hljs-number">1b78b865</span>b<span class="hljs-number">13b717a254</span>cbf1  refs/heads/new-style
+</code></pre><p>或是<code>git remote show (remote)</code>: </p>
+<pre><code>$ git remote <span class="hljs-operator"><span class="hljs-keyword">show</span> origin
+* remote origin
+  <span class="hljs-keyword">Fetch</span> URL: git@github.com:luchoching/myJblog.git
+  Push  URL: git@github.com:luchoching/myJblog.git
+  HEAD branch: <span class="hljs-keyword">master</span>
+  Remote branches:
+    add_page_bar   tracked
+    <span class="hljs-keyword">master</span>         tracked
+    materail-style tracked
+    new-style      tracked
+  <span class="hljs-keyword">Local</span> branch configured <span class="hljs-keyword">for</span> <span class="hljs-string">'git pull'</span>:
+    <span class="hljs-keyword">master</span> merges <span class="hljs-keyword">with</span> remote <span class="hljs-keyword">master</span>
+  <span class="hljs-keyword">Local</span> ref configured <span class="hljs-keyword">for</span> <span class="hljs-string">'git push'</span>:
+    <span class="hljs-keyword">master</span> pushes <span class="hljs-keyword">to</span> <span class="hljs-keyword">master</span> (up <span class="hljs-keyword">to</span> <span class="hljs-built_in">date</span>)</span>
+</code></pre><p>最常用的, 還是利用 remote-tracking branches的優點</p>
+<p>Remote-tracking branches 就是紀錄遠端分支狀態的reference, 這些都是我們不能移動的local references, 只有當我們做任何網路溝通的時候他們才會自動移動</p>
+<p>Remote-tracking branches就好像書籤(bookmarks)提醒你, 你最後跟遠端respositories連線的時候, 那些在遠端repositories的branches是在什麼位置</p>
+<p><code>(remote)/(branch)</code></p>
+<p>例如你想要看 在你的<code>origin</code> remote的 <code>master</code> branch最後我跟他們連線的時候是什麼模樣, 我們就可以檢查<code>origin/master</code> branch</p>
+<p>又假設你的伙伴push上去一個<code>iss53</code> branch, 我可能也有自己的local的<code>iss53</code>, 那server上的這個branch, 會指向<code>origin/iss53</code>的commit</p>
+<p>進一步說明, 假設你有一個Git server在網路上叫作<code>git.ourcompany.com</code>, 如果我clone, Git就會自動把遠端倉庫<code>git.ourcompany.com</code>叫作<code>origin</code>, pull拉下所有資料, 建立一個指向這個遠端倉庫的<code>master</code>的指標, 在local端命名為<code>origin/master</code>, 但是我們沒有辦法在local端更改資料, 
+接著Git就會建立一個屬於你自己的local端的<code>master</code> branch, 一開始, 兩個branches都指向相同的位置: </p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/remote-branches-1.png" alt="b1"></p>
+<p>如果你在本地 master 分支做了些改動，與此同時，其他人向 git.ourcompany.com 推送了他們的更新，那麼伺服器上的 master 分支就會向前推進，而於此同時，你在本地的提交歷史正朝向不同方向發展。不過只要你不和伺服器通訊，你的 origin/master 指標仍然保持原位不會移動:</p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/remote-branches-2.png" alt="b2"></p>
+<p><code>git fetch origin</code> 會去找哪一個server叫作<code>origin</code>, 然後從該server擷取我們local都還沒有的資料下來, 更新我們的local database, 移動我們的<code>origin/master</code>到新的位置:</p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/remote-branches-3.png" alt="b3"></p>
+<p>假設你還有另一個僅供你的敏捷開發小組使用的內部伺服器<code>git.team1.ourcompany.com</code>, 利用<code>git remote add teamone git.team1.ourcompany.com</code>加入成為我們的remote reference之一: </p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/remote-branches-4.png" alt="b4"></p>
+<p>利用<code>git fetch teamone</code>取得該server裏面我們local server沒有的資料, 因為teamone是origin的subset, 所以只有加上<code>teamone/master</code> branch pointer</p>
+<p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/remote-branches-5.png" alt="b5"></p>
+<h2 id="pushing">Pushing</h2>
+<p>當我想要跟大家分享我的branch, 我需要把我的分支<strong>push</strong> up到我有寫入權限的remote去</p>
+<p>你的local branches不會自動和你的remote同步, 你必須明確的將你要分享的分支 push上去</p>
+<p>也就是說, 對於無意分享的分支，你儘管保留為私人分支好了，而只推送那些協同工作要用到的特性分支。 </p>
+<p>如果你有的branch叫作<code>serverfix</code>,你想要跟其他人一起合作, 你就可以用<code>git push (remote) (branch)</code>的方式push該分支到remote去：</p>
+<pre><code>$ git push origin serverfix
+Counting objects: 24, done.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (15/15), done.
+Writing objects: 100% (24/24), 1.91 KiB | 0 bytes/s, done.
+Total 24 (delta 2), reused 0 (delta 0)
+To https://github.com/schacon/simplegit
+ * <span class="hljs-comment">[new branch]</span>      serverfix -&gt; serverfix
+</code></pre><p>這裡其實走了一點捷徑。</p>
+<p>Git 自動把 serverfix 分支名擴展為 <code>refs/heads/serverfix:refs/heads/serverfix</code>，意為“取出我在本地的 serverfix 分支，推送到遠端倉庫的 serverfix 分支中去”。我們將在第九章進一步介紹 <code>refs/heads/</code> 部分的細節，不過一般使用的時候都可以省略它。</p>
+<p>也可以運行 <code>git push origin serverfix:serverfix</code> 來實現相同的效果，它的意思是“上傳我本地的 serverfix 分支到遠端倉庫中去，仍舊稱它為 serverfix 分支”。</p>
+<p>通過此語法，你可以把本地分支推送到某個命名不同的遠端分支：若想把遠端分支叫作 awesomebranch，可以用 <code>git push origin serverfix:awesomebranch</code> 來推送數據。</p>
+<p>接下來，當你的協作者再次從伺服器上獲取資料時，他們將得到一個新的遠端分支 origin/serverfix，並指向伺服器上 serverfix 所指向的版本：</p>
+<pre><code>$ git fetch origin
+<span class="hljs-string">remote:</span> Counting <span class="hljs-string">objects:</span> <span class="hljs-number">7</span>, done.
+<span class="hljs-string">remote:</span> Compressing <span class="hljs-string">objects:</span> <span class="hljs-number">100</span>% (<span class="hljs-number">2</span>/<span class="hljs-number">2</span>), done.
+<span class="hljs-string">remote:</span> Total <span class="hljs-number">3</span> (delta <span class="hljs-number">0</span>), reused <span class="hljs-number">3</span> (delta <span class="hljs-number">0</span>)
+Unpacking <span class="hljs-string">objects:</span> <span class="hljs-number">100</span>% (<span class="hljs-number">3</span>/<span class="hljs-number">3</span>), done.
+From <span class="hljs-string">https:</span><span class="hljs-comment">//github.com/schacon/simplegit</span>
+ * [<span class="hljs-keyword">new</span> branch]      serverfix    -&gt; origin/serverfix
+</code></pre><p><strong>注意! 當你從fetch回來新的remote-tracking branches, 你並不會自動有一個可編輯的副本(editable copies), 換句話說, 你不會有一個新的<code>serverfix</code> branch, 你只有一個不能修改(無法移動)的<code>origin/serverfix</code>指標</strong></p>
+<p>我們可以把這個<code>origin/serverfix</code> merge到我們目前的working branch: <code>git merge origin/serverfix</code></p>
+<p>或是你想要自己的<code>serverfix</code> branch, 那我們可以基於我們的remote-tracking branch來建立: </p>
+<pre><code>$ git checkout -<span class="hljs-tag">b</span> serverfix origin/serverfix
+</code></pre><p>這會切換到新建的 serverfix 本地分支，其內容同遠端分支 origin/serverfix 一致，這樣你就可以在裡面繼續開發了。</p>
+<h2 id="tracking-branches">Tracking Branches</h2>
+<p>從一個remote-tracking分支checkout出來的local branch, 我們叫作<code>tracking branch</code>(或是叫作<code>upstram branch</code>)</p>
+<p>Tracking branch 為local branch, 和某個remote branch有直接關聯, 如果在這個分支直接<code>git pull</code>, Git就會知道從哪個server來fetch遠端追蹤的分支回來, 並且執行merge</p>
+<p>就像我們clone回來一個repository, Git就會自動建立master branch, 並且追蹤<code>origin/master</code>(這也是依開始why <code>git push</code>, <code>git pull</code>可以正常工作的原因)</p>
+<p>當然，你可以隨心所欲地設定為其它跟蹤分支，比如 origin 上除了 master 之外的其它分支。<code>git checkout -b [branch] [remotename]/[branch]</code>可以用<code>--track</code>簡化:</p>
+<pre><code>$ git checkout <span class="hljs-comment">--track origin/serverfix </span>
+Branch serverfix <span class="hljs-built_in">set</span> up <span class="hljs-built_in">to</span> track remote branch serverfix <span class="hljs-built_in">from</span> origin.
+Switched <span class="hljs-built_in">to</span> <span class="hljs-operator">a</span> <span class="hljs-built_in">new</span> branch <span class="hljs-string">'serverfix'</span>
+</code></pre><p>要設定不同名字：</p>
+<pre><code>$ git checkout -<span class="hljs-keyword">b</span> <span class="hljs-keyword">sf</span> origin/serverfix
+Branch <span class="hljs-keyword">sf</span> <span class="hljs-keyword">set</span> <span class="hljs-keyword">up</span> <span class="hljs-keyword">to</span> track remote branch serverfix from origin.
+Switched <span class="hljs-keyword">to</span> <span class="hljs-keyword">a</span> <span class="hljs-keyword">new</span> branch <span class="hljs-string">'sf'</span>
+</code></pre><p>如果你有現成的local branch, 你現要追蹤你剛才pull dwon下來的remote branch, 或是要改變目前所追蹤的upstream branch, 利用<code>-u</code>或<code>--set-upstream-to</code>: </p>
+<pre><code>$ git branch -u origin/serverfix
+Branch serverfix <span class="hljs-keyword">set</span> up <span class="hljs-keyword">to</span> track remote branch serverfix <span class="hljs-keyword">from</span> origin.
+</code></pre><p>利用<code>git branch -vv</code>一起列出local branch和其追蹤的branch:</p>
+<pre><code>$ git <span class="hljs-keyword">branch </span>-vv
+  iss53     <span class="hljs-number">7</span>e424c3 [origin/iss53: ahead <span class="hljs-number">2</span>] forgot the <span class="hljs-keyword">brackets
+</span>  master    <span class="hljs-number">1</span>ae2a45 [origin/master] deploying index fix
+* serverfix f8674d9 [teamone/server-fix-good: ahead <span class="hljs-number">3</span>, <span class="hljs-keyword">behind </span><span class="hljs-number">1</span>] this should do <span class="hljs-keyword">it
+</span>  testing   <span class="hljs-number">5</span>ea463a trying something new
+</code></pre><p>第1行說 <code>iss53</code>正在追蹤 <code>origin/iss53</code>, <code>ahead 2</code>表示我們有兩個local的commit還沒有push到server去</p>
+<p><code>serverfix</code>, <code>ahead 3</code>表示我們local有3個還沒push到server去, <code>behind 1</code>表示server還有一個commit我們還沒有merge</p>
+<p><code>testing</code>沒有追蹤任何remote branch</p>
+<p>注意這些都是local的cache紀錄, 要確保這樣的資料正確, 要<code>git fetch --all; git branch -vv</code></p>
+<h2 id="pulling">Pulling</h2>
+<p><code>git fetch</code>會把server上我們還沒有的改變全部fetch回來, 但是這個動作並不會修改我們的working directory, 只是把資料抓下來讓我們自己merge.</p>
+<p><strong><code>git pull</code>本質上就是<code>git fetch</code>後立刻<code>git merge</code></strong></p>
+<p>Pro Git這本書建議使用<code>git fetch</code>+<code>git merge</code>這樣比較明確。</p>
+<h2 id="deleting-remote-branches">Deleting Remote Branches</h2>
+<p>使用<code>git push</code>加上<code>--delete</code>:</p>
+<pre><code>$ git push origin --delete serverfix
+To https://github.com/schacon/simplegit
+ - <span class="hljs-comment">[deleted]</span>         serverfix
+</code></pre><div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
