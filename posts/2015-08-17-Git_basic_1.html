@@ -240,6 +240,12 @@ index 264e6ae..53d07a8 100644
  123
 <span class="hljs-addition">+abc</span>
 <span class="hljs-addition">+1q2w</span>
+</code></pre><h3 id="-word-diff">--word-diff</h3>
+<p><code>git diff --word-diff</code>: </p>
+<pre><code>  [-delay<span class="hljs-comment">(1000)</span>;-]{+delay<span class="hljs-comment">(3000)</span>;+}               <span class="hljs-comment">// wait for a second</span>
+</code></pre><p><code>git diff</code>:</p>
+<pre><code>-  delay<span class="hljs-comment">(1000)</span>;               <span class="hljs-comment">// wait for a second</span>
++  delay<span class="hljs-comment">(3000)</span>;               <span class="hljs-comment">// wait for a second</span>
 </code></pre><h2 id="commit-your-changes">Commit your changes</h2>
 <p>當我們的staging area已經調整到我們想要的結果了,就可以commit changes(提交變更的部份)。</p>
 <p>所有都還沒有<code>git add</code>的內容都不會commit。</p>
@@ -248,7 +254,7 @@ index 264e6ae..53d07a8 100644
  <span class="hljs-number">1</span> file <span class="hljs-keyword">changed</span>, <span class="hljs-number">2</span> deletions(-)</span>
 </code></pre><p>訊息顯示commit到mater分支, SHA-1檢查碼(6e4bee4), 改了多少檔案, 有幾行被新增刪除</p>
 <p>每次我們執行一次commit, 我們就紀錄了一個我們專案的snapshot, 可以用來回復或是比對之前之後的紀錄。 </p>
-<p><code>git commit -a</code>: commit a snapshot of all changes in the working directory.</p>
+<p><code>git commit -a</code>: commit a snapshot of all changes in the working directory. (<strong>不包含新增檔案</strong>)</p>
 <p><strong>commit messaage很重要</strong> , <a href="http://chris.beams.io/posts/git-commit/">How to Write a Git Commit Message</a> 做了很詳細的提醒(more!)</p>
 <h2 id="removing-files">Removing Files</h2>
 <p>要從Git移除一個檔案, 必須要從你的tracked file中移除。更明確的說, 就是從你的staging area中移除, 並且執行commit。</p>

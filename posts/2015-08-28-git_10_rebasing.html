@@ -10,7 +10,7 @@
 <p>還有另外一個選擇：你可以把在 <code>C4</code> 裡產生的變化補丁在 <code>C3</code> 的基礎上重新打一遍。在 Git 裡，這種操作叫作<code>rebasing</code>。有了 rebase 命令，就可以把在一個分支裡提交的改變移到另一個分支裡重放一遍, 例如:</p>
 <pre><code><span class="hljs-variable">$ </span>git checkout experiment
 <span class="hljs-variable">$ </span>git rebase master
-</code></pre><p>它的原理是回到兩個分支最近的共同祖先，根據當前分支（也就是要進行衍合的分支 <code>experiment</code>）後續的歷次提交物件（這裡只有一個 <code>C3</code>），生成一系列檔補丁，然後以基底分支（也就是主幹分支 master）最後一個提交物件（<code>C4</code>）為新的出發點，逐個應用之前準備好的補丁檔，最後會生成一個新的合併提交物件（<code>C3&#39;</code>），從而改寫 experiment 的提交歷史，使它成為 master 分支的直接下游:</p>
+</code></pre><p>它的原理是回到兩個分支最近的共同祖先，根據當前分支（也就是要進行衍合的分支 <code>experiment</code>）後續的歷次提交物件（這裡只有一個 <code>C4</code>），生成一系列檔補丁(patch)，然後以基底分支（也就是主幹分支 master）最後一個提交物件（<code>C3</code>）為新的出發點，逐個應用之前準備好的補丁檔，最後會生成一個新的合併提交物件（<code>C4&#39;</code>），從而改寫 experiment 的提交歷史，使它成為 master 分支的直接下游:</p>
 <p>It works by going to the common ancestor of the two branches (the one you’re on and the one you’re rebasing onto), getting the diff introduced by each commit of the branch you’re on, saving those diffs to temporary files, resetting the current branch to the same commit as the branch you are rebasing onto, and finally applying each change in turn.</p>
 <p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/basic-rebase-3.png" alt="b3"></p>
 <p>回到<code>master</code>, 進行fast forward合併:</p>
