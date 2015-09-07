@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - docker_dockerfile</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-docker-dockerfile-reference">[Docker]  Dockerfile reference</h1>
+<p>以下局部翻譯與整理自 <a href="https://docs.docker.com/reference/builder/">Official Dockerfile doc</a></p>
+<h2 id="usage">Usage</h2>
+<p>The <code>docker build</code> command builds an image from a <code>Dockerfile</code> and a <code>context</code>. The build’s context is the files at a specified location PATH or URL.  <code>PATH</code> is a directory on your local directory, <code>URL</code> is a the location of a Git repository.</p>
+<pre><code>$ docker <span class="hljs-keyword">build </span>.
+<span class="hljs-label">Sending</span> <span class="hljs-keyword">build </span>context to Docker daemon  <span class="hljs-number">6</span>.<span class="hljs-number">51</span> MB
+<span class="hljs-label">...</span>
+</code></pre><p><code>.dockerignore</code>排除掉不必要build的檔案或是目錄</p>
+<p>You can specify a repository and tag at which to save the new image if the build succeeds:</p>
+<pre><code>$ docker <span class="hljs-keyword">build </span>-t shykes/myapp .
+</code></pre><p>build完, 就可以考慮pushing a respository to its registry.</p>
+<h2 id="format">Format</h2>
+<pre><code><span class="hljs-comment"># Comment</span>
+<span class="hljs-title">INSTRUCTION</span> arguments
+</code></pre><p>第1行一定要是<code>FROM</code> 指定base image</p>
+<h2 id="environment-replacement">Environment replacement</h2>
+<p>Environment variables(declared with the <code>ENV</code> statement) can alse by used in certain instructions as variables to interpreted</p>
+<p><code>$variable_name</code> 或 <code>${variable_name}</code>(用在像是 <code>${foo}_bar</code>)</p>
+<p><code>${variable_name}</code>支援一些bash modifiers: </p>
+<ul>
+<li><code>${variable:~word}</code> 如果<code>variable</code>被設置,那結果就是這個<code>variable</code>的值, 如果沒有設置, 那<code>word</code>就是結果的值</li>
+<li><code>${variable:+word}</code> 如果<code>variable</code>有設置, 那<code>word</code>就是結果的值, 不然為空字串</li>
+</ul>
+<p>以下指令負責處理environment variables: </p>
+<ul>
+<li><code>ENV</code></li>
+<li><code>ADD</code></li>
+<li><code>COPY</code></li>
+<li><code>WORKDIR</code></li>
+<li><code>EXPOSE</code></li>
+<li><code>VOLUME</code></li>
+<li><code>USER</code></li>
+</ul>
+<p><strong>注意</strong></p>
+<pre><code><span class="hljs-built_in">ENV</span> abc=hello
+<span class="hljs-built_in">ENV</span> abc=bye def=$abc
+<span class="hljs-built_in">ENV</span> ghi=$abc
+</code></pre><p><code>def</code>為<code>hello</code>(因為abc=bye當作是同行命令的一部份), <code>ghi</code>為bye</p>
+<h2 id="-dockerignore">.dockerignore</h2>
+<pre><code><span class="hljs-keyword">*</span>/temp<span class="hljs-keyword">*</span>
+<span class="hljs-keyword">*</span>/<span class="hljs-keyword">*</span>/temp<span class="hljs-keyword">*</span>
+temp?
+<span class="hljs-keyword">*</span>.md
+!LICENSE.md
+</code></pre><p><code>temp?</code>: Exclude the files that match the pattern in the root directory. For example, the files tempa, tempb in the root directory are ignored.</p>
+<h2 id="from">FROM</h2>
+<pre><code>FROM <span class="hljs-tag">&lt;<span class="hljs-title">image</span>&gt;</span>
+FROM <span class="hljs-tag">&lt;<span class="hljs-title">image</span>&gt;</span>:<span class="hljs-tag">&lt;<span class="hljs-title">tag</span>&gt;</span>
+FROM <span class="hljs-tag">&lt;<span class="hljs-title">imaage</span>&gt;</span>@<span class="hljs-tag">&lt;<span class="hljs-title">digest</span>&gt;</span>
+</code></pre><p><code>FROM</code>可以多次出現用來建立多個images,  預設是<code>latest</code></p>
+<h2 id="run">RUN</h2>
+<p>The RUN instruction will execute any commands in a new layer on top of the current image and commit the results. The resulting committed image will be used for the next step in the Dockerfile.</p>
+<p>兩種型式: </p>
+<ul>
+<li><p>shell form: <code>RUN &lt;command&gt;</code>: <code>bash /bin/sh -c</code> (launch bash and execute the <command>)</p>
+</li>
+<li><p>exec form: <code>RUN [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]</code></p>
+</li>
+</ul>
+<p><strong>Layering RUN instructions and generating commits conforms to the core concepts of Docker where commits are cheap and containers can be created from any point in an image’s history, much like source control.</strong></p>
+<p>exec form 避免shell string munging(改寫), 而且讓<code>RUN</code>指令使用base image而不用包含<code>/bin/sh</code></p>
+<p><strong>注意</strong> 使用不同的shell例如: <code>RUN [&quot;/bin/bash&quot;, &quot;-c&quot;, &quot;echo hello&quot;]</code>, 只能使用雙引號</p>
+<p><strong>注意</strong> exec form裡<code>RUN [ &quot;echo&quot;, &quot;$HOME&quot; ]</code>無法執行變數取代, 只能用像: <code>RUN [ &quot;sh&quot;, &quot;-c&quot;, &quot;echo&quot;, &quot;$HOME&quot; ]</code>才行! </p>
+<p><code>docker build --no-cache</code></p>
+<p><a href="http://stackoverflow.com/questions/3985193/what-is-bin-sh-c">stackoverflow- what is /bin/sh -c</a></p>
+<h2 id="cmd">CMD</h2>
+<p><code>CMD</code>的主要目的, 就是提供一個可執行的continer預設的執行指令</p>
+<ul>
+<li>exec form: <code>CMD [&quot;executable&quot;,&quot;param1&quot;,&quot;param2&quot;]</code> 建議用這</li>
+<li><code>CMD [&quot;param1&quot;,&quot;param2&quot;]</code> 為<code>ENTRYPOINT</code>預設參數</li>
+<li>shell form: <code>CMD command param1 param2</code></li>
+</ul>
+<p>Dokcerfile只能有一個CMD指令</p>
+<p>通常<code>CMD</code>會跟<code>ENTRYPOINT</code>合用, 用來提供預設的參數給<code>ENTRYPOINT</code></p>
+<pre><code><span class="hljs-built_in">FROM</span> ubuntu
+<span class="hljs-built_in">CMD</span> <span class="bash">[<span class="hljs-string">"/usr/bin/wc"</span>,<span class="hljs-string">"--help"</span>]</span>
+</code></pre><p>if you would like your container to run the same executable every time, then you should consider using ENTRYPOINT in combination with CMD. </p>
+<p><strong>注意CMD和RUN的區別</strong>: <code>RUN</code>會實際執行command, 並且把結果commit。<code>CMD</code>在build time的時候不會執行任何事情</p>
+<h2 id="label">LABEL</h2>
+<p>用來加入些metadata給這個image: </p>
+<pre><code>LABEL <span class="hljs-tag">&lt;<span class="hljs-title">key</span>&gt;</span>=<span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-title">key</span>&gt;</span>=<span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-title">key</span>&gt;</span>=<span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span> ...
+</code></pre><p>例如:</p>
+<pre><code><span class="hljs-keyword">LABEL</span> com.example.<span class="hljs-keyword">label</span>-with-value=<span class="hljs-string">"foo"</span>
+<span class="hljs-keyword">LABEL</span> <span class="hljs-keyword">version</span>=<span class="hljs-string">"1.0"</span>
+<span class="hljs-keyword">LABEL</span> description="This text illustrates \
+that <span class="hljs-keyword">label</span>-values can span multiple lines."
+</code></pre><p><strong>Docker建議儘可能把labels都放在一個LABEL命令下</strong>, 因為每個LABEL都會產生一個新的layer, 導致最後產生的image沒有效率, 最好是像這樣: </p>
+<pre><code>LABEL multi.<span class="hljs-variable">label1=</span><span class="hljs-string">"value1"</span> multi.<span class="hljs-variable">label2=</span><span class="hljs-string">"value2"</span> <span class="hljs-variable">other=</span><span class="hljs-string">"value3"</span>
+</code></pre><p>要察看該image有哪些labels, 使用<code>docker inspect</code> command, 察看其<code>Labels</code>屬性值</p>
+<h2 id="expose">EXPOSE</h2>
+<p>The <code>EXPOSE</code> instruction informs Docker that the container will listen on the specified network ports at runtime.</p>
+<pre><code>EXPOSE <span class="hljs-tag">&lt;<span class="hljs-title">port</span>&gt;</span> [<span class="hljs-tag">&lt;<span class="hljs-title">port</span>&gt;</span>...]
+</code></pre><p> EXPOSE doesn’t define which ports can be exposed to the host or make ports accessible from the host by default. To expose ports to the host, at runtime, use the -p flag or the -P flag.</p>
+<h2 id="env">ENV</h2>
+<pre><code>ENV <span class="hljs-tag">&lt;<span class="hljs-title">key</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>
+ENV <span class="hljs-tag">&lt;<span class="hljs-title">key</span>&gt;</span>=<span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span> ...
+</code></pre><p>例如: </p>
+<pre><code>ENV myName=<span class="hljs-string">"John Doe"</span> myDog=Rex<span class="hljs-string">\</span> The<span class="hljs-string">\</span> Dog <span class="hljs-string">\</span>
+    myCat=fluffy
+</code></pre><p>利用 <code>docker inspect</code>檢查, 利用<code>docker run --env &lt;key&gt;=&lt;value&gt;</code>做修改</p>
+<p><strong>Note</strong> To set a value for a single command, use <code>RUN &lt;key&gt;=&lt;value&gt; &lt;command&gt;</code>.</p>
+<h2 id="add">ADD</h2>
+<p>The <code>ADD</code> instruction copies new files , directories, or remote file URLs from <src>,  and adds them to the filesystem of the container at the path <dest>.</p>
+<p>兩種型式: </p>
+<ul>
+<li><code>ADD &lt;src&gt;.. &lt;dest&gt;</code></li>
+<li><code>ADD [&quot;&lt;src&gt;&quot;,...&quot;&lt;dest&gt;&quot;]</code>:  (this form is required for paths containing whitespace)</li>
+</ul>
+<p>例如: </p>
+<pre><code><span class="hljs-built_in">ADD</span> <span class="bash">hom* /mydir/        <span class="hljs-comment"># adds all files starting with "hom"</span>
+</span><span class="hljs-built_in">ADD</span> <span class="bash">hom?.txt /mydir/    <span class="hljs-comment"># ? is replaced with any single character</span></span>
+</code></pre><p><strong>The <dest> is an absolute path, or a path relative to WORKDIR</strong>: </p>
+<pre><code><span class="hljs-built_in">ADD</span> <span class="bash"><span class="hljs-built_in">test</span> aDir/          <span class="hljs-comment"># adds "test" to `WORKDIR`/aDir/</span></span>
+</code></pre><p>In the case where <src> is a remote file URL, the destination will have permissions of 600.</p>
+<p>若沒有權限, 需要用<code>RUN wget</code>或是<code>RUN curl</code>來取代<code>ADD</code></p>
+<p>有很多copy的注意規則, 直接看<a href="https://docs.docker.com/reference/builder/#cmd">官方說明</a></p>
+<h2 id="copy">COPY</h2>
+<p><strong>跟ADD一樣, 但是沒有辦法處理tar, 和url</strong>  (ADD可以做比較多事情)</p>
+<p><strong> &quot;For other items (files, directories) that do not require ADD’s tar auto-extraction capability, you should always use COPY.&quot;</strong></p>
+<p>兩種型式: </p>
+<ul>
+<li><code>COPY &lt;src&gt;... &lt;dest&gt;</code></li>
+<li><code>COPY [&quot;&lt;src&gt;&quot;,... &quot;&lt;dest&gt;&quot;]</code> (this form is required for paths containing whitespace)</li>
+</ul>
+<p>例如: </p>
+<pre><code><span class="hljs-built_in">COPY</span> <span class="bash">hom* /mydir/        <span class="hljs-comment"># adds all files starting with "hom"</span>
+</span><span class="hljs-built_in">COPY</span> <span class="bash">hom?.txt /mydir/    <span class="hljs-comment"># ? is replaced with any single character</span></span>
+</code></pre><h2 id="volume">VOLUME</h2>
+<pre><code><span class="hljs-title">VOLUME ["/data"]</span>
+</code></pre><p><a href="https://en.wikipedia.org/wiki/Volume_(computing">the definition of volume</a>: In the context of computer operating systems, a volume or logical drive is a single accessible storage area with a single file system, typically (though not necessarily) resident on a single partition of a hard disk.</p>
+<pre><code><span class="hljs-built_in">FROM</span> ubuntu
+<span class="hljs-built_in">RUN</span> <span class="bash">mkdir /myvol
+</span><span class="hljs-built_in">RUN</span> <span class="bash"><span class="hljs-built_in">echo</span> <span class="hljs-string">"hello world"</span> &gt; /myvol/greeting
+</span><span class="hljs-built_in">VOLUME</span> <span class="bash">/myvol</span>
+</code></pre><p>以上Dockerfile經由<code>docker run</code>, 會建立一個image, 建立一個新的<code>/myvol</code>的mount point, 並且將<code>greeting</code>檔案拷貝到我們新建的volumne.</p>
+<p><strong>若在volumne的資料在宣告volumen之後被改變, 這些改變會被捨棄</strong></p>
+<h2 id="user">USER</h2>
+<pre><code><span class="hljs-built_in">USER</span> daemon
+</code></pre><p>The <code>USER</code> instruction sets the user name or UID to use when running the image and for any <code>RUN</code>, <code>CMD</code>, <code>ENTRYPOINT</code> instructions that follow it in the Dockerfile.</p>
+<h2 id="workdir">WORKDIR</h2>
+<pre><code><span class="hljs-built_in">WORKDIR</span> <span class="bash">/path/to/workdir</span>
+</code></pre><p>The WORKDIR instruction sets the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow it in the Dockerfile.</p>
+<p>一個Dockerfile裏面可以呼叫多次來改變工作目錄: </p>
+<pre><code><span class="hljs-built_in">WORKDIR</span> <span class="bash">/a
+</span><span class="hljs-built_in">WORKDIR</span> <span class="bash">b
+</span><span class="hljs-built_in">WORKDIR</span> <span class="bash">c
+</span><span class="hljs-built_in">RUN</span> <span class="bash"><span class="hljs-built_in">pwd</span></span>
+</code></pre><p>上例最後pwd結果為<code>/a/b/c</code></p>
+<p><code>WORKDIR</code>也收之前宣告的<code>ENV</code>環境變數: </p>
+<pre><code><span class="hljs-built_in">ENV</span> DIRPATH /path
+<span class="hljs-built_in">WORKDIR</span> <span class="bash"><span class="hljs-variable">$DIRPATH</span>/<span class="hljs-variable">$DIRNAME</span></span>
+</code></pre><h2 id="entrypoint">ENTRYPOINT</h2>
+<p><code>ENTRYPOINT</code> 可以設定container為可執行</p>
+<ul>
+<li>exec form: <code>ENTRYPOINT [&quot;executable&quot;, &quot;param1&quot;, &quot;param2&quot;]</code> 建議</li>
+<li>shell form: <code>ENTRYPOINT command param1 param2</code></li>
+</ul>
+<p>例如以下, 啟動nginx及其預設內容,port 80: </p>
+<pre><code>$ docker run -<span class="hljs-tag">i</span> -t --rm -<span class="hljs-tag">p</span> <span class="hljs-number">80</span>:<span class="hljs-number">80</span> nginx
+</code></pre><p><code>docker run &lt;image&gt;</code>後面的參數都會被加到所有exec form <code>ENTRYPOINT</code>的所有元素去, 並且會覆寫所有用<code>CMD</code>指定的元素</p>
+<p>例如<code>docker run &lt;image&gt; -d</code>, 那<code>-d</code>參數都會pass給entry point,  可用<code>docker run --entrypoint</code>覆寫entrypoint</p>
+<p>You can use the exec form of ENTRYPOINT to set fairly stable default commands and arguments and then use either form of CMD to set additional defaults that are more likely to be changed: </p>
+<pre><code><span class="hljs-built_in">FROM</span> ubuntu
+<span class="hljs-built_in">ENTRYPOINT</span> <span class="bash">[<span class="hljs-string">"top"</span>, <span class="hljs-string">"-b"</span>]
+</span><span class="hljs-built_in">CMD</span> <span class="bash">[<span class="hljs-string">"-c"</span>]</span>
+</code></pre><p>例如: </p>
+<pre><code><span class="hljs-built_in">FROM</span> debian:stable
+<span class="hljs-built_in">RUN</span> <span class="bash">apt-get update &amp;&amp; apt-get install -y --force-yes apache2
+</span><span class="hljs-built_in">EXPOSE</span> <span class="hljs-number">80</span> <span class="hljs-number">443</span>
+VOLUME [<span class="hljs-string">"/var/www"</span>, <span class="hljs-string">"/var/log/apache2"</span>, <span class="hljs-string">"/etc/apache2"</span>]
+<span class="hljs-built_in">ENTRYPOINT</span> <span class="bash">[<span class="hljs-string">"/usr/sbin/apache2ctl"</span>, <span class="hljs-string">"-D"</span>, <span class="hljs-string">"FOREGROUND"</span>]</span>
+</code></pre><h2 id="onbuild">ONBUILD</h2>
+<pre><code>ONB<span class="hljs-built_in">UILD</span> [I<span class="hljs-built_in">NSTRUCTION</span>]
+</code></pre><p>當這個image被用來當作其他build的base的時候, <code>ONBUILD</code> 指令會在image裏面加一個 <em>trigger</em> 指令用來晚點執行</p>
+<p>The trigger will be executed in the context of the downstream build, as if it had been inserted immediately after the FROM instruction in the downstream Dockerfile.</p>
+<p>Any build instruction can be registered as a trigger.</p>
+<p>當我們要建立一個image來build其他image的時候會很有用, 例如 an application build environment 或是 a daemon ,這些都可以被使用者客制化</p>
+<p>例如, 我們的image是一個可重複使用的Python application builder, 那會需要一些application source code被加入到特定的目錄, 另外也可能會需要一個build script在之後被呼叫</p>
+<p>這時候不能只用<code>ADD</code>或是<code>RUN</code>, 因為沒有存取application source code的權限, 並且每個apllication build都不會相同</p>
+<p>我們可以提供開發者一個Dockerfile boilerplate讓開發者用來copy-paste到他們的app去, 不過這樣沒有效率, 容易發生錯誤而且難以更新因為這檔案混雜了特定的app相關的程式碼</p>
+<p>解法就是利用<code>ONBUILD</code>註冊一些進一步的指令來晚些執行</p>
+<p>工作原理: </p>
+<ol>
+<li>When it encounters an ONBUILD instruction, the builder adds a trigger to the metadata of the image being built. The instruction does not otherwise affect the current build.</li>
+<li>At the end of the build, a list of all triggers is stored in the image manifest, under the key OnBuild. They can be inspected with the docker inspect command.</li>
+<li>Later the image may be used as a base for a new build, using the FROM instruction. As part of processing the FROM instruction, the downstream builder looks for ONBUILD triggers, and executes them in the same order they were registered. If any of the triggers fail, the FROM instruction is aborted which in turn causes the build to fail. If all triggers succeed, the FROM instruction completes and the build continues as usual.</li>
+<li>Triggers are cleared from the final image after being executed. In other words they are not inherited by “grand-children” builds.</li>
+</ol>
+<pre><code>[...]
+<span class="hljs-built_in">ONBUILD</span> <span class="hljs-built_in">ADD</span> <span class="bash">. /app/src
+</span><span class="hljs-built_in">ONBUILD</span> <span class="hljs-built_in">RUN</span> <span class="bash">/usr/<span class="hljs-built_in">local</span>/bin/python-build --dir /app/src
+</span>[...]
+</code></pre><div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
