@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><meta name="viewport" content="width=device-width"><title>Cho-Ching's Blog - docker_container_commands</title><link rel="stylesheet" href="../css/main.css"><link rel="stylesheet" href="../css/codepen-embed.css"><script src="../js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="Wrapper"><div class="Header"><h1><a href="/">Cho-Ching's Blog</a></h1><ul class="Menu"><li><a href="/">Posts</a></li><li><a href="/pages/Bookmarks.html">Bookmarks</a></li><li><a href="/english">English</a></li><li><a href="/pages/About.html">About</a></li></ul></div><div class="Main"><h1 id="-docker-container-">[Docker] Container -- 操作</h1>
+<p>來自於 <a href="http://www.dockerbook.com/">dockerbook</a>與官網操作手冊的整理, 列一下目前有用到的指令與參數, 儘可能依照情境順序排列指令。</p>
+<p>陸續加範例</p>
+<h2 id="-container">什麼是 Container</h2>
+<p>Docker helps you build and deploy containers inside of which you can package your applications and services.</p>
+<p><strong>Containers are launched fromn images and can contain one or more running processes</strong></p>
+<p>you can think about <strong>images as the building or packing aspect of Docker and the containers as the running or execution of Docker</strong>.</p>
+<p>A Docker container is : </p>
+<ul>
+<li>an image format</li>
+<li>a set of standard operations</li>
+<li>an execution environment</li>
+</ul>
+<h2 id="run-our-first-container">Run our first container</h2>
+<pre><code><span class="hljs-variable">$ </span>docker run -i -t ubuntu /bin/bash
+root<span class="hljs-variable">@c5328777e0a0</span><span class="hljs-symbol">:/</span><span class="hljs-comment">#</span>
+</code></pre><p>The <code>-i</code> flag starts an interactive container. The <code>-t</code> flag creates a pseudo-TTY that attaches stdin and stdout.</p>
+<p>利用<code>$ docker help run</code>察看可用flags </p>
+<p>這裡告訴Docker我們使用<code>ubuntu</code>來當作base image在我們的檔案系統裏面建立一個container。</p>
+<p>這個container有自己的network, IP address, 還有一個bridge interface來跟local host溝通</p>
+<pre><code>root<span class="hljs-variable">@c5328777e0a0</span><span class="hljs-symbol">:/</span><span class="hljs-comment"># hostname</span>
+root<span class="hljs-variable">@c5328777e0a0</span><span class="hljs-symbol">:/</span><span class="hljs-comment"># cat /etc/hosts </span>
+root<span class="hljs-variable">@c5328777e0a0</span><span class="hljs-symbol">:/</span><span class="hljs-comment"># ip a </span>
+root<span class="hljs-variable">@c5328777e0a0</span><span class="hljs-symbol">:/</span><span class="hljs-comment"># ps -aux</span>
+root<span class="hljs-variable">@c5328777e0a0</span><span class="hljs-symbol">:/</span><span class="hljs-comment"># apt-get update &amp;&amp; apt-get install vim</span>
+</code></pre><p>打<code>exit</code>跳出</p>
+<p>一旦我們跳出container, 命令(<code>/bin/bash</code>)就停止執行, container中止</p>
+<h2 id="container-commands">Container commands</h2>
+<h3 id="run-">run (陸續補充)</h3>
+<p>run a command in a new container. </p>
+<p><code>--name=</code>: assign a name to the container</p>
+<p><code>-d</code>: run container in background and print container ID.</p>
+<p>例如 <code>$ docker run -i -t --name=my_container ubuntu /bin/bash</code>就會從<code>ubuntu</code> image 建立一個新的container叫作<code>my_container</code>, 並且執行<code>/bin/bash</code>指令開啟一個bash shell.</p>
+<h3 id="create">create</h3>
+<p>create a new container <strong>but does not run it</strong></p>
+<h3 id="ps">ps</h3>
+<p>list containers</p>
+<p><code>-a</code>: show all containers(default show just running)</p>
+<p><code>-q</code>: only display numeric IDs</p>
+<p><code>-l</code>: show the latest created container, include non-running. </p>
+<p><code>-n=</code>: show n last created containers, include non-running.</p>
+<h3 id="stop">stop</h3>
+<p>stop a running container by sending SIGTERM and then SIGKILL after a grace period</p>
+<h3 id="start">start</h3>
+<p>start one or more stopped containers. </p>
+<p><code>-i</code>: attach container&#39;s STDIN</p>
+<p><code>-a</code>: attach STDOUT/STDERR and forward signals.</p>
+<h3 id="rm">rm</h3>
+<p>remove one or more containers,</p>
+<p><code>-f</code>: force the removal of a running container(SIGKILL)</p>
+<p><code>$ docker rm `docker ps -a -q`</code> 刪除所有的container</p>
+<h3 id="logs">logs</h3>
+<p>fetchs the logs of the container, 看看container裏面發生了什麼, </p>
+<p><code>-f</code>: follow log output, </p>
+<p><code>-t</code>: show timestamps</p>
+<h3 id="top">top</h3>
+<p>display the running processes of a container </p>
+<pre><code>$ <span class="hljs-function_or_atom">docker</span> <span class="hljs-function_or_atom">stats</span> <span class="hljs-function_or_atom">daemon_dave</span> 
+<span class="hljs-variable">CONTAINER</span>           <span class="hljs-variable">CPU</span> <span class="hljs-comment">%               MEM USAGE/LIMIT     MEM %               NET I/O</span>
+<span class="hljs-function_or_atom">daemon_dave</span>         <span class="hljs-number">0.09</span><span class="hljs-comment">%               2.707 MB/4.02 GB    0.07%               10.52 kB/828 B</span>
+</code></pre><h3 id="stats">stats</h3>
+<p>display a live stream of one or more containers&#39; resource usage statistics(統計)</p>
+<pre><code>$ docker top daemon_dave 
+UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
+root                <span class="hljs-number">8173</span>                <span class="hljs-number">2361</span>                <span class="hljs-number">0</span>                   <span class="hljs-number">20</span>:<span class="hljs-number">41</span>               ?                   <span class="hljs-number">00</span>:<span class="hljs-number">00</span>:<span class="hljs-number">00</span>            /bin/sh -c <span class="hljs-keyword">while</span> <span class="hljs-literal">true</span>;<span class="hljs-keyword">do</span> <span class="hljs-built_in">echo</span> hello world;sleep <span class="hljs-number">1</span>;<span class="hljs-keyword">done</span>
+root                <span class="hljs-number">9971</span>                <span class="hljs-number">8173</span>                <span class="hljs-number">0</span>                   <span class="hljs-number">20</span>:<span class="hljs-number">44</span>               ?                   <span class="hljs-number">00</span>:<span class="hljs-number">00</span>:<span class="hljs-number">00</span>            sleep <span class="hljs-number">1</span>
+</code></pre><h3 id="attach">attach</h3>
+<p>Attach(<strong>connect</strong>) to a running container. --&gt; to view its ongoing output or to control it interactively. <code>CTRL-p</code>, <code>CTRL-q</code>: detach, <code>CTRL-c</code> will send SIGKILL to the container.</p>
+<p>在使用<code>$ docker run -d</code>或是<code>$ docker start</code>後, 有些時候要進入container操作, 那就可用<code>$ docker attach</code></p>
+<h3 id="exec">exec</h3>
+<p>在我們的container裏面執行額外的processes (run a command in a running container),</p>
+<p><code>-d</code>: detached mode(run command in the background) </p>
+<p>利用<code>docker exec</code> 做維護, monitoring 或是 management tasks.</p>
+<div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
+var disqus_shortname = 'luchoching';
+/* * * DON'T EDIT BELOW THIS LINE * * */
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><noscript><Please>enable JavaScript to view the </Please><a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus`</a></noscript><div class="Footer"><p><i>學習程式,順便翻譯與筆記。</i><a href="email:choching.work@gmail.com">Email Me >></a></p></div><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-63125623-1', 'auto');
+ga('send', 'pageview');</script></div></body></html>
