@@ -28,9 +28,31 @@ root<span class="hljs-variable">@c5328777e0a0</span><span class="hljs-symbol">:/
 <h2 id="container-commands">Container commands</h2>
 <h3 id="run-">run (陸續補充)</h3>
 <p>run a command in a new container. </p>
-<p><code>--name=</code>: assign a name to the container</p>
-<p><code>-d</code>: run container in background and print container ID.</p>
 <p>例如 <code>$ docker run -i -t --name=my_container ubuntu /bin/bash</code>就會從<code>ubuntu</code> image 建立一個新的container叫作<code>my_container</code>, 並且執行<code>/bin/bash</code>指令開啟一個bash shell.</p>
+<p>-a, --attach=[]                 Attach to STDIN, STDOUT or STDERR</p>
+<p>--add-host=[]                   Add a custom host-to-IP mapping (host:ip)</p>
+<p>-d, --detach=false              Run container in background and print container ID</p>
+<p>-e, --env=[]                    Set environment variables</p>
+<p>--entrypoint=                   Overwrite the default ENTRYPOINT of the image</p>
+<p>--env-file=[]                   Read in a file of environment variables</p>
+<p>--expose=[]                     Expose a port or a range of ports</p>
+<p>--group-add=[]                  Add additional groups to join</p>
+<p>-h, --hostname=                 Container host name</p>
+<p>-i, --interactive=false         Keep STDIN open even if not attached</p>
+<p>-l, --label=[]                  Set meta data on a container</p>
+<p>--label-file=[]                 Read in a line delimited file of labels</p>
+<p>--link=[]                       Add link to another container</p>
+<p>--name=                         Assign a name to the container</p>
+<p>-P, --publish-all=false         Publish all exposed ports to random ports</p>
+<p>-p, --publish=[]                Publish a container&#39;s port(s) to the host</p>
+<p>--read-only=false               Mount the container&#39;s root filesystem as read only</p>
+<p>--restart=no                    Restart policy to apply when a container exits</p>
+<p>--rm=false                      Automatically remove the container when it exits</p>
+<p>-t, --tty=false                 Allocate a pseudo-TTY</p>
+<p>-u, --user=                     Username or UID (format: <name|uid>[:<group|gid>])</p>
+<p>-v, --volume=[]                 Bind mount a volume</p>
+<p>--volumes-from=[]               Mount volumes from the specified container(s)</p>
+<p>-w, --workdir=                  Working directory inside the container</p>
 <h3 id="create">create</h3>
 <p>create a new container <strong>but does not run it</strong></p>
 <h3 id="ps">ps</h3>
@@ -71,6 +93,8 @@ root                <span class="hljs-number">9971</span>                <span c
 <p>在我們的container裏面執行額外的processes (run a command in a running container),</p>
 <p><code>-d</code>: detached mode(run command in the background) </p>
 <p>利用<code>docker exec</code> 做維護, monitoring 或是 management tasks.</p>
+<h3 id="inspect">inspect</h3>
+<p>Return low-level information on a container or image</p>
 <div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
 var disqus_shortname = 'luchoching';
 /* * * DON'T EDIT BELOW THIS LINE * * */
