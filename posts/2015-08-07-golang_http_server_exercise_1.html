@@ -23,7 +23,7 @@
 <p>打開<code>http:localhost:8080</code>就可以見到 <code>doc/index.html</code>的畫面。</p>
 <h2 id="hello-from-template-">Hello (from template)</h2>
 <pre><code><span class="hljs-variable">$ </span>mkdir templates
-<span class="hljs-variable">$ </span>touch temlpates/<span class="hljs-constant">Hello.</span>html
+<span class="hljs-variable">$ </span>touch temlpates/<span class="hljs-constant">Hello</span>.html
 </code></pre><p><code>Hello.html</code>:</p>
 <pre><code class="lang-html"><span class="hljs-doctype">&lt;!DOCTYPE html&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-title">html</span> <span class="hljs-attribute">lang</span>=<span class="hljs-value">"zh"</span>&gt;</span>
@@ -46,15 +46,15 @@
     <span class="hljs-string">"path"</span>
 )
 
-func handler(w http.<span class="hljs-type">ResponseWriter</span>, r *http.<span class="hljs-type">Request</span>) {
-    t := <span class="hljs-keyword">template</span>.<span class="hljs-type">Must</span>(<span class="hljs-keyword">template</span>.<span class="hljs-type">ParseFiles</span>(path.<span class="hljs-type">Join</span>(<span class="hljs-string">"templates"</span>, <span class="hljs-string">"Hello.html"</span>)))
-    t.<span class="hljs-type">Execute</span>(w, <span class="hljs-keyword">nil</span>)
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">handler</span><span class="hljs-params">(w http.ResponseWriter, r *http.Request)</span></span> {
+    t := template.<span class="hljs-type">Must</span>(template.<span class="hljs-type">ParseFiles</span>(path.<span class="hljs-type">Join</span>(<span class="hljs-string">"templates"</span>, <span class="hljs-string">"Hello.html"</span>)))
+    t.<span class="hljs-type">Execute</span>(w, <span class="hljs-literal">nil</span>)
 }
 
-func main() {
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
     http.<span class="hljs-type">HandleFunc</span>(<span class="hljs-string">"/"</span>, handler)
 
-    <span class="hljs-keyword">if</span> err := http.<span class="hljs-type">ListenAndServe</span>(<span class="hljs-string">":8080"</span>, <span class="hljs-keyword">nil</span>); err != <span class="hljs-keyword">nil</span> {
+    <span class="hljs-keyword">if</span> err := http.<span class="hljs-type">ListenAndServe</span>(<span class="hljs-string">":8080"</span>, <span class="hljs-literal">nil</span>); err != <span class="hljs-literal">nil</span> {
         log.<span class="hljs-type">Fatal</span>(<span class="hljs-string">"ListenAndServe:"</span>, err)
     }
 }
@@ -92,7 +92,7 @@ $ touch <span class="hljs-keyword">static</span><span class="hljs-regexp">/css/m
 <pre><code>...
 Resource interpreted <span class="hljs-keyword">as</span> Stylesheet <span class="hljs-keyword">but</span> transferred <span class="hljs-keyword">with</span> MIME type <span class="hljs-type">text</span>/html
 </code></pre><p>如果我們沒有指定對應css, js的URL handler, golang的net/http library就會把該路徑的回應都傳回text。Css, JavaScript檔案均為static file, 需要增加file server來處理, 修改<code>main.go</code>: </p>
-<pre><code class="lang-go">package main
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
 
 <span class="hljs-keyword">import</span> (
     <span class="hljs-string">"html/template"</span>
@@ -101,20 +101,20 @@ Resource interpreted <span class="hljs-keyword">as</span> Stylesheet <span class
     <span class="hljs-string">"path"</span>
 )
 
-func handler(w http.<span class="hljs-type">ResponseWriter</span>, r *http.<span class="hljs-type">Request</span>) {
-    t := <span class="hljs-keyword">template</span>.<span class="hljs-type">Must</span>(<span class="hljs-keyword">template</span>.<span class="hljs-type">ParseFiles</span>(path.<span class="hljs-type">Join</span>(<span class="hljs-string">"templates"</span>, <span class="hljs-string">"Hello.html"</span>)))
-    t.<span class="hljs-type">Execute</span>(w, <span class="hljs-keyword">nil</span>)
+<span class="hljs-function">func <span class="hljs-title">handler</span><span class="hljs-params">(w http.ResponseWriter, r *http.Request)</span> </span>{
+    t := template.Must(template.ParseFiles(path.Join(<span class="hljs-string">"templates"</span>, <span class="hljs-string">"Hello.html"</span>)))
+    t.Execute(w, nil)
 }
 
 func main() {
 
-    fs := http.<span class="hljs-type">FileServer</span>(http.<span class="hljs-type">Dir</span>(<span class="hljs-string">"static"</span>))
-    http.<span class="hljs-type">Handle</span>(<span class="hljs-string">"/static/"</span>, http.<span class="hljs-type">StripPrefix</span>(<span class="hljs-string">"/static/"</span>, fs))
+    fs := http.FileServer(http.Dir(<span class="hljs-string">"static"</span>))
+    http.Handle(<span class="hljs-string">"/static/"</span>, http.StripPrefix(<span class="hljs-string">"/static/"</span>, fs))
 
-    http.<span class="hljs-type">HandleFunc</span>(<span class="hljs-string">"/"</span>, handler)
+    http.HandleFunc(<span class="hljs-string">"/"</span>, <span class="hljs-keyword">handler</span>)
 
-    <span class="hljs-keyword">if</span> err := http.<span class="hljs-type">ListenAndServe</span>(<span class="hljs-string">":8080"</span>, <span class="hljs-keyword">nil</span>); err != <span class="hljs-keyword">nil</span> {
-        log.<span class="hljs-type">Fatal</span>(<span class="hljs-string">"ListenAndServe:"</span>, err)
+    <span class="hljs-keyword">if</span> err := http.ListenAndServe(<span class="hljs-string">":8080"</span>, nil); err != nil {
+        log.Fatal(<span class="hljs-string">"ListenAndServe:"</span>, err)
     }
 }
 </code></pre>
@@ -124,18 +124,18 @@ func main() {
 <p>這裡我們的FileServer所指定的<code>static</code>為static files的根目錄。那我們要的<code>/css/main.css</code>的確在我們的<code>static</code>目錄裏面, 這樣就會得到我們要的結果。</p>
 <h2 id="-">錯誤處理</h2>
 <p>在<code>handler</code>加上一些錯誤處理, URL pattern只允許&quot;/&quot;, method只允許&quot;GET&quot;:</p>
-<pre><code class="lang-go">func handler(w http.<span class="hljs-type">ResponseWriter</span>, r *http.<span class="hljs-type">Request</span>) {
-  <span class="hljs-keyword">if</span> r.<span class="hljs-type">URL</span>.<span class="hljs-type">Path</span> != <span class="hljs-string">"/"</span> {
-    http.<span class="hljs-type">Error</span>(w, <span class="hljs-string">"Not found"</span>, http.<span class="hljs-type">StatusNotFound</span>)
+<pre><code class="lang-go">func <span class="hljs-operator"><span class="hljs-keyword">handler</span>(w <span class="hljs-keyword">http</span>.ResponseWriter, r *<span class="hljs-keyword">http</span>.Request) {
+  <span class="hljs-keyword">if</span> r.<span class="hljs-keyword">URL</span>.<span class="hljs-keyword">Path</span> != <span class="hljs-string">"/"</span> {
+    <span class="hljs-keyword">http</span>.<span class="hljs-keyword">Error</span>(w, <span class="hljs-string">"Not found"</span>, <span class="hljs-keyword">http</span>.StatusNotFound)
     <span class="hljs-keyword">return</span>
   }
-  <span class="hljs-keyword">if</span> r.<span class="hljs-type">Method</span> != <span class="hljs-string">"GET"</span> {
-    http.<span class="hljs-type">Error</span>(w, <span class="hljs-string">"Method not allowed"</span>, http.<span class="hljs-type">StatusMethodNotAllowed</span>)
+  <span class="hljs-keyword">if</span> r.Method != <span class="hljs-string">"GET"</span> {
+    <span class="hljs-keyword">http</span>.<span class="hljs-keyword">Error</span>(w, <span class="hljs-string">"Method not allowed"</span>, <span class="hljs-keyword">http</span>.StatusMethodNotAllowed)
     <span class="hljs-keyword">return</span>
   }
-    t := <span class="hljs-keyword">template</span>.<span class="hljs-type">Must</span>(<span class="hljs-keyword">template</span>.<span class="hljs-type">ParseFiles</span>(path.<span class="hljs-type">Join</span>(<span class="hljs-string">"templates"</span>, <span class="hljs-string">"Hello.html"</span>)))
-    t.<span class="hljs-type">Execute</span>(w, <span class="hljs-keyword">nil</span>)
-}
+    <span class="hljs-keyword">t</span> := <span class="hljs-keyword">template</span>.Must(<span class="hljs-keyword">template</span>.ParseFiles(<span class="hljs-keyword">path</span>.<span class="hljs-keyword">Join</span>(<span class="hljs-string">"templates"</span>, <span class="hljs-string">"Hello.html"</span>)))
+    <span class="hljs-keyword">t</span>.<span class="hljs-keyword">Execute</span>(w, nil)
+}</span>
 </code></pre>
 <h2 id="more">More</h2>
 <p><a href="http://stackoverflow.com/questions/27945310/why-do-i-need-to-use-http-stripprefix-to-access-my-static-files">stackoverflow - why do i need to use http stripprefix to access my static files</a></p>

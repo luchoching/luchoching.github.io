@@ -32,9 +32,9 @@
 <li><code>USER</code></li>
 </ul>
 <p><strong>注意</strong></p>
-<pre><code><span class="hljs-built_in">ENV</span> abc=hello
-<span class="hljs-built_in">ENV</span> abc=bye def=$abc
-<span class="hljs-built_in">ENV</span> ghi=$abc
+<pre><code>ENV abc=hello
+ENV abc=bye def=<span class="hljs-variable">$abc</span>
+ENV ghi=<span class="hljs-variable">$abc</span>
 </code></pre><p><code>def</code>為<code>hello</code>(因為abc=bye當作是同行命令的一部份), <code>ghi</code>為bye</p>
 <h2 id="-dockerignore">.dockerignore</h2>
 <pre><code><span class="hljs-keyword">*</span>/temp<span class="hljs-keyword">*</span>
@@ -85,11 +85,11 @@ FROM <span class="hljs-tag">&lt;<span class="hljs-title">imaage</span>&gt;</span
 <span class="hljs-keyword">LABEL</span> description="This text illustrates \
 that <span class="hljs-keyword">label</span>-values can span multiple lines."
 </code></pre><p><strong>Docker建議儘可能把labels都放在一個LABEL命令下</strong>, 因為每個LABEL都會產生一個新的layer, 導致最後產生的image沒有效率, 最好是像這樣: </p>
-<pre><code>LABEL multi.<span class="hljs-variable">label1=</span><span class="hljs-string">"value1"</span> multi.<span class="hljs-variable">label2=</span><span class="hljs-string">"value2"</span> <span class="hljs-variable">other=</span><span class="hljs-string">"value3"</span>
+<pre><code><span class="hljs-title">LABEL</span> multi.label1=<span class="hljs-string">"value1"</span> multi.label2=<span class="hljs-string">"value2"</span> other=<span class="hljs-string">"value3"</span>
 </code></pre><p>要察看該image有哪些labels, 使用<code>docker inspect</code> command, 察看其<code>Labels</code>屬性值</p>
 <h2 id="expose">EXPOSE</h2>
 <p>The <code>EXPOSE</code> instruction informs Docker that the container will listen on the specified network ports at runtime.</p>
-<pre><code>EXPOSE <span class="hljs-tag">&lt;<span class="hljs-title">port</span>&gt;</span> [<span class="hljs-tag">&lt;<span class="hljs-title">port</span>&gt;</span>...]
+<pre><code><span class="hljs-type">EXPOSE</span> &lt;<span class="hljs-foreign"><span class="hljs-keyword">port</span>&gt; [&lt;<span class="hljs-keyword">port</span>&gt;...]</span>
 </code></pre><p> EXPOSE doesn’t define which ports can be exposed to the host or make ports accessible from the host by default. To expose ports to the host, at runtime, use the -p flag or the -P flag.</p>
 <h2 id="env">ENV</h2>
 <pre><code>ENV <span class="hljs-tag">&lt;<span class="hljs-title">key</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>
@@ -126,7 +126,7 @@ ENV <span class="hljs-tag">&lt;<span class="hljs-title">key</span>&gt;</span>=<s
 <pre><code><span class="hljs-built_in">COPY</span> <span class="bash">hom* /mydir/        <span class="hljs-comment"># adds all files starting with "hom"</span>
 </span><span class="hljs-built_in">COPY</span> <span class="bash">hom?.txt /mydir/    <span class="hljs-comment"># ? is replaced with any single character</span></span>
 </code></pre><h2 id="volume">VOLUME</h2>
-<pre><code><span class="hljs-title">VOLUME ["/data"]</span>
+<pre><code><span class="hljs-built_in">VOLUME</span> <span class="bash">[<span class="hljs-string">"/data"</span>]</span>
 </code></pre><p><a href="https://en.wikipedia.org/wiki/Volume_(computing">the definition of volume</a>: In the context of computer operating systems, a volume or logical drive is a single accessible storage area with a single file system, typically (though not necessarily) resident on a single partition of a hard disk.</p>
 <pre><code><span class="hljs-built_in">FROM</span> ubuntu
 <span class="hljs-built_in">RUN</span> <span class="bash">mkdir /myvol
@@ -147,8 +147,8 @@ ENV <span class="hljs-tag">&lt;<span class="hljs-title">key</span>&gt;</span>=<s
 </span><span class="hljs-built_in">RUN</span> <span class="bash"><span class="hljs-built_in">pwd</span></span>
 </code></pre><p>上例最後pwd結果為<code>/a/b/c</code></p>
 <p><code>WORKDIR</code>也收之前宣告的<code>ENV</code>環境變數: </p>
-<pre><code><span class="hljs-built_in">ENV</span> DIRPATH /path
-<span class="hljs-built_in">WORKDIR</span> <span class="bash"><span class="hljs-variable">$DIRPATH</span>/<span class="hljs-variable">$DIRNAME</span></span>
+<pre><code>ENV DIRPATH /path
+WORKDIR <span class="hljs-variable">$DIRPATH</span>/<span class="hljs-variable">$DIRNAME</span>
 </code></pre><h2 id="entrypoint">ENTRYPOINT</h2>
 <p><code>ENTRYPOINT</code> 可以設定container為可執行</p>
 <ul>

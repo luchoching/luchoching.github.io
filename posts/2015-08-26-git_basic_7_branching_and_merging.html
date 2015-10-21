@@ -29,10 +29,10 @@ $ git commit -<span class="hljs-tag">a</span> -m <span class="hljs-string">'fixe
 <p>測試hotfix若ok, 就可以把hotfix 合併回去master: </p>
 <pre><code>$ git checkout master
 $ git <span class="hljs-operator"><span class="hljs-keyword">merge</span> hotfix
-Updating f42c576..<span class="hljs-number">3</span>a0874c
+Updating f42c576.<span class="hljs-number">.3</span>a0874c
 <span class="hljs-keyword">Fast</span>-forward
  <span class="hljs-keyword">index</span>.html | <span class="hljs-number">2</span> ++
- <span class="hljs-number">1</span> file <span class="hljs-keyword">changed</span>, <span class="hljs-number">2</span> insertions(+)</span>
+ <span class="hljs-number">1</span> <span class="hljs-keyword">file</span> <span class="hljs-keyword">changed</span>, <span class="hljs-number">2</span> insertions(+)</span>
 </code></pre><p>如果順著一個分支走下去可以到達另一個分支的話，那麼 Git 在合併兩者時，只會簡單地把指標右移，因為這種單線的歷史分支不存在任何需要解決的分歧，所以這種合併過程可以稱為<code>fast-forward</code>。</p>
 <p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/basic-branching-5.png" alt="b5"></p>
 <p>hotfix分支已經用不到了, 因為master branch指向的是同一個地方, 那就可以刪掉hotfix, 然後回到iss53 branch工作: </p>
@@ -62,10 +62,10 @@ index.html |    <span class="hljs-number">1</span> +
 </code></pre><h2 id="basic-merge-conflicts">Basic merge conflicts</h2>
 <p>大多數時間合併沒有這麼順利</p>
 <p>如果我們在兩個branch都改相同的檔案然後合併, Git不能清楚的合併他們, 可能就會看到如下的訊息:</p>
-<pre><code>$ git merge iss53
-<span class="hljs-type">Auto</span>-merging index.html
-<span class="hljs-type">CONFLICT</span> (content): <span class="hljs-type">Merge</span> conflict <span class="hljs-keyword">in</span> index.html
-<span class="hljs-type">Automatic</span> merge failed; fix conflicts <span class="hljs-keyword">and</span> then commit the <span class="hljs-literal">result</span>.
+<pre><code>$ git <span class="hljs-operator"><span class="hljs-keyword">merge</span> iss53
+<span class="hljs-keyword">Auto</span>-merging <span class="hljs-keyword">index</span>.html
+CONFLICT (<span class="hljs-keyword">content</span>): <span class="hljs-keyword">Merge</span> conflict <span class="hljs-keyword">in</span> <span class="hljs-keyword">index</span>.html
+<span class="hljs-keyword">Automatic</span> <span class="hljs-keyword">merge</span> <span class="hljs-keyword">failed</span>;</span> fix conflicts and then <span class="hljs-operator"><span class="hljs-keyword">commit</span> the <span class="hljs-keyword">result</span>.</span>
 </code></pre><p>Git沒有辦法自動建立一個新的merge commit, 會先暫停等你解決衝突後再繼續。</p>
 <p><code>git status</code>:</p>
 <pre><code>$ git status

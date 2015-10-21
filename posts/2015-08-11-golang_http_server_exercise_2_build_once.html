@@ -8,21 +8,21 @@
   <span class="hljs-string">"path/filepath"</span>
   <span class="hljs-string">"sync"</span>
 )
-<span class="hljs-keyword">type</span> templateHandler struct {
+type templateHandler <span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{
   once     sync.<span class="hljs-type">Once</span>
-  filename <span class="hljs-type">string</span> 
-  templ    *<span class="hljs-keyword">template</span>.<span class="hljs-type">Template</span>
+  filename string 
+  templ    *template.<span class="hljs-type">Template</span>
 }
-func (t *templateHandler) <span class="hljs-type">ServeHTTP</span>(w http.<span class="hljs-type">ResponseWriter</span>, r *http.<span class="hljs-type">Request</span>) {
-  t.once.<span class="hljs-type">Do</span>(func() {
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-params">(t *templateHandler)</span></span> <span class="hljs-type">ServeHTTP</span>(w http.<span class="hljs-type">ResponseWriter</span>, r *http.<span class="hljs-type">Request</span>) {
+  t.once.<span class="hljs-type">Do</span>(<span class="hljs-func"><span class="hljs-keyword">func</span><span class="hljs-params">()</span></span> {
     t.templ =
-      <span class="hljs-keyword">template</span>.<span class="hljs-type">Must</span>(<span class="hljs-keyword">template</span>.<span class="hljs-type">ParseFiles</span>(filepath.<span class="hljs-type">Join</span>(<span class="hljs-string">"templates"</span>, t.filename)))
-    t.templ.<span class="hljs-type">Execute</span>(w, <span class="hljs-keyword">nil</span>)
+      template.<span class="hljs-type">Must</span>(template.<span class="hljs-type">ParseFiles</span>(filepath.<span class="hljs-type">Join</span>(<span class="hljs-string">"templates"</span>, t.filename)))
+    t.templ.<span class="hljs-type">Execute</span>(w, <span class="hljs-literal">nil</span>)
   })
 }
-func main() {
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
   http.<span class="hljs-type">Handle</span>(<span class="hljs-string">"/"</span>, &amp;templateHandler{filename: <span class="hljs-string">"chat.html"</span>})
-  <span class="hljs-keyword">if</span> err := http.<span class="hljs-type">ListenAndServe</span>(<span class="hljs-string">":8080"</span>, <span class="hljs-keyword">nil</span>); err != <span class="hljs-keyword">nil</span> {
+  <span class="hljs-keyword">if</span> err := http.<span class="hljs-type">ListenAndServe</span>(<span class="hljs-string">":8080"</span>, <span class="hljs-literal">nil</span>); err != <span class="hljs-literal">nil</span> {
     log.<span class="hljs-type">Fatal</span>(<span class="hljs-string">"ListenAndServe:"</span>, err)
   }
 }

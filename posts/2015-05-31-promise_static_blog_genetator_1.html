@@ -26,12 +26,12 @@
 <p>產生的結果都放在<code>build</code>資料夾內, 我們就可以把整包拿去發佈了:   </p>
 <pre><code>.
 ├── ...
-├── index<span class="hljs-class">.html</span>
+├── index.html
 └── posts
-    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">12</span>-hello_world<span class="hljs-class">.html</span>
-    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">13</span>-install_and_setting_golang_on_ubuntu_and_vim<span class="hljs-class">.html</span>
-    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">14</span>-flexbox<span class="hljs-class">.html</span>
-    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">15</span>-express_middleware_1<span class="hljs-class">.html</span>
+    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">12</span>-hello_world.html
+    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">13</span>-install_and_setting_golang_on_ubuntu_and_vim.html
+    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">14</span>-flexbox.html
+    ├── <span class="hljs-number">2015</span>-<span class="hljs-number">05</span>-<span class="hljs-number">15</span>-express_middleware_1.html
     ├── ...
 </code></pre><h2 id="markdown-">Markdown文章格式</h2>
 <p>為了方便(簡單), 撰寫的markdown文章檔名必須要像以下格式: </p>
@@ -287,16 +287,16 @@ app.<span class="hljs-keyword">use</span>(<span class="hljs-function"><span clas
 </code></pre>
 <p>再來加入要處理的routes: 要處理的route只有兩種, 一個就是index page, 另外就是每篇文章, 處理index page的route像這樣: </p>
 <pre><code class="lang-js"><span class="hljs-comment">//Blog Route</span>
-app.get<span class="hljs-params">('/', function<span class="hljs-params">(req, res)</span>{
-  fs.readdirAsync<span class="hljs-params">(conf.articleSource)</span>
-    .then<span class="hljs-params">(utils.reverseDirList)</span>
-    .map<span class="hljs-params">(utils.parseInfo)</span>
-    .map<span class="hljs-params">(utils.getPostList)</span>
-    .then<span class="hljs-params">(utils.genIndex)</span>
-    .then<span class="hljs-params">(function<span class="hljs-params">(indexPage)</span>{
-      res.send<span class="hljs-params">(indexPage)</span>;
-    })</span>;
-})</span>;
+<span class="hljs-transposed_variable">app.</span>get(<span class="hljs-string">'/'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span>{</span>
+  <span class="hljs-transposed_variable">fs.</span>readdirAsync(<span class="hljs-transposed_variable">conf.</span>articleSource)
+    .<span class="hljs-keyword">then</span>(<span class="hljs-transposed_variable">utils.</span>reverseDirList)
+    .map(<span class="hljs-transposed_variable">utils.</span>parseInfo)
+    .map(<span class="hljs-transposed_variable">utils.</span>getPostList)
+    .<span class="hljs-keyword">then</span>(<span class="hljs-transposed_variable">utils.</span>genIndex)
+    .<span class="hljs-keyword">then</span>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(indexPage)</span>{</span>
+      <span class="hljs-transposed_variable">res.</span>send(indexPage);
+    });
+});
 </code></pre>
 <p>完全就把<code>gen.js</code> promise流程拿來用就對了! 這裡的流程和<code>gen.js</code>相比, 只是拿掉了<code>.each(utils.markdownToHtml)</code>每個markdown轉成html的部份, 以及最後我們沒有把index page寫入檔案, 而是把整個index page 直接傳回顯使給使用者(<code>res.send(indexPage)</code>)。</p>
 <p>顯示每篇文章的部份, 則是我們上述所寫到的<code>markdownToHtml</code> 函式的內容, 我們解析URL, 讀取解析出來對應的markdown檔案, 轉換html, 最後直接render解析jade樣板後, 傳送結果給使用者: </p>

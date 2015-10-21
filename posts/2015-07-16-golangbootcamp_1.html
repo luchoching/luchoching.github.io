@@ -8,17 +8,17 @@
 )
 </code></pre>
 <p>也可以直接賦值:</p>
-<pre><code class="lang-go"><span class="hljs-keyword">var</span> (
-  name     <span class="hljs-keyword">string</span> = <span class="hljs-string">"Prince Oberyn"</span>
+<pre><code class="lang-go">var (
+  name     <span class="hljs-built_in">string</span> = <span class="hljs-string">"Prince Oberyn"</span>
   age      <span class="hljs-keyword">int</span>    =  <span class="hljs-number">32</span>
-  location <span class="hljs-keyword">string</span> = <span class="hljs-string">"Dorne"</span>
+  location <span class="hljs-built_in">string</span> = <span class="hljs-string">"Dorne"</span>
 )
 </code></pre>
 <p>inferred typing, 直接依照initializer給的值決定其型別:</p>
-<pre><code class="lang-go">var (
-  <span class="hljs-variable">name     =</span> <span class="hljs-string">"Prince Oberyn"</span>
-  <span class="hljs-variable">age      =</span>  <span class="hljs-number">32</span>
-  <span class="hljs-variable">location =</span> <span class="hljs-string">"Dorne"</span>
+<pre><code class="lang-go"><span class="hljs-variable"><span class="hljs-keyword">var</span> (
+  name</span>     = <span class="hljs-string">"Prince Oberyn"</span>
+  age      =  <span class="hljs-number">32</span>
+  location = <span class="hljs-string">"Dorne"</span>
 )
 </code></pre>
 <p>變數可以是任何型別, 包括function: </p>
@@ -34,15 +34,15 @@
 <h2 id="constants">Constants</h2>
 <p>Constants只能是 character, string, boolean, 或是 numeric value。</p>
 <p>不能用<code>:=</code>宣告</p>
-<pre><code class="lang-go">const <span class="hljs-variable">Pi =</span> <span class="hljs-number">3.14</span>
-const (
-        <span class="hljs-variable">StatusOK                   =</span> <span class="hljs-number">200</span>
-        <span class="hljs-variable">StatusCreated              =</span> <span class="hljs-number">201</span>
-        <span class="hljs-variable">StatusAccepted             =</span> <span class="hljs-number">202</span>
-        <span class="hljs-variable">StatusNonAuthoritativeInfo =</span> <span class="hljs-number">203</span>
-        <span class="hljs-variable">StatusNoContent            =</span> <span class="hljs-number">204</span>
-        <span class="hljs-variable">StatusResetContent         =</span> <span class="hljs-number">205</span>
-        <span class="hljs-variable">StatusPartialContent       =</span> <span class="hljs-number">206</span>
+<pre><code class="lang-go"><span class="hljs-keyword">const</span> Pi = <span class="hljs-number">3.14</span>
+<span class="hljs-keyword">const</span> (
+        StatusOK                   = <span class="hljs-number">200</span>
+        StatusCreated              = <span class="hljs-number">201</span>
+        StatusAccepted             = <span class="hljs-number">202</span>
+        StatusNonAuthoritativeInfo = <span class="hljs-number">203</span>
+        StatusNoContent            = <span class="hljs-number">204</span>
+        StatusResetContent         = <span class="hljs-number">205</span>
+        StatusPartialContent       = <span class="hljs-number">206</span>
 )
 </code></pre>
 <h2 id="print">Print</h2>
@@ -59,17 +59,17 @@ const (
 </code></pre><p>使用<code>fmt.Printf</code>要分行必須加<code>\n</code>。</p>
 <p>另外使用<code>%v</code>會印出預設的格式, 那<code>%+v</code>會印出結構加上field name, 例如:</p>
 <pre><code class="lang-go">ype User <span class="hljs-keyword">struct</span> {
-  Id       <span class="hljs-typename">int</span>
-  Name     <span class="hljs-typename">string</span>
-  Location <span class="hljs-typename">string</span>
+  Id       <span class="hljs-keyword">int</span>
+  Name     <span class="hljs-built_in">string</span>
+  Location <span class="hljs-built_in">string</span>
 }
 
-<span class="hljs-keyword">type</span> Player <span class="hljs-keyword">struct</span> {
+type Player <span class="hljs-keyword">struct</span> {
   User
-  GameId         <span class="hljs-typename">int</span>
+  GameId         <span class="hljs-keyword">int</span>
 }
 
-<span class="hljs-keyword">func</span> main() {
+<span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
   p := Player{}
   p.Id = <span class="hljs-number">42</span>
   p.Name = <span class="hljs-string">"Matt"</span>
@@ -105,13 +105,13 @@ const (
 <p>上面import述句告訴compiler要從<code>github.com/russross/blackfriday</code>路徑來import該blackfriday package, 不過compiler並不會自動下載(pull down)這個repository, 我們需要手動下載, 這裡利用Go所提供的<code>go get</code>指令來取得(當然事先要確認有安裝git): </p>
 <pre><code><span class="hljs-keyword">go</span> <span class="hljs-built_in">get</span> github.<span class="hljs-keyword">com</span>/russross/blackfriday
 </code></pre><p>這樣就會下載,編譯並安裝該package到我們的<code>$GOPATH</code>去。</p>
-<pre><code><span class="hljs-variable">$ </span>ls <span class="hljs-variable">$GOPATH</span>
+<pre><code>$ ls <span class="hljs-variable">$GOPATH</span>
 bin pkg src
 </code></pre><p><code>bin</code>包含Go編譯過的二進位檔案, 我們可以在我們的系統路徑加上bin的路徑。</p>
 <p><code>pkg</code>包含已經編譯過的可用的函式庫, 這樣編譯器可以直接聯結他們使用而不需要再重新編譯。</p>
 <p><code>src</code>包含所有由import路徑所管理的source code: </p>
 <pre><code>$ ls <span class="hljs-variable">$GOPATH</span>/src
-<span class="hljs-number">9</span>fans<span class="hljs-class">.net</span> github<span class="hljs-class">.com</span>
+<span class="hljs-number">9</span>fans.net github.com
 
 $ ls <span class="hljs-variable">$GOPATH</span>/src/github.com/russross
 blackfriday
@@ -120,18 +120,18 @@ blackfriday
 <p>當我們引用(import)一個package後, 我們可以使用該package所提供(export)出的變數或是函式等等。</p>
 <p>對於Go來說, 只要是<strong>大寫</strong>開頭的名字, 就是可以被引用的, 例如<code>Foo</code>就是一個該package可用的名字, <code>foo</code>就沒有提供, 為該package私用。</p>
 <p>例如: </p>
-<pre><code class="lang-go"><span class="hljs-built_in">import</span> <span class="hljs-params">(
+<pre><code class="lang-go"><span class="hljs-keyword">import</span> (
   <span class="hljs-string">"fmt"</span>
   <span class="hljs-string">"math"</span>
-)</span>
+)
 
-func main<span class="hljs-params">()</span> {
-  fmt.Println<span class="hljs-params">(math.Pi)</span>
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  fmt.<span class="hljs-type">Println</span>(math.<span class="hljs-type">Pi</span>)
 }
 </code></pre>
 <p>執行ok. 那以下: </p>
-<pre><code><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
-  fmt.<span class="hljs-type">Println</span>(math.pi)
+<pre><code><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> {</span>
+  fmt.Println(math.pi)
 }
 </code></pre><p>就會告知：</p>
 <pre><code>cannot refer <span class="hljs-keyword">to</span> unexported <span class="hljs-property">name</span> math.<span class="hljs-constant">pi</span>
@@ -160,7 +160,7 @@ func main<span class="hljs-params">()</span> {
 </code></pre>
 <p>結果為: </p>
 <pre><code>Matt released their <span class="hljs-number">43</span>th song
-Matt has <span class="hljs-operator">a</span> total <span class="hljs-operator">of</span> <span class="hljs-number">42</span> songs
+Matt has a total of <span class="hljs-number">42</span> songs
 </code></pre><p>如果要改變傳遞過來的值, 就<em>pass it by reference</em> 了: </p>
 <pre><code class="lang-go"><span class="hljs-keyword">package</span> main
 
@@ -184,7 +184,7 @@ Matt has <span class="hljs-operator">a</span> total <span class="hljs-operator">
 </code></pre>
 <p>得到結果為: </p>
 <pre><code>Matt released their <span class="hljs-number">43</span>th song
-Matt has <span class="hljs-operator">a</span> total <span class="hljs-operator">of</span> <span class="hljs-number">43</span> songs
+Matt has a total of <span class="hljs-number">43</span> songs
 </code></pre><h2 id="more">More</h2>
 <p><a href="http://golang.org/doc/effective_go.html#interface_conversions">effective go - interface conversions and type assertions</a></p>
 <div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */

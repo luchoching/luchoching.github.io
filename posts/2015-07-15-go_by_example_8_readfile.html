@@ -19,7 +19,7 @@
 }
 </code></pre>
 <p><code>ioutil.ReadFile</code>定義: </p>
-<pre><code class="lang-go"><span class="hljs-keyword">func</span> ReadFile(filename <span class="hljs-typename">string</span>) ([]<span class="hljs-typename">byte</span>, error)
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ReadFile</span><span class="hljs-params">(filename string)</span> <span class="hljs-params">([]byte, error)</span></span>
 </code></pre>
 <p>注意引用ioutil是<code>io/ioutil</code>而不是<code>ioutil</code></p>
 <p>將檔案讀取成byte型式的slice。</p>
@@ -68,19 +68,19 @@ fmt.Printf(<span class="hljs-string">"read %d bytes: %q\n"</span>, <span class="
 <p><code>Scanner</code>型別可以使用的function包括: </p>
 <p><img src="http://imgur.com/cOwfuAyl.png" alt="bufio.Scanner"></p>
 <p>實作一行一行讀取檔案如下: </p>
-<pre><code class="lang-go">package main
-<span class="hljs-built_in">import</span> <span class="hljs-params">(
+<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<span class="hljs-keyword">import</span> (
   <span class="hljs-string">"bufio"</span>
   <span class="hljs-string">"fmt"</span>
   <span class="hljs-string">"os"</span>
-)</span>
-func main<span class="hljs-params">()</span> {
-  f, err := os.Open<span class="hljs-params">(<span class="hljs-string">"./test"</span>)</span>
-  check<span class="hljs-params">(err)</span>
-  defer f.Close<span class="hljs-params">()</span>
-  scanner := bufio.NewScanner<span class="hljs-params">(f)</span>
-  <span class="hljs-keyword">for</span> scanner.Scan<span class="hljs-params">()</span> {
-    fmt.Println<span class="hljs-params">(scanner.Text<span class="hljs-params">()</span>)</span>
+)
+<span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+  f, err := os.Open(<span class="hljs-string">"./test"</span>)
+  check(err)
+  defer f.Close()
+  scanner := bufio.NewScanner(f)
+  <span class="hljs-keyword">for</span> scanner.Scan() {
+    fmt.Println(scanner.Text())
   }
 }
 </code></pre>
@@ -88,19 +88,19 @@ func main<span class="hljs-params">()</span> {
 <h3 id="-ioutil">使用 ioutil</h3>
 <p>當然，另外一種作法就是使用<code>ioutil.ReadFile</code>讀取整個檔案, 再利用<code>strings.Split</code>切割: </p>
 <pre><code class="lang-go">package main
-<span class="hljs-built_in">import</span> <span class="hljs-params">(
+import (
   <span class="hljs-string">"fmt"</span>
   <span class="hljs-string">"io/ioutil"</span>
   <span class="hljs-string">"strings"</span>
-)</span>
-func main<span class="hljs-params">()</span> {
-  doc, err := ioutil.ReadFile<span class="hljs-params">(<span class="hljs-string">"./test.md"</span>)</span>
-  <span class="hljs-keyword">if</span> err <span class="hljs-built_in">!</span>= nil {
-    panic<span class="hljs-params">(err)</span>
+)
+func main() {
+  doc, <span class="hljs-keyword">err</span> := ioutil.ReadFile(<span class="hljs-string">"./test.md"</span>)
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> != nil {
+    panic(<span class="hljs-keyword">err</span>)
   }
-  lines := strings.Split<span class="hljs-params">(string<span class="hljs-params">(doc)</span>, <span class="hljs-string">"\n"</span>)</span>
-  <span class="hljs-keyword">for</span> _, line := range lines {
-    fmt.Printf<span class="hljs-params">(<span class="hljs-string">"%q\n"</span>, line)</span>
+  lines := strings.<span class="hljs-keyword">Split</span>(<span class="hljs-literal">string</span>(doc), <span class="hljs-string">"\n"</span>)
+  <span class="hljs-keyword">for</span> _, <span class="hljs-keyword">line</span> := <span class="hljs-keyword">range</span> lines {
+    fmt.Printf(<span class="hljs-string">"%q\n"</span>, <span class="hljs-keyword">line</span>)
   } 
 }
 </code></pre>

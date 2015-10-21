@@ -20,7 +20,7 @@
 </code></pre>
 <p>執行結果: </p>
 <pre><code class="lang-bash"><span class="hljs-variable">$ </span>curl <span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/localhost:8080/monkeys</span>
-<span class="hljs-constant">Hi </span>there, <span class="hljs-constant">I </span>love monkeys!
+<span class="hljs-constant">Hi</span> there, <span class="hljs-constant">I</span> love monkeys!
 </code></pre>
 <p>看來我們程式的動作包括: </p>
 <ul>
@@ -31,25 +31,25 @@
 </ul>
 <h2 id="http-responsewriter">http.ResponseWriter</h2>
 <p><code>handler</code> function要傳入兩個參數, 其中一個是 <a href="http://golang.org/pkg/net/http/#ResponseWriter">http.ResponseWriter</a> 其source code如下:</p>
-<pre><code class="lang-go">//A ResponseWriter interface is used by an HTTP <span class="hljs-operator"><span class="hljs-keyword">handler</span> <span class="hljs-keyword">to</span> contruct an HTTP response.
-type ResponseWriter interface {
-  // Header <span class="hljs-keyword">returns</span> the header map that will be sent <span class="hljs-keyword">by</span> WriteHeader.
-  // Changing the header <span class="hljs-keyword">after</span> a <span class="hljs-keyword">call</span> <span class="hljs-keyword">to</span> WriteHeader (<span class="hljs-keyword">or</span> <span class="hljs-keyword">Write</span>) has
+<pre><code class="lang-go">//A ResponseWriter interface is used by an HTTP <span class="hljs-operator"><span class="hljs-keyword">handler</span> <span class="hljs-keyword">to</span> contruct an <span class="hljs-keyword">HTTP</span> response.
+<span class="hljs-keyword">type</span> ResponseWriter <span class="hljs-keyword">interface</span> {
+  // Header <span class="hljs-keyword">returns</span> the header <span class="hljs-keyword">map</span> that will be sent <span class="hljs-keyword">by</span> WriteHeader.
+  // Changing the header <span class="hljs-keyword">after</span> a <span class="hljs-keyword">call</span> <span class="hljs-keyword">to</span> WriteHeader (<span class="hljs-keyword">or</span> Write) has
   // <span class="hljs-keyword">no</span> effect.
   Header() Header
 
-  // <span class="hljs-keyword">Write</span> writes the <span class="hljs-keyword">data</span> <span class="hljs-keyword">to</span> the <span class="hljs-keyword">connection</span> <span class="hljs-keyword">as</span> part <span class="hljs-keyword">of</span> an HTTP reply.
-  // <span class="hljs-keyword">If</span> WriteHeader has <span class="hljs-keyword">not</span> yet been called, <span class="hljs-keyword">Write</span> calls WriteHeader(http.StatusOK)
+  // Write writes the <span class="hljs-keyword">data</span> <span class="hljs-keyword">to</span> the <span class="hljs-keyword">connection</span> <span class="hljs-keyword">as</span> part <span class="hljs-keyword">of</span> an <span class="hljs-keyword">HTTP</span> reply.
+  // <span class="hljs-keyword">If</span> WriteHeader has <span class="hljs-keyword">not</span> yet been called, Write calls WriteHeader(<span class="hljs-keyword">http</span>.StatusOK)
   // <span class="hljs-keyword">before</span> writing the <span class="hljs-keyword">data</span>.  <span class="hljs-keyword">If</span> the Header does <span class="hljs-keyword">not</span> contain a
-  // Content-Type line, <span class="hljs-keyword">Write</span> adds a Content-Type <span class="hljs-keyword">set</span> <span class="hljs-keyword">to</span> the result <span class="hljs-keyword">of</span> passing
-  // the initial <span class="hljs-number">512</span> bytes <span class="hljs-keyword">of</span> written <span class="hljs-keyword">data</span> <span class="hljs-keyword">to</span> DetectContentType.
-  <span class="hljs-keyword">Write</span>([]byte) (<span class="hljs-built_in">int</span>, error)
+  // <span class="hljs-keyword">Content</span>-<span class="hljs-keyword">Type</span> line, Write adds a <span class="hljs-keyword">Content</span>-<span class="hljs-keyword">Type</span> <span class="hljs-keyword">set</span> <span class="hljs-keyword">to</span> the <span class="hljs-keyword">result</span> <span class="hljs-keyword">of</span> <span class="hljs-keyword">passing</span>
+  // the <span class="hljs-keyword">initial</span> <span class="hljs-number">512</span> <span class="hljs-keyword">bytes</span> <span class="hljs-keyword">of</span> written <span class="hljs-keyword">data</span> <span class="hljs-keyword">to</span> DetectContentType.
+  Write([]<span class="hljs-keyword">byte</span>) (<span class="hljs-built_in">int</span>, <span class="hljs-keyword">error</span>)
 
-  // WriteHeader sends an HTTP response header <span class="hljs-keyword">with</span> <span class="hljs-keyword">status</span> code.
-  // <span class="hljs-keyword">If</span> WriteHeader <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> called explicitly, the <span class="hljs-keyword">first</span> <span class="hljs-keyword">call</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">Write</span>
-  // will <span class="hljs-keyword">trigger</span> an implicit WriteHeader(http.StatusOK).
+  // WriteHeader sends an <span class="hljs-keyword">HTTP</span> response header <span class="hljs-keyword">with</span> <span class="hljs-keyword">status</span> code.
+  // <span class="hljs-keyword">If</span> WriteHeader <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> called explicitly, the <span class="hljs-keyword">first</span> <span class="hljs-keyword">call</span> <span class="hljs-keyword">to</span> Write
+  // will <span class="hljs-keyword">trigger</span> an implicit WriteHeader(<span class="hljs-keyword">http</span>.StatusOK).
   // Thus explicit calls <span class="hljs-keyword">to</span> WriteHeader <span class="hljs-keyword">are</span> mainly used <span class="hljs-keyword">to</span>
-  // send error codes.
+  // send <span class="hljs-keyword">error</span> codes.
   WriteHeader(<span class="hljs-built_in">int</span>)
 }</span>
 </code></pre>
@@ -63,39 +63,39 @@ type ResponseWriter interface {
 <p>如果沒有明確呼叫<code>WriteHeader</code>, <code>Write</code>會在寫入資料前自動呼叫<code>WriteHeader(http.StatusOK)</code>, 如果<code>Header</code>沒有包含<code>Content-Type</code>, <code>Write</code>會依照寫入資料的前512bytes來判斷content-type。</p>
 <h3 id="json-handler">JSON handler</h3>
 <p>理解<code>http.ResponseWriter</code> interface type後, 我們可以舉一反三, 將原來handler改寫, 讓其傳回JSON: </p>
-<pre><code class="lang-go"><span class="hljs-built_in">import</span> <span class="hljs-string">"json"</span>
+<pre><code class="lang-go">import <span class="hljs-string">"json"</span>
 
-func handler<span class="hljs-params">(w http.ResponseWriter, r *http.Request)</span> {
-  w.Header<span class="hljs-params">()</span>.Set<span class="hljs-params">(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"application/json; charset=utf-8"</span>)</span> 
+func handler(w <span class="hljs-keyword">http</span>.ResponseWriter, r *<span class="hljs-keyword">http</span>.Request) {
+  w.Header().Set(<span class="hljs-string">"Content-Type"</span>, <span class="hljs-string">"application/json; charset=utf-8"</span>) 
 
-  myItems := []string{<span class="hljs-string">"item1"</span>, <span class="hljs-string">"item2"</span>, <span class="hljs-string">"item3"</span>}
-  a, _ := json.Marshal<span class="hljs-params">(myItems)</span>
+  myItems := []<span class="hljs-keyword">string</span>{<span class="hljs-string">"item1"</span>, <span class="hljs-string">"item2"</span>, <span class="hljs-string">"item3"</span>}
+  <span class="hljs-operator">a</span>, _ := json.Marshal(myItems)
 
-  w.Write<span class="hljs-params">(a)</span>  
+  w.Write(<span class="hljs-operator">a</span>)  
 }
 </code></pre>
 <h2 id="http-request">http.Request</h2>
 <p><a href="http://golang.org/pkg/net/http/#Request">http.Request</a> 表示由client發送, server所收到的一個HTTP request。</p>
 <p>就是一個表示initail request的struct type, 註解直接看source, 簡寫如下: </p>
 <pre><code class="lang-go"><span class="hljs-typedef"><span class="hljs-keyword">type</span> <span class="hljs-type">Request</span> struct <span class="hljs-container">{
-  <span class="hljs-type">Method</span> <span class="hljs-title">string</span>
-  <span class="hljs-type">URL</span> *<span class="hljs-title">url</span>.<span class="hljs-type">URL</span>
-  <span class="hljs-type">Proto</span>      <span class="hljs-title">string</span> // "<span class="hljs-type">HTTP</span>/1.0"
-  <span class="hljs-type">ProtoMajor</span> <span class="hljs-title">int</span>    // 1
-  <span class="hljs-type">ProtoMinor</span> <span class="hljs-title">int</span>    // 0
+  <span class="hljs-type">Method</span> string
+  <span class="hljs-type">URL</span> *url.<span class="hljs-type">URL</span>
+  <span class="hljs-type">Proto</span>      string // "<span class="hljs-type">HTTP</span>/1.0"
+  <span class="hljs-type">ProtoMajor</span> int    // 1
+  <span class="hljs-type">ProtoMinor</span> int    // 0
   <span class="hljs-type">Header</span> <span class="hljs-type">Header</span>
-  <span class="hljs-type">Body</span> <span class="hljs-title">io</span>.<span class="hljs-type">ReadCloser</span>
-  <span class="hljs-type">ContentLength</span> <span class="hljs-title">int64</span>
-  <span class="hljs-type">TransferEncoding</span> []<span class="hljs-title">string</span>
-  <span class="hljs-type">Close</span> <span class="hljs-title">bool</span>
-  <span class="hljs-type">Host</span> <span class="hljs-title">string</span>
-  <span class="hljs-type">Form</span> <span class="hljs-title">url</span>.<span class="hljs-type">Values</span>
-  <span class="hljs-type">PostForm</span> <span class="hljs-title">url</span>.<span class="hljs-type">Values</span>
-  <span class="hljs-type">MultipartForm</span> *<span class="hljs-title">multipart</span>.<span class="hljs-type">Form</span>
+  <span class="hljs-type">Body</span> io.<span class="hljs-type">ReadCloser</span>
+  <span class="hljs-type">ContentLength</span> int64
+  <span class="hljs-type">TransferEncoding</span> []string
+  <span class="hljs-type">Close</span> bool
+  <span class="hljs-type">Host</span> string
+  <span class="hljs-type">Form</span> url.<span class="hljs-type">Values</span>
+  <span class="hljs-type">PostForm</span> url.<span class="hljs-type">Values</span>
+  <span class="hljs-type">MultipartForm</span> *multipart.<span class="hljs-type">Form</span>
   <span class="hljs-type">Trailer</span> <span class="hljs-type">Header</span>
-  <span class="hljs-type">RemoteAddr</span> <span class="hljs-title">string</span>
-  <span class="hljs-type">RequestURI</span> <span class="hljs-title">string</span>
-  <span class="hljs-type">TLS</span> *<span class="hljs-title">tls</span>.<span class="hljs-type">ConnectionState</span>
+  <span class="hljs-type">RemoteAddr</span> string
+  <span class="hljs-type">RequestURI</span> string
+  <span class="hljs-type">TLS</span> *tls.<span class="hljs-type">ConnectionState</span>
 }</span></span>
 </code></pre>
 <p>The field semantics differ slightly between client and server usage. In addition to the notes on the fields below, see the documentation for Request.Write and RoundTripper.</p>
@@ -132,9 +132,9 @@ func handler<span class="hljs-params">(w http.ResponseWriter, r *http.Request)</
 </code></pre>
 <h2 id="servemux">ServeMux</h2>
 <p>由上可看到: </p>
-<pre><code class="lang-go"><span class="hljs-class"><span class="hljs-keyword">type</span> <span class="hljs-title">ServeMux</span> <span class="hljs-title">struct</span> {</span>
-  <span class="hljs-comment">// contains filtered or unexported fields</span>
-}
+<pre><code class="lang-go"><span class="hljs-keyword">type</span> <span class="hljs-constant">ServeMux</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> {</span>
+  /<span class="hljs-regexp">/ contains filtered or unexported fields
+}</span>
 </code></pre>
 <p>翻譯自官網定義: </p>
 <p><code>ServeMux</code>是一個HTTP request multiplexer, 會對進來的request跟已經註冊的一堆patterns做比對,  呼叫對應的handler。</p>
@@ -147,7 +147,7 @@ func handler<span class="hljs-params">(w http.ResponseWriter, r *http.Request)</
 <p><code>http.ListenAndServe</code> 監聽 TCP network address, 然後呼叫帶著handler的服務來處理連線進來的request。</p>
 <p><code>Handler</code>通常為<code>nil</code>, 表示預設使用了<code>DefaultServeMux</code>。</p>
 <p>source code如下: </p>
-<pre><code class="lang-go">func ListenAndServe(addr string, <span class="hljs-operator"><span class="hljs-keyword">handler</span> <span class="hljs-keyword">Handler</span>) error {
+<pre><code class="lang-go">func ListenAndServe(addr string, <span class="hljs-operator"><span class="hljs-keyword">handler</span> <span class="hljs-keyword">Handler</span>) <span class="hljs-keyword">error</span> {
   <span class="hljs-keyword">server</span> := &amp;<span class="hljs-keyword">Server</span>{Addr: addr, <span class="hljs-keyword">Handler</span>: <span class="hljs-keyword">handler</span>}
   <span class="hljs-keyword">return</span> <span class="hljs-keyword">server</span>.ListenAndServe()
 }</span>
@@ -233,23 +233,23 @@ type <span class="hljs-type">Server</span> <span class="hljs-class"><span class=
 }
 </code></pre>
 <p><code>func (srv *Server) newConn(rwc net.Conn) (c *conn, err error)</code>:</p>
-<pre><code class="lang-go"><span class="hljs-comment">// Create new connection from rwc.</span>
-<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-params">(srv *Server)</span></span> newConn(rwc net.<span class="hljs-type">Conn</span>) (<span class="hljs-built_in">c</span> *conn, err error) {
-  <span class="hljs-built_in">c</span> = <span class="hljs-keyword">new</span>(conn)
-  <span class="hljs-built_in">c</span>.remoteAddr = rwc.<span class="hljs-type">RemoteAddr</span>().<span class="hljs-type">String</span>()
-  <span class="hljs-built_in">c</span>.server = srv
-  <span class="hljs-built_in">c</span>.rwc = rwc
-  <span class="hljs-built_in">c</span>.w = rwc
+<pre><code class="lang-go">// <span class="hljs-operator"><span class="hljs-keyword">Create</span> <span class="hljs-keyword">new</span> <span class="hljs-keyword">connection</span> <span class="hljs-keyword">from</span> rwc.
+func (srv *<span class="hljs-keyword">Server</span>) newConn(rwc net.<span class="hljs-keyword">Conn</span>) (<span class="hljs-keyword">c</span> *<span class="hljs-keyword">conn</span>, err <span class="hljs-keyword">error</span>) {
+  <span class="hljs-keyword">c</span> = <span class="hljs-keyword">new</span>(<span class="hljs-keyword">conn</span>)
+  <span class="hljs-keyword">c</span>.remoteAddr = rwc.RemoteAddr().<span class="hljs-keyword">String</span>()
+  <span class="hljs-keyword">c</span>.<span class="hljs-keyword">server</span> = srv
+  <span class="hljs-keyword">c</span>.rwc = rwc
+  <span class="hljs-keyword">c</span>.w = rwc
   <span class="hljs-keyword">if</span> debugServerConnections {
-    <span class="hljs-built_in">c</span>.rwc = newLoggingConn(<span class="hljs-string">"server"</span>, <span class="hljs-built_in">c</span>.rwc)
+    <span class="hljs-keyword">c</span>.rwc = newLoggingConn(<span class="hljs-string">"server"</span>, <span class="hljs-keyword">c</span>.rwc)
   }
-  <span class="hljs-built_in">c</span>.sr = liveSwitchReader{r: <span class="hljs-built_in">c</span>.rwc}
-  <span class="hljs-built_in">c</span>.lr = io.<span class="hljs-type">LimitReader</span>(&amp;<span class="hljs-built_in">c</span>.sr, noLimit).(*io.<span class="hljs-type">LimitedReader</span>)
-  br := newBufioReader(<span class="hljs-built_in">c</span>.lr)
-  bw := newBufioWriterSize(checkConnErrorWriter{<span class="hljs-built_in">c</span>}, <span class="hljs-number">4</span>&lt;&lt;<span class="hljs-number">10</span>)
-  <span class="hljs-built_in">c</span>.buf = bufio.<span class="hljs-type">NewReadWriter</span>(br, bw)
-  <span class="hljs-keyword">return</span> <span class="hljs-built_in">c</span>, <span class="hljs-literal">nil</span>
-}
+  <span class="hljs-keyword">c</span>.sr = liveSwitchReader{r: <span class="hljs-keyword">c</span>.rwc}
+  <span class="hljs-keyword">c</span>.lr = io.LimitReader(&amp;<span class="hljs-keyword">c</span>.sr, noLimit).(*io.LimitedReader)
+  br := newBufioReader(<span class="hljs-keyword">c</span>.lr)
+  bw := newBufioWriterSize(checkConnErrorWriter{<span class="hljs-keyword">c</span>}, <span class="hljs-number">4</span>&lt;&lt;<span class="hljs-number">10</span>)
+  <span class="hljs-keyword">c</span>.buf = bufio.NewReadWriter(br, bw)
+  <span class="hljs-keyword">return</span> <span class="hljs-keyword">c</span>, nil
+}</span>
 </code></pre>
 <p><code>func (c *conn) setState(nc net.Conn, state ConnState)</code>:</p>
 <pre><code class="lang-go">func (c *conn) <span class="hljs-built_in">set</span>State(nc net.Conn, <span class="hljs-keyword">state</span> ConnState) {

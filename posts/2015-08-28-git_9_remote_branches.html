@@ -14,17 +14,17 @@ df<span class="hljs-number">3566a53b1</span>d19bae<span class="hljs-number">1b78
 </code></pre><p>或是<code>git remote show (remote)</code>: </p>
 <pre><code>$ git remote <span class="hljs-operator"><span class="hljs-keyword">show</span> origin
 * remote origin
-  <span class="hljs-keyword">Fetch</span> URL: git@github.com:luchoching/myJblog.git
-  Push  URL: git@github.com:luchoching/myJblog.git
-  HEAD branch: <span class="hljs-keyword">master</span>
+  <span class="hljs-keyword">Fetch</span> <span class="hljs-keyword">URL</span>: git@github.com:luchoching/myJblog.git
+  Push  <span class="hljs-keyword">URL</span>: git@github.com:luchoching/myJblog.git
+  <span class="hljs-keyword">HEAD</span> branch: <span class="hljs-keyword">master</span>
   Remote branches:
     add_page_bar   tracked
     <span class="hljs-keyword">master</span>         tracked
-    materail-style tracked
-    new-style      tracked
+    materail-<span class="hljs-keyword">style</span> tracked
+    <span class="hljs-keyword">new</span>-<span class="hljs-keyword">style</span>      tracked
   <span class="hljs-keyword">Local</span> branch configured <span class="hljs-keyword">for</span> <span class="hljs-string">'git pull'</span>:
     <span class="hljs-keyword">master</span> merges <span class="hljs-keyword">with</span> remote <span class="hljs-keyword">master</span>
-  <span class="hljs-keyword">Local</span> ref configured <span class="hljs-keyword">for</span> <span class="hljs-string">'git push'</span>:
+  <span class="hljs-keyword">Local</span> <span class="hljs-keyword">ref</span> configured <span class="hljs-keyword">for</span> <span class="hljs-string">'git push'</span>:
     <span class="hljs-keyword">master</span> pushes <span class="hljs-keyword">to</span> <span class="hljs-keyword">master</span> (up <span class="hljs-keyword">to</span> <span class="hljs-built_in">date</span>)</span>
 </code></pre><p>最常用的, 還是利用 remote-tracking branches的優點</p>
 <p>Remote-tracking branches 就是紀錄遠端分支狀態的reference, 這些都是我們不能移動的local references, 只有當我們做任何網路溝通的時候他們才會自動移動</p>
@@ -49,24 +49,24 @@ df<span class="hljs-number">3566a53b1</span>d19bae<span class="hljs-number">1b78
 <p>也就是說, 對於無意分享的分支，你儘管保留為私人分支好了，而只推送那些協同工作要用到的特性分支。 </p>
 <p>如果你有的branch叫作<code>serverfix</code>,你想要跟其他人一起合作, 你就可以用<code>git push (remote) (branch)</code>的方式push該分支到remote去：</p>
 <pre><code>$ git push origin serverfix
-Counting objects: 24, done.
-Delta compression using up to 8 threads.
-Compressing objects: 100% (15/15), done.
-Writing objects: 100% (24/24), 1.91 KiB | 0 bytes/s, done.
-Total 24 (delta 2), reused 0 (delta 0)
-To https://github.com/schacon/simplegit
- * <span class="hljs-comment">[new branch]</span>      serverfix -&gt; serverfix
+Counting objects: <span class="hljs-number">24</span>, done.
+Delta compression <span class="hljs-keyword">using</span> up to <span class="hljs-number">8</span> threads.
+Compressing objects: <span class="hljs-number">100</span>% (<span class="hljs-number">15</span>/<span class="hljs-number">15</span>), done.
+Writing objects: <span class="hljs-number">100</span>% (<span class="hljs-number">24</span>/<span class="hljs-number">24</span>), <span class="hljs-number">1.91</span> KiB | <span class="hljs-number">0</span> bytes/s, done.
+Total <span class="hljs-number">24</span> (delta <span class="hljs-number">2</span>), reused <span class="hljs-number">0</span> (delta <span class="hljs-number">0</span>)
+To https:<span class="hljs-comment">//github.com/schacon/simplegit</span>
+ * [<span class="hljs-keyword">new</span> branch]      serverfix -&gt; serverfix
 </code></pre><p>這裡其實走了一點捷徑。</p>
 <p>Git 自動把 serverfix 分支名擴展為 <code>refs/heads/serverfix:refs/heads/serverfix</code>，意為“取出我在本地的 serverfix 分支，推送到遠端倉庫的 serverfix 分支中去”。我們將在第九章進一步介紹 <code>refs/heads/</code> 部分的細節，不過一般使用的時候都可以省略它。</p>
 <p>也可以運行 <code>git push origin serverfix:serverfix</code> 來實現相同的效果，它的意思是“上傳我本地的 serverfix 分支到遠端倉庫中去，仍舊稱它為 serverfix 分支”。</p>
 <p>通過此語法，你可以把本地分支推送到某個命名不同的遠端分支：若想把遠端分支叫作 awesomebranch，可以用 <code>git push origin serverfix:awesomebranch</code> 來推送數據。</p>
 <p>接下來，當你的協作者再次從伺服器上獲取資料時，他們將得到一個新的遠端分支 origin/serverfix，並指向伺服器上 serverfix 所指向的版本：</p>
 <pre><code>$ git fetch origin
-<span class="hljs-string">remote:</span> Counting <span class="hljs-string">objects:</span> <span class="hljs-number">7</span>, done.
-<span class="hljs-string">remote:</span> Compressing <span class="hljs-string">objects:</span> <span class="hljs-number">100</span>% (<span class="hljs-number">2</span>/<span class="hljs-number">2</span>), done.
-<span class="hljs-string">remote:</span> Total <span class="hljs-number">3</span> (delta <span class="hljs-number">0</span>), reused <span class="hljs-number">3</span> (delta <span class="hljs-number">0</span>)
-Unpacking <span class="hljs-string">objects:</span> <span class="hljs-number">100</span>% (<span class="hljs-number">3</span>/<span class="hljs-number">3</span>), done.
-From <span class="hljs-string">https:</span><span class="hljs-comment">//github.com/schacon/simplegit</span>
+remote: Counting objects: <span class="hljs-number">7</span>, done.
+remote: Compressing objects: <span class="hljs-number">100</span>% (<span class="hljs-number">2</span>/<span class="hljs-number">2</span>), done.
+remote: Total <span class="hljs-number">3</span> (delta <span class="hljs-number">0</span>), reused <span class="hljs-number">3</span> (delta <span class="hljs-number">0</span>)
+Unpacking objects: <span class="hljs-number">100</span>% (<span class="hljs-number">3</span>/<span class="hljs-number">3</span>), done.
+From https:<span class="hljs-comment">//github.com/schacon/simplegit</span>
  * [<span class="hljs-keyword">new</span> branch]      serverfix    -&gt; origin/serverfix
 </code></pre><p><strong>注意! 當你從fetch回來新的remote-tracking branches, 你並不會自動有一個可編輯的副本(editable copies), 換句話說, 你不會有一個新的<code>serverfix</code> branch, 你只有一個不能修改(無法移動)的<code>origin/serverfix</code>指標</strong></p>
 <p>我們可以把這個<code>origin/serverfix</code> merge到我們目前的working branch: <code>git merge origin/serverfix</code></p>
@@ -89,11 +89,11 @@ Switched <span class="hljs-keyword">to</span> <span class="hljs-keyword">a</span
 <pre><code>$ git branch -u origin/serverfix
 Branch serverfix <span class="hljs-keyword">set</span> up <span class="hljs-keyword">to</span> track remote branch serverfix <span class="hljs-keyword">from</span> origin.
 </code></pre><p>利用<code>git branch -vv</code>一起列出local branch和其追蹤的branch:</p>
-<pre><code>$ git <span class="hljs-keyword">branch </span>-vv
-  iss53     <span class="hljs-number">7</span>e424c3 [origin/iss53: ahead <span class="hljs-number">2</span>] forgot the <span class="hljs-keyword">brackets
-</span>  master    <span class="hljs-number">1</span>ae2a45 [origin/master] deploying index fix
-* serverfix f8674d9 [teamone/server-fix-good: ahead <span class="hljs-number">3</span>, <span class="hljs-keyword">behind </span><span class="hljs-number">1</span>] this should do <span class="hljs-keyword">it
-</span>  testing   <span class="hljs-number">5</span>ea463a trying something new
+<pre><code>$ git branch -vv
+  iss53     <span class="hljs-number">7e424</span>c3 [origin/iss53: ahead <span class="hljs-number">2</span>] forgot the brackets
+  master    <span class="hljs-number">1</span>ae2a45 [origin/master] deploying index fix
+* serverfix f8674d9 [teamone/server-fix-good: ahead <span class="hljs-number">3</span>, behind <span class="hljs-number">1</span>] <span class="hljs-keyword">this</span> should <span class="hljs-keyword">do</span> it
+  testing   <span class="hljs-number">5</span>ea463a trying something <span class="hljs-keyword">new</span>
 </code></pre><p>第1行說 <code>iss53</code>正在追蹤 <code>origin/iss53</code>, <code>ahead 2</code>表示我們有兩個local的commit還沒有push到server去</p>
 <p><code>serverfix</code>, <code>ahead 3</code>表示我們local有3個還沒push到server去, <code>behind 1</code>表示server還有一個commit我們還沒有merge</p>
 <p><code>testing</code>沒有追蹤任何remote branch</p>
@@ -104,9 +104,9 @@ Branch serverfix <span class="hljs-keyword">set</span> up <span class="hljs-keyw
 <p>Pro Git這本書建議使用<code>git fetch</code>+<code>git merge</code>這樣比較明確。</p>
 <h2 id="deleting-remote-branches">Deleting Remote Branches</h2>
 <p>使用<code>git push</code>加上<code>--delete</code>:</p>
-<pre><code>$ git push origin --delete serverfix
-To https://github.com/schacon/simplegit
- - <span class="hljs-comment">[deleted]</span>         serverfix
+<pre><code>$ git <span class="hljs-keyword">push</span> origin --<span class="hljs-keyword">delete</span> serverfix
+To https:<span class="hljs-comment">//github.com/schacon/simplegit</span>
+ - [deleted]         serverfix
 </code></pre><div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
 var disqus_shortname = 'luchoching';
 /* * * DON'T EDIT BELOW THIS LINE * * */

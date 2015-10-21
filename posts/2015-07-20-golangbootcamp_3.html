@@ -3,12 +3,12 @@
 <h2 id="array">Array</h2>
 <p>長度固定, 不能重新更動陣列長度。</p>
 <p>但是可以隱性的宣告陣列長度: </p>
-<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
+<pre><code class="lang-go">package main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+import <span class="hljs-string">"fmt"</span>
 
-<span class="hljs-keyword">func</span> main() {
-  a := [...]<span class="hljs-typename">string</span>{<span class="hljs-string">"hello"</span>, <span class="hljs-string">"world!"</span>}
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> {</span>
+  a := [...]<span class="hljs-built_in">string</span>{<span class="hljs-string">"hello"</span>, <span class="hljs-string">"world!"</span>}
   fmt.Printf(<span class="hljs-string">"%q"</span>, a)
 }
 </code></pre>
@@ -18,7 +18,7 @@
 <p><img src="http://blog.golang.org/go-slices-usage-and-internals_slice-struct.png" alt="slice1"></p>
 <h3 id="making-slices">Making Slices</h3>
 <p>可以直接賦值建立slice: </p>
-<pre><code class="lang-go"><span class="hljs-string">mySlice :</span>= []<span class="hljs-typename">int</span>{<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">7</span>, <span class="hljs-number">11</span>, <span class="hljs-number">13</span>}
+<pre><code class="lang-go">mySlice := []<span class="hljs-keyword">int</span>{<span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">7</span>, <span class="hljs-number">11</span>, <span class="hljs-number">13</span>}
 </code></pre>
 <p>或是利用<code>make</code>可以建立特定長度的空slice, 像以下為<code>make([]byte, 5)</code>:</p>
 <p><img src="http://blog.golang.org/go-slices-usage-and-internals_slice-1.png" alt="slice2"></p>
@@ -34,8 +34,8 @@
 </code></pre>
 <h3 id="appending-to-a-slice">Appending to a slice</h3>
 <p>Slice就是一個指向底層陣列的指標, 因此像如下: </p>
-<pre><code class="lang-go">func main<span class="hljs-literal">()</span> {
-  cities := <span class="hljs-literal">[]</span><span class="hljs-built_in">string</span>{}
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> {</span>
+  cities := []<span class="hljs-built_in">string</span>{}
   cities[<span class="hljs-number">0</span>] = <span class="hljs-string">"Santa Monica"</span>
 }
 </code></pre>
@@ -43,20 +43,20 @@
 <pre><code>panic: runtime <span class="hljs-keyword">error</span>: index <span class="hljs-keyword">out of</span> range
 goroutine <span class="hljs-number">1</span> [<span class="hljs-property">running</span>]:
 </code></pre><p>因為我們的cities slice指向的是一個長度為0的空陣列。若要加項目到該種slice, 需要使用<code>append</code> function:</p>
-<pre><code class="lang-go"><span class="hljs-tag">func</span> <span class="hljs-tag">main</span>() <span class="hljs-rules">{
-  <span class="hljs-rule"><span class="hljs-attribute">cities </span>:<span class="hljs-value">= []string{}
-  cities = <span class="hljs-function">append</span>(cities, <span class="hljs-string">"San Diego"</span>, <span class="hljs-string">"Mountain View"</span>)
-  fmt.<span class="hljs-function">Printf</span>(<span class="hljs-string">"%q"</span>, cities) // [<span class="hljs-string">"San Diego"</span> <span class="hljs-string">"Mountain View"</span>]
-}</span></span></span>
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> {</span>
+  cities := []<span class="hljs-built_in">string</span>{}
+  cities = append(cities, <span class="hljs-string">"San Diego"</span>, <span class="hljs-string">"Mountain View"</span>)
+  fmt.Printf(<span class="hljs-string">"%q"</span>, cities) // [<span class="hljs-string">"San Diego"</span> <span class="hljs-string">"Mountain View"</span>]
+}
 </code></pre>
 <p>也可以利用<code>...</code> 將一個slice加到另外一個slice: </p>
-<pre><code class="lang-go"><span class="hljs-tag">func</span> <span class="hljs-tag">main</span>() <span class="hljs-rules">{
-  <span class="hljs-rule"><span class="hljs-attribute">cities </span>:<span class="hljs-value">= []string{<span class="hljs-string">"San Diego"</span>, <span class="hljs-string">"Mountain View"</span>}
-  otherCities := []string{<span class="hljs-string">"Santa Monica"</span>, <span class="hljs-string">"Venice"</span>}
-  cities = <span class="hljs-function">append</span>(cities, otherCities...)
-  fmt.<span class="hljs-function">Printf</span>(<span class="hljs-string">"%q\n"</span>, cities) // [<span class="hljs-string">"San Diego"</span> <span class="hljs-string">"Mountain View"</span> <span class="hljs-string">"Santa Monica"</span> <span class="hljs-string">"Venice"</span>]
-  fmt.<span class="hljs-function">Println</span>(<span class="hljs-function">len</span>(countries))
-}</span></span></span>
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> {</span>
+  cities := []<span class="hljs-built_in">string</span>{<span class="hljs-string">"San Diego"</span>, <span class="hljs-string">"Mountain View"</span>}
+  otherCities := []<span class="hljs-built_in">string</span>{<span class="hljs-string">"Santa Monica"</span>, <span class="hljs-string">"Venice"</span>}
+  cities = append(cities, otherCities...)
+  fmt.Printf(<span class="hljs-string">"%q\n"</span>, cities) // [<span class="hljs-string">"San Diego"</span> <span class="hljs-string">"Mountain View"</span> <span class="hljs-string">"Santa Monica"</span> <span class="hljs-string">"Venice"</span>]
+  fmt.Println(len(countries))
+}
 </code></pre>
 <p><code>...</code>的意思表示該元素為一個collection。要加的slice和被加的slice,其型別必須要相同才行。</p>
 <p>利用<code>len</code> function來查看slice的長度。</p>
@@ -164,10 +164,10 @@ goroutine <span class="hljs-number">1</span> [<span class="hljs-property">runnin
 <p>先抓出該list每個名字最大長度應該是多少, 再來建立一個長度是名字最大長度的二維slice, 再重新range把姓名塞到對應slice元素中去。</p>
 <h2 id="map">Map</h2>
 <p>建立 map: </p>
-<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
-<span class="hljs-keyword">func</span> main() {
-  celebs := <span class="hljs-keyword">map</span>[<span class="hljs-typename">string</span>]<span class="hljs-typename">int</span>{
+<pre><code class="lang-go">package main
+import <span class="hljs-string">"fmt"</span>
+<span class="hljs-function">func <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+  celebs := <span class="hljs-built_in">map</span>[<span class="hljs-built_in">string</span>]<span class="hljs-keyword">int</span>{
     <span class="hljs-string">"AA"</span>: <span class="hljs-number">1</span>,
     <span class="hljs-string">"BB"</span>: <span class="hljs-number">3</span>,
     <span class="hljs-string">"CC"</span>: <span class="hljs-number">5</span>,
@@ -201,10 +201,10 @@ goroutine <span class="hljs-number">1</span> [<span class="hljs-property">runnin
 <pre><code>{<span class="hljs-number">40.68433</span> -<span class="hljs-number">74.39967</span>}
 </code></pre><h3 id="mutating-map">Mutating map</h3>
 <p>刪除一個元素: </p>
-<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-title">delete</span><span class="hljs-params">(m, key)</span></span>
+<pre><code class="lang-go"><span class="hljs-operator"><span class="hljs-keyword">delete</span>(<span class="hljs-keyword">m</span>, <span class="hljs-keyword">key</span>)</span>
 </code></pre>
 <p>檢查看該元素是否存在: </p>
-<pre><code class="lang-go"><span class="hljs-tag">elem</span>, <span class="hljs-rule"><span class="hljs-attribute">ok </span>:<span class="hljs-value">= m[key]</span></span>
+<pre><code class="lang-go">elem, ok := m<span class="hljs-string">[key]</span>
 </code></pre>
 <p>elem不存在會得到zero value, ok為flase。</p>
 <h2 id="map-">Map練習題!</h2>

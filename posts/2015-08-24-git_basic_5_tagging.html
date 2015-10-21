@@ -15,34 +15,34 @@ v<span class="hljs-number">0</span>.<span class="hljs-number">1</span>
 <p>新增lightweight tag: </p>
 <pre><code>$ git <span class="hljs-keyword">tag</span> v0.<span class="hljs-number">1</span>-<span class="hljs-keyword">lw</span>
 </code></pre><p>Tagging later 追加標籤:</p>
-<pre><code>$ git tag -<span class="hljs-tag">a</span> v1.<span class="hljs-number">2</span> <span class="hljs-number">9</span>fceb02
+<pre><code>$ git tag -a v1<span class="hljs-number">.2</span> <span class="hljs-number">9f</span>ceb02
 </code></pre><h2 id="-tag">查詢tag</h2>
 <p><code>git show</code>: Show various types of objects</p>
 <p>若用<code>git show</code>查詢annotated tag: </p>
-<pre><code>$ git <span class="hljs-operator"><span class="hljs-keyword">show</span> v0.1
-tag v0.1
-Tagger: Lu Cho-Ching &lt;choching.<span class="hljs-keyword">work</span>@gmail.com&gt;
-<span class="hljs-built_in">Date</span>:   Mon Aug <span class="hljs-number">24</span> <span class="hljs-number">13</span>:<span class="hljs-number">24</span>:<span class="hljs-number">04</span> <span class="hljs-number">2015</span> +<span class="hljs-number">0800</span>
+<pre><code>$ git show v0<span class="hljs-number">.1</span>
+tag v0<span class="hljs-number">.1</span>
+Tagger: Lu Cho-Ching &lt;choching.work@gmail.com&gt;
+Date:   Mon Aug <span class="hljs-number">24</span> <span class="hljs-number">13</span>:<span class="hljs-number">24</span>:<span class="hljs-number">04</span> <span class="hljs-number">2015</span> +<span class="hljs-number">0800</span>
 
-my <span class="hljs-keyword">version</span> <span class="hljs-number">0.1</span>
+my version <span class="hljs-number">0.1</span>
 
-<span class="hljs-keyword">commit</span> <span class="hljs-number">05155664169962376</span>d3d212d57ea0271cfa75c3f
-Author: Lu Cho-Ching &lt;choching.<span class="hljs-keyword">work</span>@gmail.com&gt;
-<span class="hljs-built_in">Date</span>:   Mon Aug <span class="hljs-number">17</span> <span class="hljs-number">15</span>:<span class="hljs-number">41</span>:<span class="hljs-number">16</span> <span class="hljs-number">2015</span> +<span class="hljs-number">0800</span>
+commit <span class="hljs-number">05155664169962376</span>d3d212d57ea0271cfa75c3f
+Author: Lu Cho-Ching &lt;choching.work@gmail.com&gt;
+Date:   Mon Aug <span class="hljs-number">17</span> <span class="hljs-number">15</span>:<span class="hljs-number">41</span>:<span class="hljs-number">16</span> <span class="hljs-number">2015</span> +<span class="hljs-number">0800</span>
 
-  test <span class="hljs-keyword">commit</span>
+  test commit
 
-diff <span class="hljs-comment">--git a/1.txt b/1.txt</span>
-new file <span class="hljs-keyword">mode</span> <span class="hljs-number">100644</span>
-<span class="hljs-keyword">index</span> <span class="hljs-number">0000000.</span>.d00491f
-<span class="hljs-comment">--- /dev/null</span>
+diff --git a/<span class="hljs-number">1.</span>txt b/<span class="hljs-number">1.</span>txt
+<span class="hljs-keyword">new</span> file mode <span class="hljs-number">100644</span>
+index <span class="hljs-number">0000000.</span>.d00491f
+--- /dev/null
 +++ b/<span class="hljs-number">1.</span>txt
 @@ -<span class="hljs-number">0</span>,<span class="hljs-number">0</span> +<span class="hljs-number">1</span> @@
 +<span class="hljs-number">1</span>
-....</span>
+....
 </code></pre><p>注意最開始就會顯示tag名字, tagger, date, 還有tag commit message </p>
 <p>若用<code>git show</code> lightweight message : </p>
-<pre><code>$ git <span class="hljs-operator"><span class="hljs-keyword">show</span> v0.1-lw
+<pre><code>$ git <span class="hljs-operator"><span class="hljs-keyword">show</span> v0<span class="hljs-number">.1</span>-lw
 <span class="hljs-keyword">commit</span> <span class="hljs-number">05155664169962376</span>d3d212d57ea0271cfa75c3f
 Author: Lu Cho-Ching &lt;choching.<span class="hljs-keyword">work</span>@gmail.com&gt;
 ...</span>

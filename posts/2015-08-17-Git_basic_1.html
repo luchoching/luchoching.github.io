@@ -27,11 +27,11 @@ $ git config --global user<span class="hljs-class">.email</span> choching.work@g
 $ git config --global core<span class="hljs-class">.editor</span> vim
 </code></pre>
 <p><code>~/.gitconfig</code> global 設定所在檔案: </p>
-<pre><code>[user]
-  <span class="hljs-variable">name =</span> Lu Cho-Ching
-  <span class="hljs-variable">email =</span> choching.work@gmail.com
-[core]
-  <span class="hljs-variable">editor =</span> vim
+<pre><code><span class="hljs-string">[user]</span>
+  name = Lu Cho-Ching
+  email = choching.work@gmail.com
+<span class="hljs-string">[core]</span>
+  editor = vim
 </code></pre><p><code>.git/config</code> local設定所在檔案:</p>
 <pre><code>[core]
   repositoryformatversion = <span class="hljs-number">0</span>
@@ -77,7 +77,7 @@ On branch master
 
 Initial <span class="hljs-operator"><span class="hljs-keyword">commit</span>
 
-nothing <span class="hljs-keyword">to</span> <span class="hljs-keyword">commit</span> (<span class="hljs-keyword">create</span>/copy files <span class="hljs-keyword">and</span> <span class="hljs-keyword">use</span> <span class="hljs-string">"git add"</span> <span class="hljs-keyword">to</span> track)</span>
+<span class="hljs-keyword">nothing</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">commit</span> (<span class="hljs-keyword">create</span>/copy files <span class="hljs-keyword">and</span> <span class="hljs-keyword">use</span> <span class="hljs-string">"git add"</span> <span class="hljs-keyword">to</span> track)</span>
 </code></pre><p>新增一個檔案的git狀態: </p>
 <pre><code>$ <span class="hljs-keyword">echo</span> <span class="hljs-string">"my project"</span> &gt; README
 $ git status
@@ -97,14 +97,14 @@ nothing added <span class="hljs-keyword">to</span> commit but untracked <span cl
 <h3 id="tracking-new-files">tracking new files</h3>
 <pre><code>$ git add README
 $ git status
-<span class="hljs-keyword">On</span> branch master
+On branch master
 
-Initial commit
+Initial <span class="hljs-operator"><span class="hljs-keyword">commit</span>
 
 Changes <span class="hljs-keyword">to</span> be committed:
   (<span class="hljs-keyword">use</span> <span class="hljs-string">"git rm --cached &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> unstage)
 
-  <span class="hljs-keyword">new</span> <span class="hljs-keyword">file</span>:   README
+  <span class="hljs-keyword">new</span> <span class="hljs-keyword">file</span>:   README</span>
 </code></pre><p>這時候檔案被歸類在<code>Changes to be committed</code>, 也就是<code>staged</code>(暫存)的狀態, 這個檔案已經被暫存起來, 若這個時候執行<code>git commit</code>, 那這個時候的這個檔案的版本將會被加到新的snapshoot中。</p>
 <p><code>git add</code>可加檔案或是目錄。</p>
 <h3 id="staging-modified-files">staging modified files</h3>
@@ -127,14 +127,14 @@ Changes <span class="hljs-keyword">not</span> staged <span class="hljs-keyword">
 </code></pre><p>歸類為<code>Changes not stagged for commit</code>的表示在這working direcoty的檔案已經被追縱(tracked)應並且已經被修改(modified), 但是還沒被暫存(staged)</p>
 <p>注意這個時候commit的話, 就會把我們最後<code>git add</code>的內容commit,而不是把現在在working directory看到的結果commit。</p>
 <p>再度<code>git add</code>就會把修改過的內容暫存:</p>
-<pre><code><span class="hljs-keyword">On</span> branch master
+<pre><code>On branch master
 
-Initial commit
+Initial <span class="hljs-operator"><span class="hljs-keyword">commit</span>
 
 Changes <span class="hljs-keyword">to</span> be committed:
   (<span class="hljs-keyword">use</span> <span class="hljs-string">"git rm --cached &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> unstage)
 
-  <span class="hljs-keyword">new</span> <span class="hljs-keyword">file</span>:   README
+  <span class="hljs-keyword">new</span> <span class="hljs-keyword">file</span>:   README</span>
 </code></pre><p><code>git add</code>為多用途指令, 可以用來tracking new files, stage files, 也可以用來處理merge檔案問題, 所以要把<code>git add</code>當作是<strong>add this conetent to the next commit</strong>, 而不是把這個檔案加到project中</p>
 <p>可以<code>git add file1, file2...</code>, <code>git add dir</code>, <code>git add .</code></p>
 <p><code>git add -p</code> 可以讓我們逐步選擇哪個檔案要add, 並且會列出差異讓我們判斷。</p>
@@ -143,22 +143,22 @@ Changes <span class="hljs-keyword">to</span> be committed:
 <p><code>??</code>表示untracked new file, <code>A</code>表示stagged new file, 紅色<code>M</code>表示tracked,但修改內容還未staged, 右邊綠色<code>M</code>表示tracked, 修改內容也已經staged</p>
 <h2 id="-gitignore">.gitignore</h2>
 <pre><code><span class="hljs-comment"># no .a files</span>
-<span class="hljs-keyword">*</span>.a
+*.a
 
 <span class="hljs-comment"># but do track lib.a, even though you're ignoring .a files above</span>
-!lib.a
+!<span class="hljs-class"><span class="hljs-keyword">lib</span>.<span class="hljs-title">a</span></span>
 
-<span class="hljs-comment"># only ignore the <span class="hljs-doctag">TODO</span> file in the current directory, not subdir/<span class="hljs-doctag">TODO</span></span>
-/TODO
+<span class="hljs-comment"># only ignore the TODO file in the current directory, not subdir/TODO</span>
+/<span class="hljs-constant">TODO</span>
 
 <span class="hljs-comment"># ignore all files in the build/ directory</span>
 build/
 
 <span class="hljs-comment"># ignore doc/notes.txt, but not doc/server/arch.txt</span>
-doc/<span class="hljs-keyword">*</span>.txt
+doc/*.txt
 
 <span class="hljs-comment"># ignore all .pdf files in the doc/ directory</span>
-doc/<span class="hljs-keyword">*</span><span class="hljs-keyword">*</span>/<span class="hljs-keyword">*</span>.pdf
+doc/**<span class="hljs-regexp">/*.pdf</span>
 </code></pre><h2 id="viewing-your-staged-and-unstaged-changes">Viewing your Staged and Unstaged Changes</h2>
 <p><code>git status</code>顯示: </p>
 <ul>
@@ -185,9 +185,9 @@ index <span class="hljs-number">8</span>f94139..f14abb9 <span class="hljs-number
      s.<span class="hljs-built_in">platform</span>  =   Gem::Platform::RUBY
      s.name      =   <span class="hljs-string">"simplegit"</span>
 </code></pre><p><code>git diff --stat</code> 僅列出摘要:</p>
-<pre><code>$ git diff <span class="hljs-comment">--stat</span>
+<pre><code>$ git diff --stat
  Rakefile | <span class="hljs-number">2</span> ++
- <span class="hljs-number">1</span> <span class="hljs-type">file</span> changed, <span class="hljs-number">2</span> insertions(+)
+ <span class="hljs-number">1</span> file changed, <span class="hljs-number">2</span> insertions(+)
 </code></pre><p><code>git diff --staged</code> 顯示我們目前staged 和最後的commit的差異。 例如: </p>
 <pre><code>$ git status
 Changes to be committed:
@@ -197,28 +197,28 @@ Changes to be committed:
 
 Changes <span class="hljs-keyword">not</span> staged <span class="hljs-keyword">for</span> <span class="hljs-keyword">commit</span>:
   (<span class="hljs-keyword">use</span> <span class="hljs-string">"git add &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">update</span> what will be committed)
-  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git checkout -- &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> discard changes <span class="hljs-keyword">in</span> working directory)
+  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git checkout -- &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> discard changes <span class="hljs-keyword">in</span> working <span class="hljs-keyword">directory</span>)
 
   modified:   README
   modified:   a.txt</span>
 </code></pre><p>狀態顯示README和a.txt都修改但修改的部份還沒staged, 利用<code>git diff</code>: </p>
 <pre><code>$ git diff
 diff --git a/README b/README
-index 330ce48..53d07a8 100644
-<span class="hljs-header">--- a/README</span>
-<span class="hljs-header">+++ b/README</span>
-<span class="hljs-chunk">@@ -1,3 +1,4 @@</span>
+index <span class="hljs-number">330</span>ce48.<span class="hljs-number">.53</span>d07a8 <span class="hljs-number">100644</span>
+--- a/README
++++ b/README
+@@ -<span class="hljs-number">1</span>,<span class="hljs-number">3</span> +<span class="hljs-number">1</span>,<span class="hljs-number">4</span> @@
  my project
- 123
+ <span class="hljs-number">123</span>
  abc
-<span class="hljs-addition">+1q2w</span>
++<span class="hljs-number">1</span>q2w
 diff --git a/a.txt b/a.txt
-index 72943a1..730873b 100644
-<span class="hljs-header">--- a/a.txt</span>
-<span class="hljs-header">+++ b/a.txt</span>
-@@ -1 +1,2 @@
+index <span class="hljs-number">72943</span>a1.<span class="hljs-number">.730873</span>b <span class="hljs-number">100644</span>
+--- a/a.txt
++++ b/a.txt
+@@ -<span class="hljs-number">1</span> +<span class="hljs-number">1</span>,<span class="hljs-number">2</span> @@
  aaa
-<span class="hljs-addition">+567</span>
++<span class="hljs-number">567</span>
 </code></pre><p>那<code>git add README</code>, <code>git diff</code>剩下顯示a.txt:</p>
 <pre><code>$ git add README
 $ git diff
@@ -242,16 +242,16 @@ index 264e6ae..53d07a8 100644
 <span class="hljs-addition">+1q2w</span>
 </code></pre><h3 id="-word-diff">--word-diff</h3>
 <p><code>git diff --word-diff</code>: </p>
-<pre><code>  [-delay<span class="hljs-comment">(1000)</span>;-]{+delay<span class="hljs-comment">(3000)</span>;+}               <span class="hljs-comment">// wait for a second</span>
+<pre><code>  [-delay(<span class="hljs-number">1000</span>);-]{+delay(<span class="hljs-number">3000</span>);+}               <span class="hljs-comment">// wait for a second</span>
 </code></pre><p><code>git diff</code>:</p>
-<pre><code>-  delay<span class="hljs-comment">(1000)</span>;               <span class="hljs-comment">// wait for a second</span>
-+  delay<span class="hljs-comment">(3000)</span>;               <span class="hljs-comment">// wait for a second</span>
+<pre><code>-  delay(<span class="hljs-number">1000</span>);               <span class="hljs-comment">// wait for a second</span>
++  delay(<span class="hljs-number">3000</span>);               <span class="hljs-comment">// wait for a second</span>
 </code></pre><h2 id="commit-your-changes">Commit your changes</h2>
 <p>當我們的staging area已經調整到我們想要的結果了,就可以commit changes(提交變更的部份)。</p>
 <p>所有都還沒有<code>git add</code>的內容都不會commit。</p>
-<pre><code>$ git <span class="hljs-operator"><span class="hljs-keyword">commit</span> -m <span class="hljs-string">'remove 2 lines'</span>
+<pre><code>$ git <span class="hljs-operator"><span class="hljs-keyword">commit</span> -<span class="hljs-keyword">m</span> <span class="hljs-string">'remove 2 lines'</span>
 [<span class="hljs-keyword">master</span> <span class="hljs-number">6e4</span>bee4] remove <span class="hljs-number">2</span> <span class="hljs-keyword">lines</span>
- <span class="hljs-number">1</span> file <span class="hljs-keyword">changed</span>, <span class="hljs-number">2</span> deletions(-)</span>
+ <span class="hljs-number">1</span> <span class="hljs-keyword">file</span> <span class="hljs-keyword">changed</span>, <span class="hljs-number">2</span> deletions(-)</span>
 </code></pre><p>訊息顯示commit到mater分支, SHA-1檢查碼(6e4bee4), 改了多少檔案, 有幾行被新增刪除</p>
 <p>每次我們執行一次commit, 我們就紀錄了一個我們專案的snapshot, 可以用來回復或是比對之前之後的紀錄。 </p>
 <p><code>git commit -a</code>: commit a snapshot of all changes in the working directory. (<strong>不包含新增檔案</strong>)</p>
@@ -270,20 +270,20 @@ Changes to be committed:
 
   deleted:    README
 
-$ git <span class="hljs-keyword">commit</span> -m <span class="hljs-string">'del README again'</span>
+$ git <span class="hljs-keyword">commit</span> -<span class="hljs-keyword">m</span> <span class="hljs-string">'del README again'</span>
 [<span class="hljs-keyword">master</span> b8cf1eb] del README again
- <span class="hljs-number">1</span> file <span class="hljs-keyword">changed</span>, <span class="hljs-number">1</span> deletion(-)
+ <span class="hljs-number">1</span> <span class="hljs-keyword">file</span> <span class="hljs-keyword">changed</span>, <span class="hljs-number">1</span> deletion(-)
  <span class="hljs-keyword">delete</span> <span class="hljs-keyword">mode</span> <span class="hljs-number">100644</span> README</span>
 </code></pre><p>當執行<code>git rm README</code>的時候, README已經從working directory刪除了, README的狀態會被歸類為<code>Changes to be committed</code>, 我們必須要<code>git commit</code>讓這個修改紀錄commit到snapshot中。</p>
 <p>那我們先刪除(<code>rm README</code>)某檔案(也就是將該檔案從working directory中移除)的話: </p>
-<pre><code>$ <span class="hljs-keyword">rm</span> README
+<pre><code>$ rm README
 $ git status
-<span class="hljs-keyword">On</span> branch master
-Changes not staged <span class="hljs-keyword">for</span> commit:
-  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git add/rm &lt;file&gt;..."</span> to <span class="hljs-keyword">update</span> what will be committed)
-  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git checkout -- &lt;file&gt;..."</span> to <span class="hljs-keyword">discard</span> changes <span class="hljs-keyword">in</span> working directory)
+On branch master
+Changes not staged for <span class="hljs-operator"><span class="hljs-keyword">commit</span>:
+  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git add/rm &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">update</span> what will be committed)
+  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git checkout -- &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> discard changes <span class="hljs-keyword">in</span> working <span class="hljs-keyword">directory</span>)
 
-  deleted:    README
+  deleted:    README</span>
 </code></pre><p>這個檔案會被歸類為<code>Changes not staged for commit</code>, 必須執行<code>git rm README</code>或是<code>git add README</code>: </p>
 <pre><code>$ git rm README
 rm <span class="hljs-attribute">'README</span>'
@@ -297,16 +297,16 @@ Changes <span class="hljs-keyword">to</span> be committed:
 <h3 id="-staged-">強制移除已經staged的檔案</h3>
 <p>例如: </p>
 <pre><code>$ git status
-<span class="hljs-keyword">On</span> branch master
+On branch master
 Changes to be committed:
-  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git reset HEAD &lt;file&gt;..."</span> to unstage)
+  (<span class="hljs-operator"><span class="hljs-keyword">use</span> <span class="hljs-string">"git reset HEAD &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> unstage)
 
-  modified:   <span class="hljs-keyword">d</span>.json
+  modified:   <span class="hljs-keyword">d</span>.<span class="hljs-keyword">json</span>
 
-$ git <span class="hljs-keyword">rm</span> <span class="hljs-keyword">d</span>.json 
-<span class="hljs-keyword">error</span>: the following <span class="hljs-keyword">file</span> has changes staged <span class="hljs-keyword">in</span> the index:
-    <span class="hljs-keyword">d</span>.json
-(<span class="hljs-keyword">use</span> --cached to <span class="hljs-keyword">keep</span> the <span class="hljs-keyword">file</span>, or -f to force removal)
+$ git rm <span class="hljs-keyword">d</span>.<span class="hljs-keyword">json</span> 
+<span class="hljs-keyword">error</span>: the <span class="hljs-keyword">following</span> <span class="hljs-keyword">file</span> has changes staged <span class="hljs-keyword">in</span> the <span class="hljs-keyword">index</span>:
+    <span class="hljs-keyword">d</span>.<span class="hljs-keyword">json</span>
+(<span class="hljs-keyword">use</span> <span class="hljs-comment">--cached to keep the file, or -f to force removal)</span></span>
 </code></pre><p>要<code>git rm</code>的時候會告知該檔案已經在stage, 真的不想要,就使用<code>git rm -f</code>來強制移除: </p>
 <pre><code>$ git <span class="hljs-keyword">rm</span> -f <span class="hljs-keyword">d</span>.json
 <span class="hljs-keyword">rm</span> '<span class="hljs-keyword">d</span>.json'
@@ -320,22 +320,22 @@ Changes to be committed:
 <h3 id="-stage-">將檔案從stage移出, 但是不想再追蹤它</h3>
 <p>也就是說, 我想把檔案保留在硬碟裡, 但是不再讓Git追蹤它。</p>
 <p>使用<code>git rm --cached d.json</code>: </p>
-<pre><code>$ git <span class="hljs-keyword">rm</span> --cached <span class="hljs-keyword">d</span>.json 
-<span class="hljs-keyword">rm</span> '<span class="hljs-keyword">d</span>.json'
+<pre><code>$ git rm <span class="hljs-comment">--cached d.json </span>
+rm 'd.json'
 $ git status
-<span class="hljs-keyword">On</span> branch master
+On branch master
 Changes to be committed:
-  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git reset HEAD &lt;file&gt;..."</span> to unstage)
+  (<span class="hljs-operator"><span class="hljs-keyword">use</span> <span class="hljs-string">"git reset HEAD &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> unstage)
 
-  deleted:    <span class="hljs-keyword">d</span>.json
+  deleted:    <span class="hljs-keyword">d</span>.<span class="hljs-keyword">json</span>
 
 Untracked files:
-  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git add &lt;file&gt;..."</span> to <span class="hljs-keyword">include</span> <span class="hljs-keyword">in</span> what will be committed)
+  (<span class="hljs-keyword">use</span> <span class="hljs-string">"git add &lt;file&gt;..."</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">include</span> <span class="hljs-keyword">in</span> what will be committed)
 
-  <span class="hljs-keyword">d</span>.json
+  <span class="hljs-keyword">d</span>.<span class="hljs-keyword">json</span></span>
 </code></pre><p>會發現<code>d.json</code>檔案還保留在working directory ,但是歸類為<code>Untracked files</code>, 另外<code>Changes to be committed</code>這邊也有<code>deleted: d.json</code>的紀錄提供commit, 方便日後復原。</p>
 <h2 id="moving-files">Moving Files</h2>
-<pre><code>$ git mv file_from <span class="hljs-keyword">file_t</span>o
+<pre><code><span class="hljs-variable">$ </span>git mv file_from file_to
 </code></pre><p>例如: </p>
 <pre><code>$ git mv <span class="hljs-tag">a</span><span class="hljs-class">.txt</span> aa<span class="hljs-class">.txt</span>
 $ gss

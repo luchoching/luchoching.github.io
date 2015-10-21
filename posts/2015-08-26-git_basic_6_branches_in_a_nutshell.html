@@ -18,7 +18,7 @@
 <p>如上個指令, 我們建立一個新的branch叫作testing, 但是我們還是在master branch上: </p>
 <p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/head-to-master.png" alt="b4"></p>
 <p>利用以下來檢查branch: </p>
-<pre><code>$ git <span class="hljs-command">log</span> <span class="hljs-comment">--oneline --decorate</span>
+<pre><code>$ git <span class="hljs-built_in">log</span> --oneline --decorate
 <span class="hljs-number">745</span>d9f1 (HEAD, testing, master) Add <span class="hljs-number">111</span>
 <span class="hljs-number">21</span>d8b07 Add <span class="hljs-number">11</span>
 ffdb431 init commit
@@ -40,13 +40,13 @@ ffdb431 init commit
 <span class="hljs-variable">$ </span>git commit -a -m <span class="hljs-string">'made other change'</span>
 </code></pre><p><img src="https://git-scm.com/book/en/v2/book/03-git-branching/images/advance-master.png" alt="b8"></p>
 <p>利用<code>git log</code>查看branch概況: </p>
-<pre><code>$ git log <span class="hljs-comment">--oneline --decorate --graph --all</span>
-* bbcb306 (master) made another <span class="hljs-operator"><span class="hljs-keyword">change</span>
-| * <span class="hljs-number">6161</span>eca (HEAD, testing) made a <span class="hljs-keyword">change</span>
+<pre><code>$ git <span class="hljs-keyword">log</span> --oneline --decorate --<span class="hljs-keyword">graph</span> --all
+<span class="hljs-comment">* bbcb306 (master) made another change</span>
+| * 6161eca (HEAD, testing) made a change
 |/  
-* <span class="hljs-number">745</span>d9f1 <span class="hljs-keyword">Add</span> <span class="hljs-number">111</span>
-* <span class="hljs-number">21</span>d8b07 <span class="hljs-keyword">Add</span> <span class="hljs-number">11</span>
-* ffdb431 init <span class="hljs-keyword">commit</span></span>
+<span class="hljs-comment">* 745d9f1 Add 111</span>
+<span class="hljs-comment">* 21d8b07 Add 11</span>
+<span class="hljs-comment">* ffdb431 init commit</span>
 </code></pre><div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
 var disqus_shortname = 'luchoching';
 /* * * DON'T EDIT BELOW THIS LINE * * */

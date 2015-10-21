@@ -58,19 +58,19 @@
 <p>要在不是屬於我們的型別上加method(例如 basic types), 那就定義一個alias:</p>
 <pre><code class="lang-go">package main
 
-<span class="hljs-built_in">import</span> <span class="hljs-params">(
+import (
   <span class="hljs-string">"fmt"</span>
   <span class="hljs-string">"strings"</span>
-)</span>
+)
 
-type MyStr string
+type MyStr <span class="hljs-built_in">string</span>
 
-func <span class="hljs-params">(s MyStr)</span> Uppercase<span class="hljs-params">()</span> string {
-  return strings.ToUpper<span class="hljs-params">(string<span class="hljs-params">(s)</span>)</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(s MyStr)</span> <span class="hljs-title">Uppercase</span><span class="hljs-params">()</span> <span class="hljs-title">string</span> {</span>
+  <span class="hljs-keyword">return</span> strings.ToUpper(<span class="hljs-built_in">string</span>(s))
 }
 
-func main<span class="hljs-params">()</span> {
-  fmt.Println<span class="hljs-params">(MyStr<span class="hljs-params">(<span class="hljs-string">"test"</span>)</span>.Uppercase<span class="hljs-params">()</span>)</span>
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> {</span>
+  fmt.Println(MyStr(<span class="hljs-string">"test"</span>).Uppercase())
 }
 </code></pre>
 <h2 id="method-receivers">Method receivers</h2>

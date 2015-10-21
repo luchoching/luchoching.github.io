@@ -17,16 +17,16 @@
 <p><strong>Express.js的任務, 就是管理你所有middleware chain。</strong></p>
 <h2 id="-hello-byebye-middleware">&#39;Hello&#39; 和 &#39;ByeBye&#39; middleware</h2>
 <p>先寫出一個Express app: </p>
-<pre><code class="lang-js"><span class="hljs-reserved">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
-<span class="hljs-reserved">var</span> app = express();
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">var</span> app = express();
 app.listen(<span class="hljs-number">8000</span>);
 </code></pre>
 <p>app有了, 不過這個app沒法做任何事, 要加入middleware才成, 我們把上面寫好的<code>logger</code> middleware加入:</p>
-<pre><code class="lang-js">app.<span class="hljs-keyword">use</span><span class="hljs-params">(logger)</span>;
+<pre><code class="lang-js"><span class="hljs-keyword">app</span>.<span class="hljs-keyword">use</span>(logger);
 </code></pre>
 <p>啟動我們寫好的app, 利用curl測試看看, 會發現印出以下訊息:</p>
 <pre><code class="lang-bash"><span class="hljs-variable">$ </span>curl <span class="hljs-symbol">http:</span>/<span class="hljs-regexp">/localhost:8000/</span>
-<span class="hljs-constant">Cannot GET </span>/
+<span class="hljs-constant">Cannot</span> <span class="hljs-constant">GET</span> /
 </code></pre>
 <p>但是server這邊有順利列印出log: </p>
 <pre><code class="lang-bash">$ node <span class="hljs-keyword">server</span>
@@ -49,8 +49,8 @@ Fri May <span class="hljs-number">15</span> <span class="hljs-number">2015</span
 <p><code>app.use</code>表示 <strong>所有的request都會執行這個middleware</strong></p>
 <p><code>app.get</code>表示 <strong>只有針對該URL 做 GET request的時候才會執行這個middleware</strong></p>
 <p>測試一下看結果: </p>
-<pre><code class="lang-bash"><span class="hljs-variable">$ </span>curl <span class="hljs-symbol">localhost:</span><span class="hljs-number">8000</span>/hello
-<span class="hljs-constant">Hello</span>
+<pre><code class="lang-bash">$ curl localhost:<span class="hljs-number">8000</span>/hello
+Hello
 </code></pre>
 <p>察看一下server log: </p>
 <pre><code>Fri May <span class="hljs-number">15</span> <span class="hljs-number">2015</span> <span class="hljs-number">15</span>:<span class="hljs-number">26</span>:<span class="hljs-number">02</span> GMT<span class="hljs-number">+0800</span> <span class="hljs-comment">(CST)</span> <span class="hljs-string">'GET'</span> <span class="hljs-string">'/hello'</span>

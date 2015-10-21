@@ -5,7 +5,7 @@
 <p><code>git commit --amend</code> </p>
 <p><code>git commit --amend file1, file2...</code></p>
 <p>用來re-commit上次的commit。如果沒有staged的檔案存在, 那<code>git commit --amend</code>就是用來修改上次的commit訊息, 如果有staged的檔案存在, <code>git commit --amend</code>就會在這次修改的commit中, 加入這次的staged檔案。</p>
-<pre><code>$ git <span class="hljs-operator"><span class="hljs-keyword">commit</span> -m <span class="hljs-string">'init commit'</span>
+<pre><code>$ git <span class="hljs-operator"><span class="hljs-keyword">commit</span> -<span class="hljs-keyword">m</span> <span class="hljs-string">'init commit'</span>
 $ git <span class="hljs-keyword">add</span> forgetten_file
 $ git <span class="hljs-keyword">commit</span> <span class="hljs-comment">--amend</span></span>
 </code></pre><h2 id="unstaging-a-staged-file">Unstaging a Staged File</h2>

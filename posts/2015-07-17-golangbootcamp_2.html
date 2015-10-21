@@ -110,19 +110,19 @@ func main() {
 <p>這樣的方式非常好用, 例如我想要我的<code>Job</code> struct擁有像 <a href="http://golang.org/pkg/log/#Logger">logger</a>這樣的行為, 只要將已經實作好的logger當作是我<code>Job</code> struct的一部份:  </p>
 <pre><code class="lang-go">package main
 
-<span class="hljs-keyword">import</span> (
+import (
   <span class="hljs-string">"log"</span>
   <span class="hljs-string">"os"</span>
 )
 
-<span class="hljs-keyword">type</span> Job struct {
+type Job struct {
   Command <span class="hljs-built_in">string</span>
-  Logger  <span class="hljs-subst">*</span><span class="hljs-keyword">log</span><span class="hljs-built_in">.</span>Logger
+  Logger  *<span class="hljs-built_in">log</span>.Logger
 }
 
-func main() {
-  job <span class="hljs-subst">:=</span> <span class="hljs-subst">&amp;</span>Job{<span class="hljs-string">"demo"</span>, <span class="hljs-keyword">log</span><span class="hljs-built_in">.</span><span class="hljs-literal">New</span>(os<span class="hljs-built_in">.</span>Stderr, <span class="hljs-string">"Job: "</span>, <span class="hljs-keyword">log</span><span class="hljs-built_in">.</span>Ldate)}
-  job<span class="hljs-built_in">.</span>Logger<span class="hljs-built_in">.</span>Print(<span class="hljs-string">"test"</span>)
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> {</span>
+  job := &amp;Job{<span class="hljs-string">"demo"</span>, <span class="hljs-built_in">log</span>.New(os.Stderr, <span class="hljs-string">"Job: "</span>, <span class="hljs-built_in">log</span>.Ldate)}
+  job.Logger.Print(<span class="hljs-string">"test"</span>)
 }
 </code></pre>
 <p>我們的<code>Job</code> struct有一個欄位叫作<code>Logger</code>, 其型別是一個指向<code>log.Logger</code>的指標。當我們初始<code>Job</code>的值的時候, 我們設定一個loggger, 接著我們就可以使用已經時做好的method, 例如<code>job.Logger.Print()</code>。</p>
@@ -139,13 +139,13 @@ func main() {
 </code></pre>
 <h2 id="poniter">Poniter</h2>
 <pre><code class="lang-go"><span class="hljs-typedef"><span class="hljs-keyword">type</span> <span class="hljs-type">User</span> struct <span class="hljs-container">{
-  <span class="hljs-type">Id</span>             <span class="hljs-title">int</span>
-  <span class="hljs-type">Name</span>, <span class="hljs-type">Location</span> <span class="hljs-title">string</span>
+  <span class="hljs-type">Id</span>             int
+  <span class="hljs-type">Name</span>, <span class="hljs-type">Location</span> string
 }</span></span>
 
 <span class="hljs-typedef"><span class="hljs-keyword">type</span> <span class="hljs-type">Player</span> struct <span class="hljs-container">{
   *<span class="hljs-type">User</span>
-  <span class="hljs-type">GameId</span> <span class="hljs-title">int</span>
+  <span class="hljs-type">GameId</span> int
 }</span></span>
 </code></pre>
 <p><code>Player</code>的成員, 利用pointer指向<code>User</code>會是比較好的選擇, 因為在Go中, 所有函式的參數是passed by value, 而不是passed by reference, 因此如果我們用的是小的struct,那copy的影響不大, 那現實生活中, 如果像是<code>User</code>可能大到不應該用copy的方式, 那就要使用passed by reference(使用pointer)。</p>

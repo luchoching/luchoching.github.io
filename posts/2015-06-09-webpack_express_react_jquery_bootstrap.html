@@ -126,12 +126,12 @@ config.<span class="hljs-built_in">module</span>.loaders= [
 </code></pre>
 <h3 id="-plugin">使用 Plugin</h3>
 <pre><code class="lang-js">config.plugins= [
-  <span class="hljs-keyword">new</span> webpack.<span class="hljs-type">HotModuleReplacementPlugin</span><span class="hljs-literal">()</span>,
-  <span class="hljs-keyword">new</span> webpack.<span class="hljs-type">ProvidePlugin</span>({
-    $: <span class="hljs-symbol">'jquery'</span>,
-    jQuery: <span class="hljs-symbol">'jquery'</span>,
-    _: <span class="hljs-symbol">'lodash'</span>,
-    <span class="hljs-type">React</span>: <span class="hljs-symbol">'react'</span>
+  <span class="hljs-keyword">new</span> webpack.HotModuleReplacementPlugin(),
+  <span class="hljs-keyword">new</span> webpack.ProvidePlugin({
+    $: <span class="hljs-string">'jquery'</span>,
+    jQuery: <span class="hljs-string">'jquery'</span>,
+    _: <span class="hljs-string">'lodash'</span>,
+    React: <span class="hljs-string">'react'</span>
   })
 ];
 </code></pre>
@@ -221,13 +221,13 @@ app.listen(port, <span class="hljs-function"><span class="hljs-keyword">function
 <h2 id="production-">Production 設定</h2>
 <p>另外寫一個<code>webpack.production.config.js</code>:</p>
 <pre><code class="lang-js"><span class="hljs-attribute">...</span>
-config<span class="hljs-built_in">.</span>entry<span class="hljs-subst">=</span> mainPath ;
-config<span class="hljs-built_in">.</span>output<span class="hljs-subst">=</span> {
+config<span class="hljs-built_in">.</span>entry= mainPath ;
+config<span class="hljs-built_in">.</span>output= {
   path: buildPath,
   filename: <span class="hljs-string">'bundle.js'</span>
 };
 <span class="hljs-attribute">...</span>
-config<span class="hljs-built_in">.</span>plugins<span class="hljs-subst">=</span> <span class="hljs-preprocessor">[</span>
+config<span class="hljs-built_in">.</span>plugins= <span class="hljs-preprocessor">[</span>
   <span class="hljs-literal">new</span> webpack<span class="hljs-built_in">.</span>ProvidePlugin({
     $: <span class="hljs-string">'jquery'</span>,
     jQuery: <span class="hljs-string">'jquery'</span>,

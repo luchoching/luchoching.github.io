@@ -42,15 +42,15 @@
 </code></pre>
 <h2 id="for-of">for...of</h2>
 <p><code>for...of</code>和<code>for...in</code> loop的差別在於, <code>for...in</code>是遍歷(iterate)屬性名(property names), 那<code>for...of</code>是遍歷屬性值(property values):</p>
-<pre><code class="lang-js"><span class="hljs-reserved">let</span> arr = [<span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">7</span>];
+<pre><code class="lang-js"><span class="hljs-keyword">let</span> arr = [<span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">7</span>];
 arr.foo = <span class="hljs-string">"hello"</span>;
 
-<span class="hljs-keyword">for</span> (<span class="hljs-reserved">let</span> i <span class="hljs-keyword">in</span> arr) {
-  <span class="hljs-built_in">console</span>.log(i); <span class="hljs-regexp">//</span> logs <span class="hljs-string">"0"</span>, <span class="hljs-string">"1"</span>, <span class="hljs-string">"2"</span>, <span class="hljs-string">"foo"</span>
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i <span class="hljs-keyword">in</span> arr) {
+  console.log(i); // logs <span class="hljs-string">"0"</span>, <span class="hljs-string">"1"</span>, <span class="hljs-string">"2"</span>, <span class="hljs-string">"foo"</span>
 }
 
-<span class="hljs-keyword">for</span> (<span class="hljs-reserved">let</span> i <span class="hljs-keyword">of</span> arr) {
-  <span class="hljs-built_in">console</span>.log(i); <span class="hljs-regexp">//</span> logs <span class="hljs-string">"3"</span>, <span class="hljs-string">"5"</span>, <span class="hljs-string">"7"</span>
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i <span class="hljs-keyword">of</span> arr) {
+  console.log(i); // logs <span class="hljs-string">"3"</span>, <span class="hljs-string">"5"</span>, <span class="hljs-string">"7"</span>
 }
 </code></pre>
 <p>babel的範例: </p>
@@ -84,39 +84,39 @@ arr.foo = <span class="hljs-string">"hello"</span>;
 <p><code>yield</code> 會從iterator指定一個值回傳, 或是連同<code>yield*</code>發送值給其他的generator function。</p>
 <p>接下來<code>next()</code> method傳回一個物件, 這個物件帶有一個包含被送出(yielded)的值的屬性,以及一個<code>done</code>屬性指出是否這個generator已經發送出其最新的值。</p>
 <p>例如: </p>
-<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">idMaker</span><span class="hljs-params">()</span>{</span>
-  var index = <span class="hljs-number">0</span>;
-  while<span class="hljs-params">(index &lt; <span class="hljs-number">3</span>)</span>
+<pre><code class="lang-js">function* idMaker(){
+  <span class="hljs-keyword">var</span> index = 0;
+  <span class="hljs-keyword">while</span>(index &lt; 3)
     yield index++;
 }
 
-var gen = idMaker<span class="hljs-params">()</span>;
+<span class="hljs-keyword">var</span> <span class="hljs-keyword">gen</span> = idMaker();
 
-console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>)</span>; <span class="hljs-comment">// { value: 0, done: false }</span>
-console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>)</span>; <span class="hljs-comment">// { value: 1, done: false }</span>
-console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>)</span>; <span class="hljs-comment">// { value: 2, done: false }</span>
-console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>)</span>; <span class="hljs-comment">// { value: undfined, done: true }</span>
+console.<span class="hljs-literal">log</span>(<span class="hljs-keyword">gen</span>.next()); <span class="hljs-comment">// { value: 0, done: false }</span>
+console.<span class="hljs-literal">log</span>(<span class="hljs-keyword">gen</span>.next()); <span class="hljs-comment">// { value: 1, done: false }</span>
+console.<span class="hljs-literal">log</span>(<span class="hljs-keyword">gen</span>.next()); <span class="hljs-comment">// { value: 2, done: false }</span>
+console.<span class="hljs-literal">log</span>(<span class="hljs-keyword">gen</span>.next()); <span class="hljs-comment">// { value: undfined, done: true }</span>
 </code></pre>
 <p>使用 <code>yield*</code> 呼叫其他的generator function: </p>
-<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">anotherGenerator</span><span class="hljs-params">(i)</span> {</span>
-  yield i + <span class="hljs-number">1</span>;
-  yield i + <span class="hljs-number">2</span>;
-  yield i + <span class="hljs-number">3</span>;
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">anotherGenerator</span>(<span class="hljs-params">i</span>) </span>{
+  <span class="hljs-keyword">yield</span> i + <span class="hljs-number">1</span>;
+  <span class="hljs-keyword">yield</span> i + <span class="hljs-number">2</span>;
+  <span class="hljs-keyword">yield</span> i + <span class="hljs-number">3</span>;
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">generator</span><span class="hljs-params">(i)</span>{</span>
-  yield i;
-  yield<span class="hljs-built_in">*</span> anotherGenerator<span class="hljs-params">(i)</span>;
-  yield i + <span class="hljs-number">10</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">generator</span>(<span class="hljs-params">i</span>)</span>{
+  <span class="hljs-keyword">yield</span> i;
+  <span class="hljs-keyword">yield</span>* anotherGenerator(i);
+  <span class="hljs-keyword">yield</span> i + <span class="hljs-number">10</span>;
 }
 
-var gen = generator<span class="hljs-params">(<span class="hljs-number">10</span>)</span>;
+<span class="hljs-keyword">var</span> gen = generator(<span class="hljs-number">10</span>);
 
-console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>.value)</span>; <span class="hljs-comment">// 10</span>
-console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>.value)</span>; <span class="hljs-comment">// 11</span>
-console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>.value)</span>; <span class="hljs-comment">// 12</span>
-console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>.value)</span>; <span class="hljs-comment">// 13</span>
-console.<span class="hljs-built_in">log</span><span class="hljs-params">(gen.next<span class="hljs-params">()</span>.value)</span>; <span class="hljs-comment">// 20</span>
+<span class="hljs-built_in">console</span>.log(gen.next().value); <span class="hljs-comment">// 10</span>
+<span class="hljs-built_in">console</span>.log(gen.next().value); <span class="hljs-comment">// 11</span>
+<span class="hljs-built_in">console</span>.log(gen.next().value); <span class="hljs-comment">// 12</span>
+<span class="hljs-built_in">console</span>.log(gen.next().value); <span class="hljs-comment">// 13</span>
+<span class="hljs-built_in">console</span>.log(gen.next().value); <span class="hljs-comment">// 20</span>
 </code></pre>
 <p>babel範例, 改寫: </p>
 <pre><code class="lang-js"><span class="hljs-pi">'use strict'</span>;

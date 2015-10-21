@@ -4,29 +4,29 @@
 <h2 id="-gitconfig">.gitconfig</h2>
 <p>我的<code>.gitconfig</code>部份: </p>
 <pre><code>[alias]
-  <span class="hljs-variable">a =</span> add
-  <span class="hljs-variable">ap =</span> add -p
+  a = add
+  ap = add -p
 
-  <span class="hljs-variable">c =</span> commit --verbose
-  <span class="hljs-variable">ca =</span> commit -a --verbose
-  <span class="hljs-variable">cm =</span> commit -m
-  <span class="hljs-variable">cam =</span> commit -a -m
-  <span class="hljs-variable">m =</span> commit --amend --verbose
+  c = <span class="hljs-operator"><span class="hljs-keyword">commit</span> <span class="hljs-comment">--verbose</span>
+  ca = <span class="hljs-keyword">commit</span> -a <span class="hljs-comment">--verbose</span>
+  cm = <span class="hljs-keyword">commit</span> -<span class="hljs-keyword">m</span>
+  cam = <span class="hljs-keyword">commit</span> -a -<span class="hljs-keyword">m</span>
+  <span class="hljs-keyword">m</span> = <span class="hljs-keyword">commit</span> <span class="hljs-comment">--amend --verbose</span>
 
-  <span class="hljs-variable">d =</span> diff
-  <span class="hljs-variable">dst =</span> diff --stat
-  <span class="hljs-variable">ds =</span> diff --staged
+  <span class="hljs-keyword">d</span> = diff
+  dst = diff <span class="hljs-comment">--stat</span>
+  ds = diff <span class="hljs-comment">--staged</span>
 
 
-  <span class="hljs-variable">s =</span> status -s
-  <span class="hljs-variable">ss =</span> status 
+  s = <span class="hljs-keyword">status</span> -s
+  ss = <span class="hljs-keyword">status</span> 
 
-  <span class="hljs-variable">co =</span> checkout
-  <span class="hljs-variable">cob =</span> checkout -b
+  co = checkout
+  cob = checkout -b
 
-  <span class="hljs-variable">br =</span> branch
+  br = branch
 
-  <span class="hljs-variable">p =</span> push -u origin --all
+  <span class="hljs-keyword">p</span> = push -u origin <span class="hljs-comment">--all</span></span>
 </code></pre><p>在<code>.gitconfig</code>新增alias有幾個好處, 第一可以不用打那麼多字, 例如<code>git status</code>只要打<code>git s</code>就可,
 並且支援git command auto completion, 例如輸入<code>git s</code>按下<code>tab</code>鍵, 就會顯示<code>s</code>開頭的參數。</p>
 <h2 id="g-lt-alias-gt-">g &lt;alias&gt;</h2>

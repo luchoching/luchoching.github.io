@@ -12,7 +12,7 @@ $ sudo docker info
 <pre><code>$ curl -sSL http<span class="hljs-variable">s:</span>//<span class="hljs-built_in">get</span>.docker.<span class="hljs-keyword">com</span>/ | <span class="hljs-keyword">sh</span>
 </code></pre><h2 id="use-docker-without-sudo">use docker without sudo</h2>
 <p>不用sudo執行docker會出現: </p>
-<pre><code>Post http:///var/run/docker.sock/v1.19/containers/<span class="hljs-operator"><span class="hljs-keyword">create</span>: dial unix /<span class="hljs-keyword">var</span>/run/docker.sock: permission denied. <span class="hljs-keyword">Are</span> you trying <span class="hljs-keyword">to</span> <span class="hljs-keyword">connect</span> <span class="hljs-keyword">to</span> a TLS-enabled daemon without TLS?</span>
+<pre><code>Post http:///var/run/docker.sock/v1.19/containers/<span class="hljs-operator"><span class="hljs-keyword">create</span>: dial unix /<span class="hljs-keyword">var</span>/run/docker.sock: permission denied. <span class="hljs-keyword">Are</span> you trying <span class="hljs-keyword">to</span> <span class="hljs-keyword">connect</span> <span class="hljs-keyword">to</span> a TLS-enabled daemon <span class="hljs-keyword">without</span> TLS?</span>
 </code></pre><p><a href="https://docs.docker.com/installation/ubuntulinux/#giving-non-root-access">docker doc 說明</a>：</p>
 <blockquote>
 <p>The docker daemon binds to a Unix socket instead of a TCP port. By default that Unix socket is owned by the user root and other users can access it with sudo. For this reason, docker daemon always runs as the root user.</p>

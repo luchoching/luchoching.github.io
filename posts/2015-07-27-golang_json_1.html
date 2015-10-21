@@ -4,7 +4,7 @@
 </code></pre>
 <h2 id="encoding">encoding</h2>
 <p>使用<code>Marshal</code> function: </p>
-<pre><code class="lang-go">func Marshal(v <span class="hljs-class"><span class="hljs-keyword">interface</span></span>{}) ([]<span class="hljs-keyword">byte</span>, <span class="hljs-keyword">error</span>)
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Marshal</span><span class="hljs-params">(v interface{})</span> <span class="hljs-params">([]byte, error)</span></span>
 </code></pre>
 <p>例如: </p>
 <pre><code class="lang-go"><span class="hljs-keyword">package</span> main                                                                                    
@@ -40,25 +40,25 @@ The json package only accesses the exported fields of struct types (those that b
 <p>先建立一個struct可以來擺放我們解碼後的資料, 像是<code>var m Message</code>:</p>
 <pre><code class="lang-go">package main                                                                                    
 
-import (                                                                                        
+<span class="hljs-keyword">import</span> (                                                                                        
   <span class="hljs-string">"encoding/json"</span>                                                                               
   <span class="hljs-string">"fmt"</span>                                                                                         
 )                                                                                               
 
-<span class="hljs-keyword">type</span> Message struct {                                                                           
-  Name, Body string                                                                             
-  Time       int64                                                                              
+type <span class="hljs-type">Message</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{                                                                           
+  <span class="hljs-type">Name</span>, <span class="hljs-type">Body</span> string                                                                             
+  <span class="hljs-type">Time</span>       int64                                                                              
 }                                                                                               
 
-func main() {                                                                                   
-  b := []byte(`{<span class="hljs-string">"Name"</span>:<span class="hljs-string">"Alice"</span>,<span class="hljs-string">"Body"</span>:<span class="hljs-string">"Hello"</span>,<span class="hljs-string">"Time"</span>:1294706395881547000}`)                     
-  <span class="hljs-keyword">var</span> <span class="hljs-keyword">m</span> Message                                                                                 
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {                                                                                   
+  b := []byte(`{<span class="hljs-string">"Name"</span>:<span class="hljs-string">"Alice"</span>,<span class="hljs-string">"Body"</span>:<span class="hljs-string">"Hello"</span>,<span class="hljs-string">"Time"</span>:<span class="hljs-number">1294706395881547000</span>}`)                     
+  <span class="hljs-keyword">var</span> m <span class="hljs-type">Message</span>                                                                                 
 
-  <span class="hljs-keyword">err</span> := json.Unmarshal(b, &amp;<span class="hljs-keyword">m</span>)                                                                  
-  <span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> != nil {                                                                               
-    panic(<span class="hljs-keyword">err</span>)                                                                                  
+  err := json.<span class="hljs-type">Unmarshal</span>(b, &amp;m)                                                                  
+  <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {                                                                               
+    panic(err)                                                                                  
   }                                                                                             
-  fmt.Printf(<span class="hljs-string">"%+v"</span>, <span class="hljs-keyword">m</span>)                                                                          
+  fmt.<span class="hljs-type">Printf</span>(<span class="hljs-string">"%+v"</span>, m)                                                                          
 
 }
 </code></pre>

@@ -3,7 +3,7 @@
 <p><a href="http://www.golang-book.com/books/intro/7">圖片出處</a></p>
 <p>什麼是Function? 我覺得上面這張圖說明的太好了: 一個function是一段獨立的程式碼,就好像一個黑盒子一樣,  我們餵進去0到多個參數進去後, 這個黑盒子就會吐出0-多個結果給我們。</p>
 <p>目前我們已經寫過了第一個function: </p>
-<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {}
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> {}</span>
 </code></pre>
 <p>寫法可以很容易理解: </p>
 <pre><code class="lang-go"><span class="hljs-function">func <span class="hljs-title">plus</span><span class="hljs-params">(a <span class="hljs-keyword">int</span>, b <span class="hljs-keyword">int</span>)</span> <span class="hljs-keyword">int</span> </span>{
@@ -17,8 +17,8 @@
 }
 </code></pre>
 <p>呼叫function就跟我們熟悉的一樣, 使用 <code>name(args)</code>: </p>
-<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>{</span>
-  res := plus<span class="hljs-params">(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>)</span>
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{
+  res := plus(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>)
 }
 </code></pre>
 <h2 id="multiple-return-values">Multiple Return Values</h2>
@@ -52,7 +52,7 @@
 </code></pre>
 <p>如果要傳入的參數已經存放在slice裡了, 那要用<code>func(slice...)</code>的語法如下:</p>
 <pre><code class="lang-go">nums := []<span class="hljs-keyword">int</span>{<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>}
-<span class="hljs-keyword">sum</span>(nums...)
+sum(nums...)
 </code></pre>
 <h2 id="closures">Closures</h2>
 <p>Go也支援匿名函式(<em>anonymous functions</em>), 用來製作 <em>closure</em> 。</p>
@@ -74,10 +74,10 @@
   fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span class="hljs-params">(newInts()</span></span>)
 </code></pre>
 <p>將會得到: </p>
-<pre><code class="lang-bash">1
-2
-3
-1
+<pre><code class="lang-bash"><span class="hljs-number">1</span>
+<span class="hljs-number">2</span>
+<span class="hljs-number">3</span>
+<span class="hljs-number">1</span>
 </code></pre>
 <h2 id="recurison">Recurison</h2>
 <p>Go也支援遞迴函式(<em>recursive functions</em>)</p>
@@ -91,7 +91,7 @@
 <h2 id="pointers">Pointers</h2>
 <p>Go支援 pointer(指標), 允許傳址(pass reference to values)。</p>
 <h3 id="passed-by-value">passed  by value</h3>
-<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">zeroval</span><span class="hljs-params">(ival int)</span></span> {
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">zeroval</span><span class="hljs-params">(ival int)</span> {</span>
   ival = <span class="hljs-number">0</span>
 }
 </code></pre>
@@ -105,7 +105,7 @@ fmt.<span class="hljs-function"><span class="hljs-title">Println</span><span cla
 <p>我們會得到結果為1, 並不會影響原來的 <code>i</code>。</p>
 <h3 id="passed-by-reference">passed by reference</h3>
 <p>就如同大家所熟悉的C/C++: </p>
-<pre><code class="lang-go"><span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">zeroptr</span><span class="hljs-params">(iptr *int)</span></span> {
+<pre><code class="lang-go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">zeroptr</span><span class="hljs-params">(iptr *int)</span> {</span>
   *iptr = <span class="hljs-number">0</span>
 }
 </code></pre>

@@ -88,8 +88,8 @@ Josie
 <h3 id="-struct-">要塞入樣板的資料結構(struct)</h3>
 <p>Go的樣板只接受struct資料餵入: </p>
 <pre><code class="lang-go"><span class="hljs-typedef"><span class="hljs-keyword">type</span> <span class="hljs-type">Recipient</span> struct <span class="hljs-container">{
-  <span class="hljs-type">Name</span>, <span class="hljs-type">Gift</span> <span class="hljs-title">string</span>
-  <span class="hljs-type">Attended</span>   <span class="hljs-title">bool</span>
+  <span class="hljs-type">Name</span>, <span class="hljs-type">Gift</span> string
+  <span class="hljs-type">Attended</span>   bool
 }</span></span>
 </code></pre>
 <h3 id="-">準備我們要塞入的資料</h3>
@@ -101,10 +101,10 @@ Josie
 </code></pre>
 <h3 id="-">產生樣板</h3>
 <p>利用樣板字串產生一個樣板,並且幫這個樣板取名字</p>
-<pre><code class="lang-go">t := <span class="hljs-keyword">template</span>.<span class="hljs-type">Must</span>(<span class="hljs-keyword">template</span>.<span class="hljs-type">New</span>(<span class="hljs-string">"letter"</span>).<span class="hljs-type">Parse</span>(letter))
+<pre><code class="lang-go">t := template.<span class="hljs-function"><span class="hljs-title">Must</span><span class="hljs-params">(template.New(<span class="hljs-string">"letter"</span>)</span></span>.<span class="hljs-function"><span class="hljs-title">Parse</span><span class="hljs-params">(letter)</span></span>)
 </code></pre>
 <p>如果樣板字串是來自於外部檔案, 那麼就利用<code>template.ParseFiles()</code>:</p>
-<pre><code class="lang-go">t := <span class="hljs-keyword">template</span>.<span class="hljs-type">Must</span>(<span class="hljs-keyword">template</span>.<span class="hljs-type">ParseFiles</span>(<span class="hljs-string">"tmpl/Letter.html"</span>))
+<pre><code class="lang-go"><span class="hljs-rule"><span class="hljs-attribute">t </span>:<span class="hljs-value">= template.<span class="hljs-function">Must</span>(template.<span class="hljs-function">ParseFiles</span>(<span class="hljs-string">"tmpl/Letter.html"</span>))</span></span>
 </code></pre>
 <h3 id="-">套用樣板</h3>
 <p>將準備好的資料套用樣板, 輸出最後結果</p>
@@ -118,20 +118,20 @@ Josie
 <h2 id="-iteration">樣板語法 -- iteration</h2>
 <p>跟Go一樣, 用超多<code>range</code>來遍歷各個資料結構像是map, array或是slice, </p>
 <p>using context: </p>
-<pre><code class="lang-go">{{ range<span class="hljs-instruction"> array </span>}}
-  {{ . }}
-{{ end }}
+<pre><code class="lang-go"><span class="hljs-expansion">{{ range array }}</span>
+  <span class="hljs-expansion">{{ . }}</span>
+<span class="hljs-expansion">{{ <span class="hljs-keyword">end</span> }}</span>
 </code></pre>
 <p>或是宣告變數名稱: </p>
-<pre><code class="lang-go"><span class="xml"></span><span class="hljs-expression">{{<span class="hljs-variable">range</span> $<span class="hljs-variable">element</span> := <span class="hljs-variable">array</span>}}</span><span class="xml">
-  </span><span class="hljs-expression">{{ $<span class="hljs-variable">element</span> }}</span><span class="xml">
-</span><span class="hljs-expression">{{ <span class="hljs-variable">end</span> }}</span><span class="xml"></span>
+<pre><code class="lang-go"><span class="hljs-expansion">{{range <span class="hljs-variable">$element</span> <span class="hljs-symbol">:</span>= array}}</span>
+  <span class="hljs-expansion">{{ <span class="hljs-variable">$element</span> }}</span>
+<span class="hljs-expansion">{{ <span class="hljs-keyword">end</span> }}</span>
 </code></pre>
 <p>多宣告index: </p>
-<pre><code class="lang-go"><span class="xml"></span><span class="hljs-expression">{{<span class="hljs-variable">range</span> $<span class="hljs-variable">index</span>, $<span class="hljs-variable">element</span> := <span class="hljs-variable">array</span>}}</span><span class="xml">
-  </span><span class="hljs-expression">{{ $<span class="hljs-variable">index</span> }}</span><span class="xml">
-  </span><span class="hljs-expression">{{ $<span class="hljs-variable">element</span> }}</span><span class="xml">
-</span><span class="hljs-expression">{{ <span class="hljs-variable">end</span> }}</span><span class="xml"></span>
+<pre><code class="lang-go"><span class="hljs-expansion">{{range <span class="hljs-variable">$index</span>, <span class="hljs-variable">$element</span> <span class="hljs-symbol">:</span>= array}}</span>
+  <span class="hljs-expansion">{{ <span class="hljs-variable">$index</span> }}</span>
+  <span class="hljs-expansion">{{ <span class="hljs-variable">$element</span> }}</span>
+<span class="hljs-expansion">{{ <span class="hljs-keyword">end</span> }}</span>
 </code></pre>
 <h2 id="more">More</h2>
 <p><a href="http://stackoverflow.com/questions/18175630/go-template-executetemplate-include-html">go template excute template include html</a></p>

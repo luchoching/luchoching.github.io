@@ -3,11 +3,11 @@
 <p>自<a href="https://facebook.github.io/react/blog/2015/03/10/react-v0.13.html">react 0.13</a>開始,官方都鼓勵使用 <a href="https://facebook.github.io/react/blog/2015/01/27/react-v0.13.0-beta-1.html">ES6 classes</a> 來撰寫react元件了, 當然趁現在的空檔,從善如流的將react 0.12的程式碼翻寫一下。</p>
 <p>如果有寫過<a href="https://zh.wikipedia.org/zh-tw/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%A8%8B%E5%BA%8F%E8%AE%BE%E8%AE%A1">OO</a>的應該都會很有熟悉感。</p>
 <h2 id="-proptypes-getdefaulttypes-class-">將 propTypes 和 getDefaultTypes抽出到class定義之外</h2>
-<pre><code class="lang-js"><span class="hljs-built_in">var</span> ExampleComponent <span class="hljs-subst">=</span> React<span class="hljs-built_in">.</span>createClass({ <span class="hljs-attribute">...</span> });
-ExampleComponent<span class="hljs-built_in">.</span>propTypes <span class="hljs-subst">=</span> {
+<pre><code class="lang-js"><span class="hljs-built_in">var</span> ExampleComponent = React<span class="hljs-built_in">.</span>createClass({ <span class="hljs-attribute">...</span> });
+ExampleComponent<span class="hljs-built_in">.</span>propTypes = {
  aStringProp: React<span class="hljs-built_in">.</span>PropTypes<span class="hljs-built_in">.</span><span class="hljs-built_in">string</span>
 };
-ExampleComponent<span class="hljs-built_in">.</span>defaultProps <span class="hljs-subst">=</span> {
+ExampleComponent<span class="hljs-built_in">.</span>defaultProps = {
  aStringProp: <span class="hljs-string">''</span>
 };
 </code></pre>

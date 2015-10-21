@@ -3,9 +3,9 @@
 <p>Go沒有所謂的<code>try...catch</code>來處理exception, <code>panic</code>就是我們平常所接觸的&quot;拋出一個exception&quot;。</p>
 <p>一個<code>panic</code>表示某些事情非預期的出錯了, 大多數時間我們用在把不應該出錯的正常運作快速的導向失敗(拋出異常), 或是處理我們還沒有很好處理的錯誤。</p>
 <p>例如: </p>
-<pre><code class="lang-go"><span class="hljs-keyword">package</span> main
-<span class="hljs-keyword">func</span> main(){
-  <span class="hljs-built_in">panic</span>(<span class="hljs-string">"a problem"</span>)
+<pre><code class="lang-go">package main
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>{</span>
+  panic(<span class="hljs-string">"a problem"</span>)
 }
 </code></pre>
 <p>就會立刻panic, 印出錯誤堆疊訊息: </p>
@@ -42,34 +42,34 @@ exit status <span class="hljs-number">2</span>
 <p>例如我們現在新建一個檔案,然後寫入資料到檔案, 最後把檔案close關掉, 最後這個close的工作,就是<code>defer</code>來做:</p>
 <pre><code class="lang-go">package main
 
-<span class="hljs-built_in">import</span> <span class="hljs-params">(
+<span class="hljs-keyword">import</span> (
   <span class="hljs-string">"fmt"</span>
   <span class="hljs-string">"os"</span>
-)</span>
+)
 
-func main<span class="hljs-params">()</span>{
-  f:= createFile<span class="hljs-params">(<span class="hljs-string">"./test"</span>)</span>
-  defer closeFile<span class="hljs-params">(f)</span>
-  writeFile<span class="hljs-params">(f)</span>
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>{
+  f:= createFile(<span class="hljs-string">"./test"</span>)
+  defer closeFile(f)
+  writeFile(f)
 }
 
-func createFile<span class="hljs-params">(p string)</span> <span class="hljs-built_in">*</span>os.File {
-  fmt.Println<span class="hljs-params">(<span class="hljs-string">"creating"</span>)</span>
-  f, err := os.Create<span class="hljs-params">(p)</span>
-  <span class="hljs-keyword">if</span> err <span class="hljs-built_in">!</span>= nil {
-    panic<span class="hljs-params">(err)</span>
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">createFile</span><span class="hljs-params">(p string)</span></span> *os.<span class="hljs-type">File</span> {
+  fmt.<span class="hljs-type">Println</span>(<span class="hljs-string">"creating"</span>)
+  f, err := os.<span class="hljs-type">Create</span>(p)
+  <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+    panic(err)
   }
-  return f
+  <span class="hljs-keyword">return</span> f
 }
 
-func writeFile<span class="hljs-params">(f *os.File)</span> {
-  fmt.Println<span class="hljs-params">(<span class="hljs-string">"writing"</span>)</span>
-  fmt.Fprintln<span class="hljs-params">(f, <span class="hljs-string">"data"</span>)</span>
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">writeFile</span><span class="hljs-params">(f *os.File)</span></span> {
+  fmt.<span class="hljs-type">Println</span>(<span class="hljs-string">"writing"</span>)
+  fmt.<span class="hljs-type">Fprintln</span>(f, <span class="hljs-string">"data"</span>)
 }
 
-func closeFile<span class="hljs-params">(f *os.File)</span> {
-  fmt.Println<span class="hljs-params">(<span class="hljs-string">"closing"</span>)</span>
-  f.Close<span class="hljs-params">()</span>
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">closeFile</span><span class="hljs-params">(f *os.File)</span></span> {
+  fmt.<span class="hljs-type">Println</span>(<span class="hljs-string">"closing"</span>)
+  f.<span class="hljs-type">Close</span>()
 }
 </code></pre>
 <p>這裡<code>defer</code>將會在<code>writeFile</code>執行完成後, main要關起來的時候執行。執行結果會依序輸出: </p>
@@ -90,23 +90,23 @@ import (
   <span class="hljs-string">"gopkg.in/mgo.v2/bson"</span>
 )
 
-type <span class="hljs-keyword">Person</span> struct {
-  Name string
-  Phone string
+<span class="hljs-keyword">type</span> Person struct {
+  Name <span class="hljs-literal">string</span>
+  Phone <span class="hljs-literal">string</span>
 }
 
 func main() {
-  session, err := mgo.Dial(<span class="hljs-string">"server1.example.com,server2.example.com"</span>)
-  if err != nil {
-    panic(err)
+  session, <span class="hljs-keyword">err</span> := mgo.Dial(<span class="hljs-string">"server1.example.com,server2.example.com"</span>)
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> != nil {
+    panic(<span class="hljs-keyword">err</span>)
   }
-  defer session.Close()
+  defer session.<span class="hljs-keyword">Close</span>()
 
-  c := session.DB(<span class="hljs-string">"test"</span>).C(<span class="hljs-string">"people"</span>)
-  err = c.Insert(&amp;<span class="hljs-keyword">Person</span>{<span class="hljs-string">"Ale"</span>, <span class="hljs-string">"+55 53 8116 9639"</span>},
-         &amp;<span class="hljs-keyword">Person</span>{<span class="hljs-string">"Cla"</span>, <span class="hljs-string">"+55 53 8402 8510"</span>})
-  if err != nil {
-    log.Fatal(err)
+  c := session.<span class="hljs-keyword">DB</span>(<span class="hljs-string">"test"</span>).C(<span class="hljs-string">"people"</span>)
+  <span class="hljs-keyword">err</span> = c.Insert(&amp;Person{<span class="hljs-string">"Ale"</span>, <span class="hljs-string">"+55 53 8116 9639"</span>},
+         &amp;Person{<span class="hljs-string">"Cla"</span>, <span class="hljs-string">"+55 53 8402 8510"</span>})
+  <span class="hljs-keyword">if</span> <span class="hljs-keyword">err</span> != nil {
+    <span class="hljs-keyword">log</span>.Fatal(<span class="hljs-keyword">err</span>)
   }
 }
 </code></pre>

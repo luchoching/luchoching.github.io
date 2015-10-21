@@ -24,8 +24,8 @@
 <p><code>$ less text_file</code> : let you view text files. 可用page up , page down, <code>G</code>到檔案底部, <code>1G</code>到檔案開頭, 也可<code>/characters</code> search ,用<code>n</code>repeat previous search</p>
 <p><code>$ file name_of_file</code>: <code>file</code> will examine a file and tell you what kind of file it is.</p>
 <p>例如：</p>
-<pre><code>$ <span class="hljs-built_in">file</span> <span class="hljs-number">2015</span>-<span class="hljs-number">08</span>-<span class="hljs-number">28</span>-git_9_remote_branches.html 
-<span class="hljs-number">2015</span>-<span class="hljs-number">08</span>-<span class="hljs-number">28</span>-git_9_remote_branches.html: HTML document, UTF-<span class="hljs-number">8</span> Unicode <span class="hljs-keyword">text</span>, <span class="hljs-operator">with</span> very <span class="hljs-keyword">long</span> <span class="hljs-keyword">lines</span>
+<pre><code>$ file <span class="hljs-number">2015</span>-<span class="hljs-number">08</span>-<span class="hljs-number">28</span>-git_9_remote_branches.html 
+<span class="hljs-number">2015</span>-<span class="hljs-number">08</span>-<span class="hljs-number">28</span>-git_9_remote_branches.html: HTML document, UTF-<span class="hljs-number">8</span> Unicode text, with very <span class="hljs-keyword">long</span> lines
 </code></pre><h2 id="manipulating-files">Manipulating Files</h2>
 <p><code>cp</code>: copy files and directories</p>
 <p><code>mv</code>: move or rename files and directories</p>
@@ -122,17 +122,17 @@ this is a <span class="hljs-keyword">test</span>
 <pre><code><span class="hljs-variable">$ </span>cat file1 - file2 &gt; file3
 </code></pre><p><code>-</code>表示鍵盤輸入, 會把file1加上你鍵盤輸入內容加上file2的內容, 輸出給file3</p>
 <p><code>-b</code>(number non-blank), <code>-n</code>(number): </p>
-<pre><code>$ <span class="hljs-keyword">cat</span> -b foo
-     1  this is a <span class="hljs-keyword">test</span>
-     2  <span class="hljs-keyword">more</span>
+<pre><code>$ cat -b foo
+     <span class="hljs-number">1</span>  <span class="hljs-keyword">this</span> is a test
+     <span class="hljs-number">2</span>  more
 
-     3  <span class="hljs-keyword">cc</span>
-     4  dd
-$ <span class="hljs-keyword">cat</span> -<span class="hljs-keyword">n</span> foo
-     1  this is a <span class="hljs-keyword">test</span>
-     2  <span class="hljs-keyword">more</span>
-     3  
-     4  <span class="hljs-keyword">cc</span>
+     <span class="hljs-number">3</span>  cc
+     <span class="hljs-number">4</span>  dd
+$ cat -n foo
+     <span class="hljs-number">1</span>  <span class="hljs-keyword">this</span> is a test
+     <span class="hljs-number">2</span>  more
+     <span class="hljs-number">3</span>  
+     <span class="hljs-number">4</span>  cc
 </code></pre><div id="disqus_thread"></div><h3 class="back"><a href="/"><< 回到文章列表</a></h3></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES * * */
 var disqus_shortname = 'luchoching';
 /* * * DON'T EDIT BELOW THIS LINE * * */

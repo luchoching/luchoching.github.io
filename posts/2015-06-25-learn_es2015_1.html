@@ -11,8 +11,8 @@
 <p><code>=&gt;</code>箭頭函數表示式 (Arrow function expression，又叫 fat arrow function) 比起一般的函數表示式語法更短以及詞彙上綁定 this 變數，
 所有的箭頭函數都是無名函數 (anonymous function).</p>
 <p>ES6 code: </p>
-<pre><code class="lang-js"><span class="hljs-reserved">var</span> odds = evens.map(v =&gt; v + <span class="hljs-number">1</span>);
-<span class="hljs-reserved">var</span> nums = evens.map(<span class="hljs-function"><span class="hljs-params">(v, i)</span> =&gt;</span> v + i);
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> odds = evens.map(v =&gt; v + <span class="hljs-number">1</span>);
+<span class="hljs-keyword">var</span> nums = evens.map((v, i) =&gt; v + i);
 </code></pre>
 <p>相當於ES5 code:</p>
 <pre><code class="lang-js"><span class="hljs-keyword">var</span> odds = evens.map(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(v)</span> </span>{
@@ -25,12 +25,12 @@
 </code></pre>
 <p>使用<code>=&gt;</code>讓程式看起來簡潔多了!</p>
 <p>ES6 code:</p>
-<pre><code class="lang-js"><span class="hljs-reserved">var</span> bob = {
-  <span class="hljs-attribute">_name</span>: <span class="hljs-string">"Bob"</span>,
-  <span class="hljs-attribute">_friends</span>: [<span class="hljs-string">'aaa'</span>,<span class="hljs-string">'bbb'</span>,<span class="hljs-string">'ccc'</span>],
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> bob = {
+  _name: <span class="hljs-string">"Bob"</span>,
+  _friends: [<span class="hljs-string">'aaa'</span>,<span class="hljs-string">'bbb'</span>,<span class="hljs-string">'ccc'</span>],
   printFriends() {
     <span class="hljs-keyword">this</span>._friends.forEach(f =&gt;
-      <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>._name + <span class="hljs-string">" knows "</span> + f));
+      console.log(<span class="hljs-keyword">this</span>._name + <span class="hljs-string">" knows "</span> + f));
   }
 }
 </code></pre>
@@ -142,33 +142,33 @@ var [d, ,e] = f()<span class="hljs-comment">; //d為1, e為3</span>
 f(<span class="hljs-number">3</span>) == <span class="hljs-number">15</span>;
 </code></pre>
 <p>用ES6: </p>
-<pre><code class="lang-js"><span class="hljs-reserved">var</span> f = <span class="hljs-function"><span class="hljs-params">(x, y=<span class="hljs-number">12</span>)</span> =&gt;</span> x +y;
+<pre><code class="lang-js">var f = <span class="hljs-function"><span class="hljs-params">(x, y=<span class="hljs-number">12</span>)</span> =&gt;</span> x +y;
 </code></pre>
 <p>現在可以很方便的撰寫具有預設參數值的函式: </p>
-<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">drawES6Chart</span><span class="hljs-params">({
-  size = 'big', 
+<pre><code class="lang-js"><span class="hljs-keyword">function</span> drawES6Chart({
+  size = <span class="hljs-string">'big'</span>, 
   cords = { x: <span class="hljs-number">0</span>, y: <span class="hljs-number">0</span> }, 
-  radius = <span class="hljs-number">25</span>} = {})</span> 
-{</span>
-  console.<span class="hljs-built_in">log</span><span class="hljs-params">(size, cords, radius)</span>;
+  radius = <span class="hljs-number">25</span>} = {}) 
+{
+  console.log(size, cords, radius);
 }
 
-<span class="hljs-comment">//輸出: big { x: 18, y: 30 } 30</span>
-drawES6Chart<span class="hljs-params">({
+//輸出: big { x: <span class="hljs-number">18</span>, y: <span class="hljs-number">30</span> } <span class="hljs-number">30</span>
+drawES6Chart({
   cords: { x: <span class="hljs-number">18</span>, y: <span class="hljs-number">30</span> },
   radius: <span class="hljs-number">30</span>
-})</span>;
+});
 
-<span class="hljs-comment">//輸出: big { x: 0, y: 0 } 25</span>
-drawES6Chart<span class="hljs-params">()</span>;
+//輸出: big { x: <span class="hljs-number">0</span>, y: <span class="hljs-number">0</span> } <span class="hljs-number">25</span>
+drawES6Chart();
 </code></pre>
 <p>Rest: </p>
-<pre><code class="lang-js"><span class="hljs-reserved">var</span> f= <span class="hljs-function"><span class="hljs-params">(x, ...y)</span> =&gt;</span> x * y.length;
+<pre><code class="lang-js">var f= <span class="hljs-function"><span class="hljs-params">(x, ...y)</span> =&gt;</span> x * y.length;
 f(<span class="hljs-number">3</span>, <span class="hljs-string">"hello"</span>, <span class="hljs-literal">true</span>); <span class="hljs-regexp">//</span>傳回<span class="hljs-number">6</span>
 </code></pre>
 <p>Spread: </p>
-<pre><code class="lang-js"><span class="hljs-reserved">var</span> f = <span class="hljs-function"><span class="hljs-params">(x, y, z)</span> =&gt;</span> x + y + z;
-f(...[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]); <span class="hljs-regexp">//</span><span class="hljs-number">6</span>
+<pre><code class="lang-js">var f = (x, y, z) =&gt; x + y + z;
+f(...[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]); <span class="hljs-comment">//6</span>
 </code></pre>
 <h2 id="let-const">let + const</h2>
 <p><code>let</code>用來宣告<strong>block scope</strong>的變數,</p>
@@ -188,36 +188,36 @@ f(...[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<spa
 }
 </code></pre>
 <p><code>var</code>和<code>let</code>的不同, 可以由以下來比較: </p>
-<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span><span class="hljs-params">()</span> {</span>
-  console.<span class="hljs-built_in">log</span><span class="hljs-params">( x )</span>; <span class="hljs-comment">//undefined</span>
-  console.<span class="hljs-built_in">log</span><span class="hljs-params">( y )</span>; <span class="hljs-comment">//error</span>
+<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-built_in">console</span>.log( x ); <span class="hljs-comment">//undefined</span>
+  <span class="hljs-built_in">console</span>.log( y ); <span class="hljs-comment">//error</span>
 
-  var x = <span class="hljs-number">1</span>;
-  <span class="hljs-keyword">if</span> <span class="hljs-params">(x === <span class="hljs-number">1</span>)</span> {
-    <span class="hljs-built_in">let</span> y = <span class="hljs-number">2</span>;
+  <span class="hljs-keyword">var</span> x = <span class="hljs-number">1</span>;
+  <span class="hljs-keyword">if</span> (x === <span class="hljs-number">1</span>) {
+    <span class="hljs-keyword">let</span> y = <span class="hljs-number">2</span>;
   }
-  console.<span class="hljs-built_in">log</span><span class="hljs-params">( y )</span>; <span class="hljs-comment">//error</span>
+  <span class="hljs-built_in">console</span>.log( y ); <span class="hljs-comment">//error</span>
 }
 
-foo<span class="hljs-params">()</span>;
-console.<span class="hljs-built_in">log</span><span class="hljs-params">( x )</span>; <span class="hljs-comment">//error</span>
+foo();
+<span class="hljs-built_in">console</span>.log( x ); <span class="hljs-comment">//error</span>
 </code></pre>
 <p>第一個列印x得到的值為undefined, 因為變數x還沒有賦與值, 
 接下來列印兩個y會得到error, 因為我們用的是<code>let</code>宣告y,為block scope,
 y只存在if這個block裏面, 列印的y並沒有在這個block裏面, 因此會列印出錯誤。</p>
 <p>最後一個列印x也會得到error, 因為我們用<code>var</code>宣告x, 最後一個列印x已經超出function foo()的scope之外。</p>
 <p>讓<code>let</code>變成宣告為function scope也很簡單, 只要把<code>let</code>宣告放在function內容的第1行就好了! 例如: </p>
-<pre><code class="lang-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span><span class="hljs-params">( x )</span> {</span>
-  <span class="hljs-built_in">let</span> y;
+<pre><code class="lang-js"><span class="hljs-function">function <span class="hljs-title">foo</span><span class="hljs-params">( x )</span> </span>{
+  let y;
 
-  <span class="hljs-keyword">if</span> <span class="hljs-params">(x === <span class="hljs-number">1</span>)</span> {
+  <span class="hljs-keyword">if</span> (x === <span class="hljs-number">1</span>) {
     y = <span class="hljs-number">2</span>;
   }
-  console.<span class="hljs-built_in">log</span><span class="hljs-params">( y )</span>;
+  console.<span class="hljs-built_in">log</span>( y );
 }
 
-foo<span class="hljs-params">( <span class="hljs-number">1</span> )</span>; <span class="hljs-comment">//2</span>
-console.<span class="hljs-built_in">log</span><span class="hljs-params">( y )</span>; <span class="hljs-comment">//error</span>
+foo( <span class="hljs-number">1</span> ); <span class="hljs-comment">//2</span>
+console.<span class="hljs-built_in">log</span>( y ); <span class="hljs-comment">//error</span>
 </code></pre>
 <h2 id="more">More</h2>
 <p><a href="https://github.com/lukehoban/es6features">Overview of ES6 features</a></p>

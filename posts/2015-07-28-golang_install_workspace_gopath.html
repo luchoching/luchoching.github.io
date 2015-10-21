@@ -4,10 +4,10 @@
 <p>環境是 ubuntu 14.04 LTS , </p>
 <p><a href="https://golang.org/dl/">下載</a></p>
 <p>解壓縮: </p>
-<pre><code class="lang-bash">$ sudo tar -C /usr/local -xzf go<span class="hljs-variable">$VERSION</span>.<span class="hljs-variable">$OS</span>-<span class="hljs-variable">$ARCH</span><span class="hljs-class">.tar</span><span class="hljs-class">.gz</span>
+<pre><code class="lang-bash">$ sudo tar -C /usr/local -xzf go<span class="hljs-variable">$VERSION</span>.<span class="hljs-variable">$OS-</span><span class="hljs-variable">$ARCH</span>.tar.gz
 </code></pre>
 <p>在<code>$HOME/.profile</code>加入: </p>
-<pre><code class="lang-bash">export <span class="hljs-constant">PATH=</span><span class="hljs-variable">$PATH</span><span class="hljs-symbol">:/usr/local/go/bin</span>
+<pre><code class="lang-bash">export <span class="hljs-constant">PATH</span>=<span class="hljs-variable">$PATH</span><span class="hljs-symbol">:/usr/local/go/bin</span>
 </code></pre>
 <p>察看安裝結果: </p>
 <pre><code class="lang-bash">$ <span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span>
@@ -46,21 +46,21 @@ src/
 <p><em>Commands</em> 和 <em>libraries</em> 由不同種類的source packages所編譯(build)而成 <a href="https://golang.org/doc/code.html#PackageNames">說明</a></p>
 <h2 id="gopath-">GOPATH 環境變數</h2>
 <p><code>GOPATH</code>環境變數用來指定我們的workspace所在位置。這應該是唯一撰寫Go程式碼需要設定的環境變數,注意不能跟我們Go的安裝路徑相同: </p>
-<pre><code><span class="hljs-variable">$ </span>mkdir <span class="hljs-variable">$HOME</span>/go
+<pre><code>$ mkdir <span class="hljs-variable">$HOME</span>/go
 </code></pre><p>在<code>$HOME/.profile</code>中加入: </p>
-<pre><code><span class="hljs-built_in">export</span> PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$GOPATH</span>/bin
+<pre><code>export PATH=<span class="hljs-variable">$PATH</span>:<span class="hljs-variable">$GOPATH</span>/bin
 </code></pre><h2 id="package-paths">Package paths</h2>
 <p>避免命名衝突, 建議使用像是github帳號當作base path, 例如 <code>github.com/user</code>。</p>
-<pre><code class="lang-bash">$ mkdir -<span class="hljs-tag">p</span> <span class="hljs-variable">$GOPATH</span>/src/github.com/user
+<pre><code class="lang-bash">$ mkdir -p <span class="hljs-variable">$GOPATH</span>/src/github.com/user
 </code></pre>
 <h2 id="your-first-program-command-source-">Your first program (Command source)</h2>
 <p>要編譯並執行一個簡單的程式, 那首先就是選一個package path, 那我們就在我們的base path下面建立我們的package path, 例如: </p>
-<pre><code class="lang-bash"><span class="hljs-variable">$ </span>mkdir <span class="hljs-variable">$GOPATH</span>/src/github.com/user/hello
+<pre><code class="lang-bash">$ mkdir <span class="hljs-variable">$GOPATH</span>/src/github.com/user/hello
 </code></pre>
 <p><code>hello.go</code>: </p>
 <pre><code class="lang-go">package main
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"fmt"</span>
+<span class="hljs-keyword">import</span> "fmt"
 
 <span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
   fmt.<span class="hljs-type">Printf</span>(<span class="hljs-string">"Hello, world.\n"</span>)
@@ -71,22 +71,22 @@ src/
 </code></pre>
 <p>或是到hello目錄下, 直接執行<code>go install</code>, 如果有錯誤會印出錯誤, 順利執行就沒有任何顯示。</p>
 <p>執行<code>go install</code>後產生可執行的binary檔案到worksapce的<code>bin</code>目錄下：</p>
-<pre><code class="lang-bash"><span class="hljs-variable">$ </span><span class="hljs-variable">$GOPATH</span>/bin/hello
-<span class="hljs-constant">Hello,</span> world.
+<pre><code class="lang-bash">$ <span class="hljs-variable">$GOPATH</span>/bin/hello
+Hello, world.
 </code></pre>
 <h2 id="your-first-library">Your first library</h2>
 <p>步驟跟寫一般程式一樣, 先選擇一個package path(這裡選擇<code>github.com/user/stringutil</code>), 再建立該package目錄: </p>
-<pre><code class="lang-bash"><span class="hljs-variable">$ </span>mkdir <span class="hljs-variable">$GOPATH</span>/src/github.com/user/stringutil
+<pre><code class="lang-bash">$ mkdir <span class="hljs-variable">$GOPATH</span>/src/github.com/user/stringutil
 </code></pre>
 <p>在目錄下<code>reverse.go</code>:</p>
-<pre><code class="lang-go"><span class="hljs-keyword">package</span> stringutil
+<pre><code class="lang-go"><span class="hljs-function">package stringutil
 
-<span class="hljs-keyword">func</span> Reverse(s <span class="hljs-typename">string</span>) <span class="hljs-typename">string</span> {
-  r := []<span class="hljs-typename">rune</span>(s)
-  <span class="hljs-keyword">for</span> i, j := <span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(r)-<span class="hljs-number">1</span>; i &lt; <span class="hljs-built_in">len</span>(r)/<span class="hljs-number">2</span>; i, j = i+<span class="hljs-number">1</span>, j-<span class="hljs-number">1</span> {
+func <span class="hljs-title">Reverse</span><span class="hljs-params">(s <span class="hljs-built_in">string</span>)</span> <span class="hljs-built_in">string</span> </span>{
+  r := []rune(s)
+  <span class="hljs-keyword">for</span> i, j := <span class="hljs-number">0</span>, len(r)-<span class="hljs-number">1</span>; i &lt; len(r)/<span class="hljs-number">2</span>; i, j = i+<span class="hljs-number">1</span>, j-<span class="hljs-number">1</span> {
     r[i], r[j] = r[j], r[i]
   }
-  <span class="hljs-keyword">return</span> <span class="hljs-typename">string</span>(r)
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">string</span>(r)
 }
 </code></pre>
 <p>利用<code>go build</code>測試並且編譯我們的package: </p>
@@ -95,13 +95,13 @@ src/
 <p>再來修改我們的<code>hello.go</code>看是否可以順利使用我們新建的library: </p>
 <pre><code class="lang-go">package main
 
-<span class="hljs-built_in">import</span> <span class="hljs-params">(
+<span class="hljs-keyword">import</span> (
   <span class="hljs-string">"fmt"</span>
   <span class="hljs-string">"github.com/user/stringutil"</span>
-)</span>
+)
 
-func main<span class="hljs-params">()</span> {
-  fmt.Printf<span class="hljs-params">(stringutil.Reverse<span class="hljs-params">(<span class="hljs-string">"!oG ,olleH"</span>)</span>)</span>
+<span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+  fmt.<span class="hljs-type">Printf</span>(stringutil.<span class="hljs-type">Reverse</span>(<span class="hljs-string">"!oG ,olleH"</span>))
 }
 </code></pre>
 <p><code>go install</code>會同時安裝其相關套件, 所以重新<code>go install  github.com/user/hello</code>也會安裝<code>stringutil</code> package。</p>
@@ -124,7 +124,7 @@ src/
 <p>例如建立<code>$GOPATH/src/github.com/user/stringutil/reverse_test.go</code>: </p>
 <pre><code class="lang-go">package stringutil
 
-<span class="hljs-keyword">import</span> <span class="hljs-string">"testing"</span>
+<span class="hljs-keyword">import</span> "testing"
 
 <span class="hljs-func"><span class="hljs-keyword">func</span> <span class="hljs-title">TestReverse</span><span class="hljs-params">(t *testing.T)</span></span> {
   cases := []<span class="hljs-class"><span class="hljs-keyword">struct</span> </span>{
@@ -147,9 +147,9 @@ src/
 ok    github.<span class="hljs-keyword">com</span>/user/stringutil <span class="hljs-number">0.165</span><span class="hljs-keyword">s</span>
 </code></pre><h2 id="remote-packages">remote packages</h2>
 <p>使用 <code>go get</code>獲取遠端的package來用: </p>
-<pre><code><span class="hljs-variable">$ </span>go get github.com/golang/example/hello
-<span class="hljs-variable">$ </span><span class="hljs-variable">$GOPATH</span>/bin/hello
-<span class="hljs-constant">Hello,</span> <span class="hljs-constant">Go </span>examples!
+<pre><code>$ go get github.com/golang/example/hello
+$ <span class="hljs-variable">$GOPATH</span>/bin/hello
+Hello, Go examples!
 </code></pre><p>注意<code>go get</code>每次都會抓最新的版本..</p>
 <h2 id="more">More</h2>
 <p><a href="https://golang.org/doc/install">Go- Getting started</a></p>

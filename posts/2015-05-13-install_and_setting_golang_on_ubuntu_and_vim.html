@@ -6,7 +6,7 @@
 <pre><code class="lang-bash"><span class="hljs-label">sudo</span> apt-<span class="hljs-preprocessor">get</span> install curl git mercurial make <span class="hljs-keyword">binutils </span><span class="hljs-keyword">bison </span>gcc <span class="hljs-keyword">build-essential</span>
 </code></pre>
 <p>再來安裝gvm:</p>
-<pre><code>bash &lt; &lt;(curl -s -<span class="hljs-constant">S </span>-<span class="hljs-constant">L </span><span class="hljs-symbol">https:</span>/<span class="hljs-regexp">/raw.githubusercontent.com/moovweb</span><span class="hljs-regexp">/gvm/master</span><span class="hljs-regexp">/binscripts/gvm</span>-installer)
+<pre><code>bash &lt; &lt;(curl -s -<span class="hljs-constant">S</span> -<span class="hljs-constant">L</span> <span class="hljs-symbol">https:</span>/<span class="hljs-regexp">/raw.githubusercontent.com/moovweb</span><span class="hljs-regexp">/gvm/master</span><span class="hljs-regexp">/binscripts/gvm</span>-installer)
 </code></pre><p>察看一下 <code>gvm</code> 有哪些命令列參數可用: </p>
 <pre><code class="lang-bash">$ gvm
 Usage: gvm [command]
@@ -20,19 +20,19 @@ Commands:
   <span class="hljs-operator"><span class="hljs-keyword">use</span>        - <span class="hljs-keyword">select</span> a <span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span> <span class="hljs-keyword">to</span> <span class="hljs-keyword">use</span>
   diff       - <span class="hljs-keyword">view</span> changes <span class="hljs-keyword">to</span> <span class="hljs-keyword">Go</span> root
   implode    - completely remove gvm
-  <span class="hljs-keyword">install</span>    - <span class="hljs-keyword">install</span> <span class="hljs-keyword">go</span> versions
-  <span class="hljs-keyword">uninstall</span>  - <span class="hljs-keyword">uninstall</span> <span class="hljs-keyword">go</span> versions
+  <span class="hljs-keyword">install</span>    - <span class="hljs-keyword">install</span> <span class="hljs-keyword">go</span> <span class="hljs-keyword">versions</span>
+  <span class="hljs-keyword">uninstall</span>  - <span class="hljs-keyword">uninstall</span> <span class="hljs-keyword">go</span> <span class="hljs-keyword">versions</span>
   <span class="hljs-keyword">cross</span>      - <span class="hljs-keyword">install</span> <span class="hljs-keyword">go</span> <span class="hljs-keyword">cross</span> compilers
-  linkthis   - link this directory <span class="hljs-keyword">into</span> GOPATH
-  list       - list installed <span class="hljs-keyword">go</span> versions
-  listall    - list available versions
-  alias      - manage <span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span> aliases
-  pkgset     - manage <span class="hljs-keyword">go</span> packages sets
-  pkgenv     - edit the environment <span class="hljs-keyword">for</span> a package <span class="hljs-keyword">set</span></span>
+  linkthis   - <span class="hljs-keyword">link</span> this <span class="hljs-keyword">directory</span> <span class="hljs-keyword">into</span> GOPATH
+  <span class="hljs-keyword">list</span>       - <span class="hljs-keyword">list</span> installed <span class="hljs-keyword">go</span> <span class="hljs-keyword">versions</span>
+  listall    - <span class="hljs-keyword">list</span> available <span class="hljs-keyword">versions</span>
+  <span class="hljs-keyword">alias</span>      - manage <span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span> aliases
+  pkgset     - manage <span class="hljs-keyword">go</span> packages <span class="hljs-keyword">sets</span>
+  pkgenv     - edit the environment <span class="hljs-keyword">for</span> a <span class="hljs-keyword">package</span> <span class="hljs-keyword">set</span></span>
 </code></pre>
 <p>檢查一下所安裝的gvm版本:</p>
 <pre><code class="lang-bash">$ gvm <span class="hljs-property">version</span>
-Go Version Manager v1.0.22 installed <span class="hljs-keyword">at</span> /home/parks/.gvm
+Go Version Manager v1<span class="hljs-number">.0</span><span class="hljs-number">.22</span> installed <span class="hljs-keyword">at</span> /home/parks/.gvm
 </code></pre>
 <p>看有哪些go版本可以裝: </p>
 <pre><code class="lang-bash">$ gvm listall
@@ -54,16 +54,16 @@ gvm gos <span class="hljs-comment">(available)</span>
    ...
 </code></pre>
 <p>安裝最新穩定版1.4.2: </p>
-<pre><code class="lang-bash">$ gvm install go1.<span class="hljs-number">4.2</span> --default
-<span class="hljs-variable">Downloading</span> <span class="hljs-variable">Go</span> source...
-<span class="hljs-variable">Installing</span> go1.<span class="hljs-number">4.2</span>...
-* <span class="hljs-variable">Compiling</span>...
+<pre><code class="lang-bash">$ gvm install go1<span class="hljs-number">.4</span><span class="hljs-number">.2</span> --<span class="hljs-keyword">default</span>
+Downloading Go source...
+Installing go1<span class="hljs-number">.4</span><span class="hljs-number">.2</span>...
+* Compiling...
 </code></pre>
 <p>告訴gvm我們要用的go版本是1.4.2, 並確認看看go有沒有安裝成功:</p>
-<pre><code class="lang-bash">$ gvm <span class="hljs-operator"><span class="hljs-keyword">use</span> go1.4.2
-<span class="hljs-keyword">Now</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">version</span> go1.4.2
+<pre><code class="lang-bash">$ gvm <span class="hljs-operator"><span class="hljs-keyword">use</span> go1<span class="hljs-number">.4</span><span class="hljs-number">.2</span>
+<span class="hljs-keyword">Now</span> <span class="hljs-keyword">using</span> <span class="hljs-keyword">version</span> go1<span class="hljs-number">.4</span><span class="hljs-number">.2</span>
 $ <span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span>
-<span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span> go1.4.2 linux/amd64</span>
+<span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span> go1<span class="hljs-number">.4</span><span class="hljs-number">.2</span> linux/amd64</span>
 </code></pre>
 <p>重新讀取<code>~/.bashrc</code> 或是重新啟動終端機。</p>
 <h2 id="-gopath">設定 $GOPATH</h2>
@@ -72,7 +72,7 @@ $ <span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span>
 <pre><code class="lang-bash">$ echo $GOPATH
 <span class="hljs-regexp">/home/</span>parks<span class="hljs-regexp">/.gvm/</span>pkgsets<span class="hljs-regexp">/go1.4.2/</span>global
 $ gvm pkgset use work
-Now using version go1.4.2<span class="hljs-annotation">@work</span>
+Now using version go1<span class="hljs-number">.4</span><span class="hljs-number">.2</span><span class="hljs-annotation">@work</span>
 $ echo $GOPATH
 <span class="hljs-regexp">/home/</span>parks<span class="hljs-regexp">/.gvm/</span>pkgsets<span class="hljs-regexp">/go1.4.2/</span><span class="hljs-string">work:</span><span class="hljs-regexp">/home/</span>parks<span class="hljs-regexp">/.gvm/</span>pkgsets<span class="hljs-regexp">/go1.4.2/</span>global
 </code></pre>
